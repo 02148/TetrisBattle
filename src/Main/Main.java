@@ -40,7 +40,6 @@ public class Main extends Application {
         SpaceRepository repo = new SpaceRepository();
         repo.addGate("tcp://server:6969/?keep");
 
-
         launch(args);
     }
 }
