@@ -1,8 +1,12 @@
 package Main;
 
+
 import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
+import javafx.stage.Screen;
 import javafx.stage.StageStyle;
+
 
 import java.io.IOException;
 
@@ -17,18 +21,21 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws IOException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
-            primaryStage.initStyle(StageStyle.UNDECORATED);
             Parent root = fxmlLoader.load();
-            Scene sc = new Scene(root,600,400);
-            primaryStage.setScene(sc);
+
+            Scene scene = new Scene(root,600,400);
+
+            primaryStage.setScene(scene);
+            primaryStage.initStyle(StageStyle.UNDECORATED);
+            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
+            primaryStage.setX((bounds.getWidth() - scene.getWidth()) / 2);
+            primaryStage.setY((bounds.getHeight() - scene.getHeight()) / 2);  ;
         } catch (IOException e) {
             e.printStackTrace();
         }
 
 
         primaryStage.show();
-
-
     }
 
 
