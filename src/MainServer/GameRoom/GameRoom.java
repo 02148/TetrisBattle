@@ -23,7 +23,7 @@ public class GameRoom {
 
     public String toString() {
         return  "GameRoom@" + this.UUID +
-                "\n  >> Created By " + this.userHost +
+                "\n  >> Hosted By " + this.userHost +
                 "\n  >> Created On " + new Date((long)this.timestamp*1000);
     }
 }

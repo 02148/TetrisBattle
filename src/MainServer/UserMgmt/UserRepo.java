@@ -3,13 +3,14 @@ package MainServer.UserMgmt;
 import MainServer.Utils;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
+import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 public class UserRepo {
     Space s;
 
-    public UserRepo(Space s) {
-        this.s = s;
+    public UserRepo() {
+        this.s = new SequentialSpace();
     }
 
     private void insertUser(User u) throws InterruptedException {

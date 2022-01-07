@@ -6,11 +6,15 @@ import org.jspace.FormalField;
 import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 public class GameRoomRepo {
     Space s, conns;
 
-    public GameRoomRepo(Space s) {
-        this.s = s;
+    public GameRoomRepo() {
+        this.s = new SequentialSpace();
         this.conns = new SequentialSpace();
     }
 
@@ -20,6 +24,11 @@ public class GameRoomRepo {
 
     private GameRoom getGameRoom(String uuid) throws InterruptedException {
         var q = s.getp(new FormalField(String.class), new ActualField(uuid), new FormalField(Double.class));
+        return new GameRoom(q);
+    }
+
+    private GameRoom queryGameRoom(String uuid) throws InterruptedException {
+        var q = s.queryp(new FormalField(String.class), new ActualField(uuid), new FormalField(Double.class));
         return new GameRoom(q);
     }
 
@@ -45,8 +54,9 @@ public class GameRoomRepo {
         insertGameRoom(gr);
     }
 
-    public boolean isAdmin(String uuid, String username) throws InterruptedException {
-        GameRoom gr = getGameRoom(uuid);
+    public boolean isHost(String uuid, String username) throws InterruptedException {
+        GameRoom gr = queryGameRoom(uuid);
+
         return gr.userHost.equals(username);
     }
 
@@ -56,10 +66,21 @@ public class GameRoomRepo {
 
     public void removeConnection(String username, String uuid) throws InterruptedException {
         conns.getp(new ActualField(username), new ActualField(uuid));
+        var curConns = queryConnections(uuid);
+        if (curConns.isEmpty()) // no more connections, close room
+            close(uuid);
+        else if (isHost(uuid, username)) // host has left, reassign role
+            changeHost(uuid, curConns.get(0));
     }
 
-    public void closeRoom(String uuid) throws InterruptedException {
-        getGameRoom(uuid);
+    public List<String> queryConnections(String uuid) throws InterruptedException {
+        var allConns = conns.queryAll( new FormalField(String.class), new ActualField(uuid));
+        return allConns.stream().map(o -> (String)(o[0])).collect(Collectors.toList());
+    }
+
+    public void close(String uuid) throws InterruptedException {
+        getGameRoom(uuid); // remove room uuid from s
+        conns.getAll(new FormalField(String.class), new ActualField(uuid)); // remove conns to room from conns
     }
 
     public void queryAllRooms() throws InterruptedException {
@@ -72,10 +93,9 @@ public class GameRoomRepo {
             GameRoom gr = new GameRoom(q);
             System.out.println(gr);
             System.out.println("  >> Connections:");
-            var allConns = conns.queryAll( new FormalField(String.class),
-                    new ActualField(gr.UUID));
+            ArrayList<String> allConns = (ArrayList<String>) queryConnections(gr.UUID);
             for (var c : allConns)
-                System.out.println("    >> " + c[0]);
+                System.out.println("    >> " + c);
         }
     }
 

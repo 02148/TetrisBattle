@@ -6,10 +6,8 @@ import org.jspace.SequentialSpace;
 
 public class MainServer {
     public static void main(String[] args) throws Exception {
-        SequentialSpace us = new SequentialSpace();
-        UserRepo users = new UserRepo(us);
-        SequentialSpace gs = new SequentialSpace();
-        GameRoomRepo gameRooms = new GameRoomRepo(gs);
+        UserRepo users = new UserRepo();
+        GameRoomRepo gameRooms = new GameRoomRepo();
 
         users.create("niels");
         users.create("emilie");
@@ -26,6 +24,13 @@ public class MainServer {
         gameRooms.addConnection("asger", roomId2);
         gameRooms.addConnection("asger", roomId3);
 
+        gameRooms.close(roomId2);
+        gameRooms.close(roomId3);
+
+        System.out.println("\nBEFORE");
+        gameRooms.queryAllRooms();
+        gameRooms.removeConnection("niels", roomId1);
+        System.out.println("\nAFTER");
         gameRooms.queryAllRooms();
     }
 }
