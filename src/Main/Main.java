@@ -27,9 +27,7 @@ public class Main extends Application {
 
             primaryStage.setScene(scene);
             primaryStage.initStyle(StageStyle.UNDECORATED);
-            Rectangle2D bounds = Screen.getPrimary().getVisualBounds();
-            primaryStage.setX((bounds.getWidth() - scene.getWidth()) / 2);
-            primaryStage.setY((bounds.getHeight() - scene.getHeight()) / 2);  ;
+            primaryStage.centerOnScreen(); ;
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -37,7 +35,6 @@ public class Main extends Application {
 
         primaryStage.show();
     }
-
 
     public static void main(String[] args) throws IOException {
         SpaceRepository repo = new SpaceRepository();

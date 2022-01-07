@@ -33,5 +33,11 @@ public class GlobalGameUIController {
     @FXML protected void  handleGameChatInputAction(ActionEvent event){
         gameChatArea.appendText("\n"+ user + ": " + gameChatTextField.getText() );
         gameChatTextField.clear();
+        //TODO: Add functionality to update TextArea based on input from other players
     }
+
+    //TODO: Add functions to show the games/Make it possible to play
+
+
+
 }

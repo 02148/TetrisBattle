@@ -31,12 +31,15 @@ public class GlobalChatUIController {
         Scene scene = new Scene(loader.load(),1300,800);
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
-        primaryStage.show();//TODO: Add go to lobby function
+        primaryStage.show();
+
+        //TODO: Add funcitonality to verify choices af username, room and wether the person want's to host or join
+
     }
 
     @FXML protected void handleChatInputAction(ActionEvent event){
-        //TODO: add functionality to add text to textview
         chatArea.appendText("\n"+ user + ": " + chatTextField.getText() );
         chatTextField.clear();
+        //TODO: Add functionality to update chat based on input from other users
     }
 }
