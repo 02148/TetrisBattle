@@ -1,41 +1,37 @@
 package Main;
 
-import org.jspace.RemoteSpace;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.stage.StageStyle;
 
 import java.io.IOException;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.jspace.SpaceRepository;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(new EventHandler<ActionEvent>() {
+    public void start(Stage primaryStage) throws IOException {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
+            primaryStage.initStyle(StageStyle.UNDECORATED);
+            Parent root = fxmlLoader.load();
+            Scene sc = new Scene(root,600,400);
+            primaryStage.setScene(sc);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            @Override
-            public void handle(ActionEvent event) {
-                System.out.println("Hello World!");
-            }
-        });
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
-
-        Scene scene = new Scene(root, 300, 250);
-
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
         primaryStage.show();
+
+
     }
+
+
     public static void main(String[] args) throws IOException {
         SpaceRepository repo = new SpaceRepository();
         repo.addGate("tcp://server:6969/?keep");
