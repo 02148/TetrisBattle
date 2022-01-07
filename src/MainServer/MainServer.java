@@ -14,6 +14,8 @@ public class MainServer {
         users.create("asger");
 
         users.login("niels");
+        users.login("asger");
+        users.logout("asger");
         users.queryAllUsers();
 
         String roomId1 = gameRooms.create("niels");
@@ -44,15 +46,19 @@ public class MainServer {
 // "login" user
 // check if user exists
 // check if user is logged in
+// TODO
+// Decide if user should be identified using only username, or if uuid should be passed on as well
 */
 
-// TODO
+// TODO DONE
 // create room
 // host room
 // establish connections to room -> interaction based coordination
 // check if user is host of room
 // assign host role and rights to other user if current host leaves
 // close room when everyone has left
+// TODO
+//
 
 // TODO
 // create game sessions
