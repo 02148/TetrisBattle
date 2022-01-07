@@ -1,34 +1,38 @@
 package Main;
 
-import Client.UI.Board;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
-import org.jspace.RemoteSpace;
+
+import javafx.fxml.FXMLLoader;
+import javafx.geometry.Rectangle2D;
+import javafx.scene.Parent;
+import javafx.stage.Screen;
+import javafx.stage.StageStyle;
+
 
 import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
 import org.jspace.SpaceRepository;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) {
-        Button btn = new Button();
-        btn.setText("Say 'Hello World'");
-        btn.setOnAction(event -> System.out.println("Hello World!"));
+    public void start(Stage primaryStage) throws IOException {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
+            Parent root = fxmlLoader.load();
 
-        StackPane root = new StackPane();
-        root.getChildren().add(btn);
+            Scene scene = new Scene(root,600,400);
 
-        Scene scene = new Scene(root, 750, 500);
+            primaryStage.setScene(scene);
+            primaryStage.initStyle(StageStyle.UNDECORATED);
+            primaryStage.centerOnScreen(); ;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-        primaryStage.setTitle("Hello World!");
-        primaryStage.setScene(scene);
+
         primaryStage.show();
     }
 
