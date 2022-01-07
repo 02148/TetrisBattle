@@ -1,5 +1,8 @@
 package Main;
 
+import Client.UI.Board;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Rectangle;
 import org.jspace.RemoteSpace;
 
 import java.io.IOException;
@@ -30,7 +33,7 @@ public class Main extends Application {
         StackPane root = new StackPane();
         root.getChildren().add(btn);
 
-        Scene scene = new Scene(root, 300, 250);
+        Scene scene = new Scene(root, 750, 500);
 
         primaryStage.setTitle("Hello World!");
         primaryStage.setScene(scene);
