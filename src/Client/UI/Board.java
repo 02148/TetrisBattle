@@ -1,5 +1,8 @@
 package Client.UI;
 
+import Client.Models.BoardState;
+import Client.Models.Mino;
+import Client.Models.Position;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -48,15 +51,30 @@ public class Board extends Pane {
         }
     }
 
+    public void setBlockColor(int x, int y, Color color) {
+        int index = y*10+x;
+        Canvas block = (Canvas) grid.getChildren().get(index);
+        updateBlock(x, y, color, block.getGraphicsContext2D());
+    }
+
     public void setBlockColor(int index, Color color) {
         int y = index / 10;
         int x = index % 10;
         setBlockColor(x, y, color);
     }
 
-    public void setBlockColor(int x, int y, Color color) {
-        int index = y*10+x;
-        Canvas block = (Canvas) grid.getChildren().get(index);
-        updateBlock(x, y, color, block.getGraphicsContext2D());
+    public void setBlockColor(Position pos, Color color) {
+        setBlockColor(pos.x, pos.y, color);
+    }
+
+    public void setBoard(BoardState boardState) {
+        Mino[] newBoard = boardState.getBoard();
+        for(int i = 0; i < newBoard.length; i++) {
+            if(newBoard[i] != null) {
+                setBlockColor(i, newBoard[i].color);
+            } else {
+                setBlockColor(i, Color.BEIGE);
+            }
+        }
     }
 }
