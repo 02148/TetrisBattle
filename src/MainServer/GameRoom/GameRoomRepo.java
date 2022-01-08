@@ -33,7 +33,6 @@ public class GameRoomRepo {
     }
 
     /**
-     *
      * @param username Username of user that created the room.
      *                 This user will become host of the room.
      * @return UUID of room, used for connecting to room.
