@@ -7,7 +7,8 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.TilePane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+
+
 
 public class Board extends Pane {
     private int posX, posY, width, height;
@@ -15,7 +16,6 @@ public class Board extends Pane {
 
     public Board(int posX, int posY, int size) {
         super();
-
         grid = new GridPane();
 
         grid.setLayoutX(posX);
