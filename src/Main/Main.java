@@ -22,9 +22,7 @@ public class Main extends Application {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
             Parent root = fxmlLoader.load();
-
             Scene scene = new Scene(root,600,400);
-
             primaryStage.setScene(scene);
             primaryStage.initStyle(StageStyle.UNDECORATED);
             primaryStage.centerOnScreen(); ;

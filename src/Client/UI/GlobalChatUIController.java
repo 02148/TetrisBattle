@@ -8,15 +8,22 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
+import javafx.scene.control.ToggleGroup;
+import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-import java.awt.*;
+
 import java.io.IOException;
 
 public class GlobalChatUIController {
     @FXML private TextArea chatArea;
     @FXML private TextField chatTextField;
     private String user = "Username1";
+    @FXML private TextField username;
+    @FXML private TextField roomName;
+    @FXML private ToggleGroup group;
+
+
 
 
 
@@ -34,6 +41,8 @@ public class GlobalChatUIController {
         primaryStage.show();
 
         //TODO: Add funcitonality to verify choices af username, room and wether the person want's to host or join
+        String answer = String.valueOf(group.getSelectedToggle());
+
 
     }
 

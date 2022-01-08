@@ -4,13 +4,13 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
+
+
 
 public class Board extends GridPane {
     private int posX, posY, width, height;
 
-    public Board(int posX, int posY, int width, int height) {
-        super();
+     public Board(int posX, int posY, int width,int height) {
 
         this.setWidth(400);
         this.setHeight(800);
@@ -49,5 +49,6 @@ public class Board extends GridPane {
 
         this.width = width;
         this.height = height;
+
     }
 }
