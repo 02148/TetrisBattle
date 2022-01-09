@@ -3,6 +3,8 @@ package Client.Models;
 
 import javafx.scene.paint.Color;
 
+import java.util.BitSet;
+
 public class BoardState {
   private Mino[] board;
 
@@ -138,7 +140,7 @@ public class BoardState {
       } else {
         if (os.equals("Windows 10"))
         {
-          s.append("⬛");
+          s.append("🟥");
         } else {
           if (board[index].color.equals(Color.BLUE)) {
             s.append("🟦");
@@ -162,5 +164,58 @@ public class BoardState {
       s.append(" ");
     }
     return s.toString();
+  }
+
+  public BitSet toBitArray() {
+    BitSet bitArray = new BitSet(200*3);
+
+    for(int i = 0; i < 200; i++) {
+      if(board[i] == null) {
+        bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
+      } else if (board[i].color.equals(Color.BLUE)) {
+        bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
+      } else if(board[i].color.equals(Color.CYAN)) {
+        bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
+      } else if(board[i].color.equals(Color.ORANGE)) {
+        bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
+      } else if(board[i].color.equals(Color.YELLOW)) {
+        bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
+      } else if(board[i].color.equals(Color.GREEN)) {
+        bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
+      } else if(board[i].color.equals(Color.PINK)) {
+        bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
+      } else if(board[i].color.equals(Color.RED)) {
+        bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
+      }
+    }
+
+    return bitArray;
+  }
+
+  public void setBoardStateFromBitArray(BitSet bitArray) {
+    for(int index = 0; index < bitArray.length(); index += 3) {
+      int indexInBoard = index/3;
+      boolean leftBit = bitArray.get(index);
+      boolean middleBit = bitArray.get(index+1);
+      boolean rightBit = bitArray.get(index+2);
+
+      if(!leftBit && !middleBit && !rightBit) {
+        board[indexInBoard] = null;
+      } else if (!leftBit && !middleBit && rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.BLUE, true);
+      } else if(!leftBit && middleBit && !rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.CYAN, true);
+      } else if(!leftBit && middleBit && rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.ORANGE, true);
+      } else if(leftBit && !middleBit && !rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.YELLOW, true);
+      } else if(leftBit && !middleBit && rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.GREEN, true);
+      } else if(leftBit && middleBit && !rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.PINK, true);
+      } else if(leftBit && middleBit && rightBit) {
+        board[indexInBoard] = new Mino(indexInBoard, Color.RED, true);
+      }
+    }
   }
 }

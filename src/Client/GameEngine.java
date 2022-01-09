@@ -6,6 +6,8 @@ import Client.UI.Board;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
+import java.lang.instrument.Instrumentation;
+import java.util.BitSet;
 import java.util.Random;
 
 public class GameEngine implements Runnable{
@@ -14,14 +16,17 @@ public class GameEngine implements Runnable{
   private BoardState boardState;
   private Board nBoard;
   private Random rnd = new Random();
+  private int lastTetromino = -1;
+  private int savedTetromino = -1;
   private boolean allowedToSwitch = true;
-  private Tetromino savedTetromino;
+  private BitSet savedBoardState = null;
+  private static Instrumentation instrumentation;
 
   public GameEngine(Board nBoard) {
     this.controller = new Controls();
-    this.current_tetromino = new I_Block();
     this.boardState = new BoardState(200);
     this.nBoard = nBoard;
+    newRandomTetromino();
 
     boardState.insertTetromino(current_tetromino);
     nBoard.loadBoardState(boardState);
@@ -42,15 +47,20 @@ public class GameEngine implements Runnable{
         } else {
           controller.moveDown(current_tetromino, boardState);
           boardState.removeFilledRows(current_tetromino.posY);
-          newTetromino();
+          newRandomTetromino();
           allowedToSwitch = true;
         }
       }
     } catch(Exception e){}
   }
 
-  public void newTetromino() {
-    switch(rnd.nextInt(7)) {
+  public void newRandomTetromino() {
+    lastTetromino = rnd.nextInt(7);
+    newTetromino(lastTetromino);
+  }
+
+  public void newTetromino(int index) {
+    switch(index) {
       case 0:
         current_tetromino = new I_Block();
         break;
@@ -88,31 +98,43 @@ public class GameEngine implements Runnable{
     if(keyEvent.getCode() == KeyCode.SPACE) {
       boardState.dropTetromino(current_tetromino);
       boardState.removeFilledRows(current_tetromino.posY);
-      newTetromino();
+      newRandomTetromino();
       allowedToSwitch = true;
     }
 
     if(keyEvent.getCode() == KeyCode.P) {
       System.out.println(boardState.toString());
+
+      BitSet bitset = boardState.toBitArray();
+      for(int i = 0; i < bitset.length(); i++) {
+        if(i%30==0 && i != 0)
+          System.out.println();
+        System.out.print(bitset.get(i) ? "1 " : "0 ");
+      }
     }
 
     if(keyEvent.getCode() == KeyCode.C && allowedToSwitch) {
       allowedToSwitch = false;
       boardState.removeTetromino(current_tetromino);
 
-      if(savedTetromino != null) {
-        Tetromino tempTetro = savedTetromino;
-        savedTetromino = current_tetromino;
-        current_tetromino = tempTetro;
+      if(savedTetromino != -1) {
+        int tempTetro = savedTetromino;
+        savedTetromino = lastTetromino;
+        newTetromino(tempTetro);
       } else {
-        savedTetromino = current_tetromino;
-        newTetromino();
+        savedTetromino = lastTetromino;
+        newRandomTetromino();
       }
-      savedTetromino.state = 0;
-      savedTetromino.posX = 3;
-      savedTetromino.posY = -2;
 
       boardState.insertTetromino(current_tetromino);
+    }
+
+    if(keyEvent.getCode() == KeyCode.T) {
+      if(savedBoardState == null) {
+        savedBoardState = boardState.toBitArray();
+      } else {
+        boardState.setBoardStateFromBitArray(savedBoardState);
+      }
     }
 
     nBoard.loadBoardState(boardState);

@@ -14,6 +14,13 @@ public class Mino {
     this.isPlaced = isPlaced;
   }
 
+  public Mino(int index, Color color, boolean isPlaced) {
+      this.posX = index%10;
+      this.posY = index/10;
+      this.color = color;
+      this.isPlaced = isPlaced;
+  }
+
   public byte toColorCode() {
     String c;
 
