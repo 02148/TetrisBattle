@@ -135,7 +135,7 @@ public class BoardState {
         if (os.equals("Mac OS X"))
           s.append("⬜");
         else
-          s.append("🔳");
+          s.append("🟨");
       } else {
         if (board[index].color.equals(Color.BLUE)) {
           s.append("🟦");
