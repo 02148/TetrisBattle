@@ -10,7 +10,6 @@ public class BoardState {
     this.board = new Mino[size];
   }
 
-
   public Mino[] getBoard() {
     return board;
   }
