@@ -1,6 +1,7 @@
 package Client.Models;
 
-import java.awt.*;
+
+import javafx.scene.paint.Color;
 
 public class BoardState {
   private Mino[] board;
@@ -133,19 +134,19 @@ public class BoardState {
         s += "⬜";
       } else {
         if (board[index].color.equals(Color.BLUE)) {
-          s += "\uD83D\uDFE6";
+          s += "🟦";
         } else if(board[index].color.equals(Color.CYAN)) {
-          s += "\uD83D\uDFEA";
+          s += "🟪";
         } else if(board[index].color.equals(Color.ORANGE)) {
-          s += "\uD83D\uDFE7";
+          s += "🟧";
         } else if(board[index].color.equals(Color.YELLOW)) {
-          s += "\uD83D\uDFE8";
+          s += "🟨";
         } else if(board[index].color.equals(Color.GREEN)) {
-          s += "\uD83D\uDFE9";
+          s += "🟩";
         } else if(board[index].color.equals(Color.PINK)) {
-          s += "\uD83D\uDFEB";
+          s += "🟫";
         } else if(board[index].color.equals(Color.RED)) {
-          s += "\uD83D\uDFE5";
+          s += "🟥";
         } else {
           s += "⬛";
         }
