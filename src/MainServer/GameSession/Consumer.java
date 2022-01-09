@@ -11,11 +11,13 @@ import java.util.HashMap;
 public class Consumer implements Runnable {
     Space in, shared, conns;
     int noConns, T = 10;
+    HashMap<String, Double> lastTimestamp; // maps each UUID to last received timestamp, to ensure chronological data receival
 
     public Consumer(Space in, Space shared, Space conns) {
         this.in = in;
         this.shared = shared;
         this.conns = conns;
+        this.lastTimestamp = new HashMap<>();
     }
 
     @Override
@@ -43,6 +45,17 @@ public class Consumer implements Runnable {
                     );
                     if (raw_data == null)
                         continue;
+
+                    String UUID = (String) raw_data[1];
+                    double curTimestamp = (double) raw_data[0];
+                    if (lastTimestamp.containsKey(UUID)) {
+                        if (lastTimestamp.get(UUID) > curTimestamp) { // retrieved entry for user is older than last in pipeline
+                            System.out.println("Old data retrieved, dropping");
+                            continue;
+                        }
+                    }
+
+                    lastTimestamp.put(UUID, curTimestamp);
 
                     allBoards.put((String) c[0], raw_data);
                 }
