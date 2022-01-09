@@ -14,19 +14,22 @@ import javafx.scene.paint.Color;
 
 
 public class Board extends Pane {
-    private int posX, posY, width, height;
+    private int posX, posY, size;
     private GridPane grid;
 
     public Board(int posX, int posY, int size) {
         super();
-        grid = new GridPane();
+        this.posX = posX;
+        this.posY = posY;
+        this.size = size;
 
+        grid = new GridPane();
         grid.setLayoutX(posX);
         grid.setLayoutY(posY);
 
         for(int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
-                Canvas canvas = new Canvas(20,20);
+                Canvas canvas = new Canvas(size,size);
                 updateBlock(x, y, Color.BEIGE, canvas.getGraphicsContext2D());
                 grid.add(canvas, x, y);
             }
@@ -37,17 +40,17 @@ public class Board extends Pane {
 
     private void updateBlock(int x, int y, Color color, GraphicsContext gc) {
         gc.setFill(Color.BLACK);
-        gc.fillRect(0,0,20,20);
+        gc.fillRect(0,0,size,size);
         gc.setFill(color);
 
         if(x == 9 && y == 19) {
-            gc.fillRect(1,1,18,18);
+            gc.fillRect(1,1,size-2,size-2);
         } else if(y == 19) {
-            gc.fillRect(1,1,19,18);
+            gc.fillRect(1,1,size-1,size-2);
         } else if(x == 9) {
-            gc.fillRect(1,1,18,19);
+            gc.fillRect(1,1,size-2,size-1);
         } else {
-            gc.fillRect(1,1,19,19);
+            gc.fillRect(1,1,size-1,size-1);
         }
     }
 

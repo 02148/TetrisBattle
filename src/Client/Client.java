@@ -22,7 +22,7 @@ public class Client extends Application {
     Button btn = new Button();
     btn.setText("Say 'Hello World' to client");
 
-    Board nBoard = new Board(30, 30, 400);
+    Board nBoard = new Board(300, 30, 20);
 
     StackPane root = new StackPane();
     root.getChildren().add(btn);
