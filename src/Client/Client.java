@@ -58,4 +58,5 @@ public class Client extends Application {
 
     launch(args);
   }
+
 }

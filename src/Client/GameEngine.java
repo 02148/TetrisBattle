@@ -3,6 +3,7 @@ package Client;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
+import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
@@ -14,13 +15,14 @@ public class GameEngine implements Runnable{
   private Controls controller;
   private Tetromino current_tetromino;
   private BoardState boardState;
-  private Board nBoard;
+  private static Board nBoard;
   private Random rnd = new Random();
   private int lastTetromino = -1;
   private int savedTetromino = -1;
   private boolean allowedToSwitch = true;
   private BitSet savedBoardState = null;
   private static Instrumentation instrumentation;
+  private static boolean gameOver = false;
 
   public GameEngine(Board nBoard) {
     this.controller = new Controls();
@@ -46,7 +48,9 @@ public class GameEngine implements Runnable{
           nBoard.loadBoardState(boardState);
         } else {
           controller.moveDown(current_tetromino, boardState);
-          boardState.removeFilledRows(current_tetromino.posY);
+          if(boardState.removeFilledRows(current_tetromino.posY)){
+            nBoard.setNumRowsRemoved();
+          }
           newRandomTetromino();
           allowedToSwitch = true;
         }
@@ -86,6 +90,7 @@ public class GameEngine implements Runnable{
 
     if(!boardState.legalPosition(current_tetromino, 0, 0 )) {
       System.out.println("YOU DEAD");
+      gameOver = true;
     }
 
     boardState.insertTetromino(current_tetromino);
@@ -98,6 +103,7 @@ public class GameEngine implements Runnable{
     if(keyEvent.getCode() == KeyCode.SPACE) {
       boardState.dropTetromino(current_tetromino);
       boardState.removeFilledRows(current_tetromino.posY);
+
       newRandomTetromino();
       allowedToSwitch = true;
     }
@@ -138,5 +144,15 @@ public class GameEngine implements Runnable{
     }
 
     nBoard.loadBoardState(boardState);
+  }
+  public static class TaskRun extends Task<Void> {
+    @Override
+    protected Void call() throws Exception {
+      while(!gameOver){
+        updateProgress(nBoard.getNumRowsRemoved(),50);
+      }
+      return null;
+    }
+
   }
 }
