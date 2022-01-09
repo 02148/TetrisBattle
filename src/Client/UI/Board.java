@@ -67,7 +67,7 @@ public class Board extends Pane {
         setBlockColor(pos.x, pos.y, color);
     }
 
-    public void setBoard(BoardState boardState) {
+    public void loadBoardState(BoardState boardState) {
         Mino[] newBoard = boardState.getBoard();
         for(int i = 0; i < newBoard.length; i++) {
             if(newBoard[i] != null) {

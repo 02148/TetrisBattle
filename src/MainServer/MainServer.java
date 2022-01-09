@@ -11,11 +11,11 @@ public class MainServer {
 
         users.create("niels");
         users.create("emilie");
-        users.create("asger");
+        users.create("magn");
 
         users.login("niels");
-        users.login("asger");
-        users.logout("asger");
+        users.login("magn");
+        users.logout("magn");
         users.queryAllUsers();
 
         String roomId1 = gameRooms.create("niels");
@@ -23,8 +23,8 @@ public class MainServer {
         String roomId3 = gameRooms.create("niels");
 
         gameRooms.addConnection("emilie", roomId1);
-        gameRooms.addConnection("asger", roomId2);
-        gameRooms.addConnection("asger", roomId3);
+        gameRooms.addConnection("magn", roomId2);
+        gameRooms.addConnection("magn", roomId3);
 
         gameRooms.close(roomId2);
         gameRooms.close(roomId3);
@@ -32,6 +32,8 @@ public class MainServer {
         System.out.println("\nBEFORE");
         gameRooms.queryAllRooms();
         gameRooms.removeConnection("niels", roomId1);
+        gameRooms.addConnection("magn", roomId1);
+        gameRooms.removeConnection("emilie", roomId1);
         System.out.println("\nAFTER");
         gameRooms.queryAllRooms();
     }
