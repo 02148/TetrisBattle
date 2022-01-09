@@ -1,9 +1,10 @@
 package MainServer.GameSession.Test;
 
-import org.jspace.FormalField;
-import org.jspace.Space;
-import org.jspace.StackSpace;
+import MainServer.GameSession.GameSession;
+import org.jspace.*;
 
+import java.io.IOException;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.Random;
 
@@ -11,12 +12,37 @@ import static MainServer.Utils.getCurrentExactTimestamp;
 import static MainServer.Utils.getCurrentTimestamp;
 
 public class TestProducer implements Runnable {
-    Space s;
+    RemoteSpace rs;
     Random rnd;
-    int T = 10; // T = 1/F
+    String uuid;
+    int T = 2; // T = 1/F
 
-    public TestProducer(StackSpace s) {
-        this.s = s;
+    public BitSet getDummyBoard() {
+        return BitSet.valueOf(new long[] {0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L, 1L, 1L, 0L, 1L, 0L, 0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L,
+                0L, 0L, 1L, 0L, 0L, 1L, 0L, 0L, 1L, 1L, 0L, 1L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 1L, 0L, 1L, 0L, 0L, 1L});
+    }
+
+    public TestProducer(String uri, String uuid) throws IOException {
+        this.uuid = uuid;
+        this.rs = new RemoteSpace(uri);
         this.rnd = new Random();
     }
 
@@ -26,7 +52,11 @@ public class TestProducer implements Runnable {
         while (true) {
             try {
                 cur += rnd.nextGaussian();
-                s.put(getCurrentExactTimestamp(), cur);
+                BitSet bs = getDummyBoard();//new BitSet(600);
+                bs.set((int)Math.abs(cur));
+
+                rs.put(getCurrentExactTimestamp(), this.uuid, bs);
+
                 Thread.sleep(T);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -34,24 +64,19 @@ public class TestProducer implements Runnable {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException {
+    public static void main(String[] args) throws InterruptedException, IOException {
+        SequentialSpace conns = new SequentialSpace();
+        for (int i = 0; i < 8; i++)
+            conns.put(""+i);
+
+        GameSession sess = new GameSession("69420", conns);
         StackSpace s = new StackSpace();
-        TestProducer tp = new TestProducer(s);
-        (new Thread(tp)).start();
 
-        while (true) {
-            try {
-                var raw_data = s.getp(new FormalField(Double.class), new FormalField(Double.class));
-                long epoch = (long) (double) raw_data[0];
-                double data = (double) raw_data[1];
+        for (int i = 0; i < 8; i++)
+            (new Thread(
+                    new TestProducer("tcp://localhost:6969/69420?keep", ""+i)))
+                    .start();
 
-                String fs = String.format("%.3f",data).replace(',','.');
-                System.out.println(fs + " " + epoch);
-            } catch (Exception ignored) {
-                ignored.printStackTrace();
-            }
-
-            Thread.sleep(tp.T);
-        }
+        while (true){}
     }
 }
