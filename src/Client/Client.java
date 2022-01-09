@@ -1,9 +1,5 @@
 package Client;
 
-import Client.Logic.Controls;
-import Client.Models.BoardState;
-import Client.Models.I_Block;
-import Client.Models.Tetromino;
 import Client.UI.Board;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
@@ -11,9 +7,7 @@ import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
-import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import org.jspace.SpaceRepository;
 
@@ -47,7 +41,7 @@ public class Client extends Application {
     primaryStage.setScene(scene);
     primaryStage.show();
 
-    Clock gameEngine = new Clock(nBoard);
+    GameEngine gameEngine = new GameEngine(nBoard);
 
     scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
       @Override

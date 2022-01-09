@@ -6,47 +6,44 @@ import Client.UI.Board;
 import javafx.scene.input.KeyCode;
 
 public class Controls {
-  public Controls() {
-
-  }
+  public Controls() { }
 
   public void keyDownEvent(KeyCode keyCode, Tetromino current_tetromino, BoardState boardState) {
-
     if(keyCode == KeyCode.UP) {
-      int[][] rightWallKickData = current_tetromino.getRightWallKickData();
-      int whichKick = boardState.getLegalRotation(current_tetromino.getRightRotation(), rightWallKickData, current_tetromino.posX, current_tetromino.posY);
-      if(whichKick != -1) {
-        boardState.removeTetromino(current_tetromino);
-        current_tetromino.rotateRight();
-        current_tetromino.posX += rightWallKickData[whichKick][0];
-        current_tetromino.posY += rightWallKickData[whichKick][1];
-        boardState.insertTetromino(current_tetromino);
-      }
-
+      rotateTetromino(boardState, current_tetromino);
     } else if(keyCode == KeyCode.DOWN && boardState.legalPosition(current_tetromino, 0, 1)) {
-      boardState.removeTetromino(current_tetromino);
-      current_tetromino.posY++;
-      boardState.insertTetromino(current_tetromino);
+      moveTetromino(boardState, current_tetromino, 0, 1);
     } else if(keyCode == keyCode.LEFT && boardState.legalPosition(current_tetromino, -1, 0)) {
-      boardState.removeTetromino(current_tetromino);
-      current_tetromino.posX--;
-      boardState.insertTetromino(current_tetromino);
+      moveTetromino(boardState, current_tetromino, -1, 0);
     } else if(keyCode == KeyCode.RIGHT && boardState.legalPosition(current_tetromino, 1, 0)) {
-      boardState.removeTetromino(current_tetromino);
-      current_tetromino.posX++;
-      boardState.insertTetromino(current_tetromino);
+      moveTetromino(boardState, current_tetromino, 1, 0);
     }
   }
 
   public void moveDown(Tetromino current_tetromino, BoardState boardState) {
-    System.out.println("Move Dwn");
-
     if(boardState.legalPosition(current_tetromino, 0, 1)) {
-      boardState.removeTetromino(current_tetromino);
-      current_tetromino.posY++;
-      boardState.insertTetromino(current_tetromino);
+      moveTetromino(boardState, current_tetromino, 0, 1);
     } else {
       boardState.placeTetromino(current_tetromino);
     }
+  }
+
+  public void rotateTetromino(BoardState boardState, Tetromino tetromino) {
+    int[][] rightWallKickData = tetromino.getRightWallKickData();
+    int whichKick = boardState.getLegalRotation(tetromino.getRightRotation(), rightWallKickData, tetromino.posX, tetromino.posY);
+    if(whichKick != -1) {
+      boardState.removeTetromino(tetromino);
+      tetromino.rotateRight();
+      tetromino.posX += rightWallKickData[whichKick][0];
+      tetromino.posY += rightWallKickData[whichKick][1];
+      boardState.insertTetromino(tetromino);
+    }
+  }
+
+  public void moveTetromino(BoardState boardState, Tetromino tetromino, int posX_incr, int posY_incr) {
+    boardState.removeTetromino(tetromino);
+    tetromino.posX += posX_incr;
+    tetromino.posY += posY_incr;
+    boardState.insertTetromino(tetromino);
   }
 }

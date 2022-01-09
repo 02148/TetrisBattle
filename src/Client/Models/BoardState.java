@@ -53,9 +53,10 @@ public class BoardState {
       for(int y = 0; y < 4; y++) {
         int index = y*4+x;
         int boardIndex = (posY + y)*10 + (posX+x);
-        boolean indexIsOutOfBounds = (posY+y) >= 20 || (posY+y<0) || (posX+x) >= 10 || (posX+x) < 0;
-        boolean overlapsAnotherBlock = state[index] == 1 && !indexIsOutOfBounds && this.board[boardIndex] != null && this.board[boardIndex].isPlaced;
-        boolean tetrominoGoesOutOfBound = state[index] == 1 && indexIsOutOfBounds;
+        boolean indexIsOutOfBounds = (posY+y) >= 20 || (posY+y<0) || (posX+x) >= 10 || (posX+x) < 0; // Is the position within the board?
+        boolean indexIsOutOfBoundsButNotTop = (posY+y) >= 20 || (posX+x) >= 10 || (posX+x) < 0; // Is the position within the board, but ignoring the top (Used when spawning, since the tetrominos can spawn with their upper half over the top, where the user should be able to move it)
+        boolean overlapsAnotherBlock = state[index] == 1 && !indexIsOutOfBounds && this.board[boardIndex] != null && this.board[boardIndex].isPlaced; // Is there a mino in the way?
+        boolean tetrominoGoesOutOfBound = state[index] == 1 && indexIsOutOfBoundsButNotTop; // Is the tetromino about to go out of the board?
         if(overlapsAnotherBlock || tetrominoGoesOutOfBound) {
           return false;
         }
@@ -72,5 +73,48 @@ public class BoardState {
       }
     }
     return -1;
+  }
+
+  // When using space to drop the tetromino
+  public void dropTetromino(Tetromino tetromino) {
+    int[] state = tetromino.getCurrentRotation();
+    int posX = tetromino.posX;
+    int posY = tetromino.posY;
+
+    removeTetromino(tetromino);
+
+    for(int i = posY+1; i <= 20; i++) {
+      if(!legalPosition(state, posX, i)) {
+        tetromino.posY = i-1;
+        placeTetromino(tetromino);
+        return;
+      }
+    }
+  }
+
+  // Removes the rows that are filled. It will check row at posY and the following three rows, since a tetromino can, at most, influence 4 rows.
+  public void removeFilledRows(int posY) {
+    for(int y = posY; y < posY+4 && y < 20; y++) {
+      for(int x = 0; x < 10; x++) {
+        int index = y*10+x;
+
+        if(board[index] == null) {
+          break;
+        } else if(x == 9) {
+          removeRow(y);
+        }
+
+      }
+    }
+  }
+
+  public void removeRow(int y) {
+    for(int index = y*10+9; index >= 0; index--) {
+      if(index > 9) {
+        board[index] = board[index-10];
+      } else {
+        board[index] = null;
+      }
+    }
   }
 }
