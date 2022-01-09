@@ -52,7 +52,7 @@ public class TestProducer implements Runnable {
         while (true) {
             try {
                 cur += rnd.nextGaussian();
-                BitSet bs = getDummyBoard();//new BitSet(600);
+                BitSet bs = new BitSet(600); // getDummyBoard();
                 bs.set((int)Math.abs(cur));
 
                 rs.put(getCurrentExactTimestamp(), this.uuid, bs);

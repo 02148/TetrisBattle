@@ -1,14 +1,16 @@
 package MainServer.GameSession;
 
+import MainServer.Utils;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
 import java.util.BitSet;
+import java.util.HashMap;
 
 public class Consumer implements Runnable {
     Space in, shared, conns;
-    int T = 10;
+    int noConns, T = 10;
 
     public Consumer(Space in, Space shared, Space conns) {
         this.in = in;
@@ -24,27 +26,36 @@ public class Consumer implements Runnable {
             } catch (InterruptedException ignored) {}
 
             try {
-                Object[] raw_data = in.getp(
-                        new FormalField(Double.class),
-                        new FormalField(String.class),
-                        new FormalField(BitSet.class)
-                );
-                if (raw_data == null) {
-                    System.out.println("CONS - sessData null");
-                    continue;
+                var curConns = conns.queryAll(new FormalField(String.class));
+                noConns = curConns.size();
+                if (noConns == 0) {
+                    System.out.println("Consumer@"+ Thread.currentThread().getId() + " finished");
+                    Thread.currentThread().join(1);
                 }
 
+                HashMap<String, Object[]> allBoards = new HashMap<>();
+                for (var c : curConns) {
+                    Object[] raw_data = in.getp(
+                            new FormalField(Double.class),
+                            new ActualField((String)c[0]),
+//                            new FormalField(String.class),
+                            new FormalField(BitSet.class)
+                    );
+                    if (raw_data == null)
+                        continue;
+
+                    allBoards.put((String) c[0], raw_data);
+                }
                 shared.put(
-                        (double)raw_data[0],
-                        (String)raw_data[1],
-                        (BitSet)raw_data[2]
+                        Utils.getCurrentExactTimestamp(),
+                        allBoards
                 );
+
             } catch (Exception ignored) {
                 System.out.println("Cons exception");
                 ignored.printStackTrace();
             }
 
         }
-//        System.out.println("Consumer@"+ Thread.currentThread().getId() + " finished");
     }
 }
