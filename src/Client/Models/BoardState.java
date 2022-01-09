@@ -124,35 +124,35 @@ public class BoardState {
   }
 
   public String toString() {
-    String s = "";
+    StringBuilder s = new StringBuilder();
     for(int index = 0; index < 200; index++) {
       if(index % 10 == 0 && index != 0) {
-        s += "\n";
+        s.append("\n");
       }
 
       if(board[index] == null) {
-        s += "⬜";
+        s.append("⬜");
       } else {
         if (board[index].color.equals(Color.BLUE)) {
-          s += "🟦";
+          s.append("🟦");
         } else if(board[index].color.equals(Color.CYAN)) {
-          s += "🟪";
+          s.append("🟪");
         } else if(board[index].color.equals(Color.ORANGE)) {
-          s += "🟧";
+          s.append("🟧");
         } else if(board[index].color.equals(Color.YELLOW)) {
-          s += "🟨";
+          s.append("🟨");
         } else if(board[index].color.equals(Color.GREEN)) {
-          s += "🟩";
+          s.append("🟩");
         } else if(board[index].color.equals(Color.PINK)) {
-          s += "🟫";
+          s.append("🟫");
         } else if(board[index].color.equals(Color.RED)) {
-          s += "🟥";
+          s.append("🟥");
         } else {
-          s += "⬛";
+          s.append("⬛");
         }
       }
-      s += " ";
+      s.append(" ");
     }
-    return s;
+    return s.toString();
   }
 }
