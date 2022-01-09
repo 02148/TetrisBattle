@@ -13,7 +13,7 @@ public class Controls {
       rotateTetromino(boardState, current_tetromino);
     } else if(keyCode == KeyCode.DOWN && boardState.legalPosition(current_tetromino, 0, 1)) {
       moveTetromino(boardState, current_tetromino, 0, 1);
-    } else if(keyCode == keyCode.LEFT && boardState.legalPosition(current_tetromino, -1, 0)) {
+    } else if(keyCode == KeyCode.LEFT && boardState.legalPosition(current_tetromino, -1, 0)) {
       moveTetromino(boardState, current_tetromino, -1, 0);
     } else if(keyCode == KeyCode.RIGHT && boardState.legalPosition(current_tetromino, 1, 0)) {
       moveTetromino(boardState, current_tetromino, 1, 0);

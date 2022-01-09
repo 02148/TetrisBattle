@@ -22,7 +22,7 @@ public class GameEngine implements Runnable{
     this.nBoard = nBoard;
 
     boardState.insertTetromino(current_tetromino);
-    nBoard.setBoard(boardState);
+    nBoard.loadBoardState(boardState);
   }
 
   public Thread toThread() {
@@ -36,7 +36,7 @@ public class GameEngine implements Runnable{
         Thread.sleep(1000);
         if(boardState.legalPosition(current_tetromino, 0, 1)) {
           controller.moveDown(current_tetromino, boardState);
-          nBoard.setBoard(boardState);
+          nBoard.loadBoardState(boardState);
         } else {
           controller.moveDown(current_tetromino, boardState);
           boardState.removeFilledRows(current_tetromino.posY);
@@ -72,7 +72,7 @@ public class GameEngine implements Runnable{
     }
 
     boardState.insertTetromino(current_tetromino);
-    nBoard.setBoard(boardState);
+    nBoard.loadBoardState(boardState);
   }
 
   public void keyDownEvent(KeyEvent keyEvent) {
@@ -88,6 +88,6 @@ public class GameEngine implements Runnable{
       System.out.println(boardState.toString());
     }
 
-    nBoard.setBoard(boardState);
+    nBoard.loadBoardState(boardState);
   }
 }
