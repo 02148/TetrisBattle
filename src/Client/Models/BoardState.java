@@ -129,30 +129,34 @@ public class BoardState {
         s.append("\n");
       }
 
+      String os = System.getProperty("os.name");
       if(board[index] == null) {
-        String os = System.getProperty("os.name");
-        System.out.println(os);
         if (os.equals("Mac OS X"))
           s.append("⬜");
         else
           s.append("🟨");
       } else {
-        if (board[index].color.equals(Color.BLUE)) {
-          s.append("🟦");
-        } else if(board[index].color.equals(Color.CYAN)) {
-          s.append("🟪");
-        } else if(board[index].color.equals(Color.ORANGE)) {
-          s.append("🟧");
-        } else if(board[index].color.equals(Color.YELLOW)) {
-          s.append("🟨");
-        } else if(board[index].color.equals(Color.GREEN)) {
-          s.append("🟩");
-        } else if(board[index].color.equals(Color.PINK)) {
-          s.append("🟫");
-        } else if(board[index].color.equals(Color.RED)) {
-          s.append("🟥");
-        } else {
+        if (os.equals("Windows 10"))
+        {
           s.append("⬛");
+        } else {
+          if (board[index].color.equals(Color.BLUE)) {
+            s.append("🟦");
+          } else if(board[index].color.equals(Color.CYAN)) {
+            s.append("🟪");
+          } else if(board[index].color.equals(Color.ORANGE)) {
+            s.append("🟧");
+          } else if(board[index].color.equals(Color.YELLOW)) {
+            s.append("🟨");
+          } else if(board[index].color.equals(Color.GREEN)) {
+            s.append("🟩");
+          } else if(board[index].color.equals(Color.PINK)) {
+            s.append("🟫");
+          } else if(board[index].color.equals(Color.RED)) {
+            s.append("🟥");
+          } else {
+            s.append("⬛");
+          }
         }
       }
       s.append(" ");
