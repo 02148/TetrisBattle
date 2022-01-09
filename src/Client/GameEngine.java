@@ -84,6 +84,10 @@ public class GameEngine implements Runnable{
       newTetromino();
     }
 
+    if(keyEvent.getCode() == KeyCode.P) {
+      System.out.println(boardState.toString());
+    }
+
     nBoard.setBoard(boardState);
   }
 }

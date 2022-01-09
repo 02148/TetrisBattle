@@ -1,5 +1,7 @@
 package Client.Models;
 
+import java.awt.*;
+
 public class BoardState {
   private Mino[] board;
 
@@ -95,6 +97,8 @@ public class BoardState {
   // Removes the rows that are filled. It will check row at posY and the following three rows, since a tetromino can, at most, influence 4 rows.
   public void removeFilledRows(int posY) {
     for(int y = posY; y < posY+4 && y < 20; y++) {
+      if(y < 0) continue;
+
       for(int x = 0; x < 10; x++) {
         int index = y*10+x;
 
@@ -116,5 +120,38 @@ public class BoardState {
         board[index] = null;
       }
     }
+  }
+
+  public String toString() {
+    String s = "";
+    for(int index = 0; index < 200; index++) {
+      if(index % 10 == 0 && index != 0) {
+        s += "\n";
+      }
+
+      if(board[index] == null) {
+        s += "⬜";
+      } else {
+        if (board[index].color.equals(Color.BLUE)) {
+          s += "\uD83D\uDFE6";
+        } else if(board[index].color.equals(Color.CYAN)) {
+          s += "\uD83D\uDFEA";
+        } else if(board[index].color.equals(Color.ORANGE)) {
+          s += "\uD83D\uDFE7";
+        } else if(board[index].color.equals(Color.YELLOW)) {
+          s += "\uD83D\uDFE8";
+        } else if(board[index].color.equals(Color.GREEN)) {
+          s += "\uD83D\uDFE9";
+        } else if(board[index].color.equals(Color.PINK)) {
+          s += "\uD83D\uDFEB";
+        } else if(board[index].color.equals(Color.RED)) {
+          s += "\uD83D\uDFE5";
+        } else {
+          s += "⬛";
+        }
+      }
+      s += " ";
+    }
+    return s;
   }
 }
