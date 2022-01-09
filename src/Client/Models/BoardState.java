@@ -130,7 +130,12 @@ public class BoardState {
       }
 
       if(board[index] == null) {
-        s.append("⬜");
+        String os = System.getProperty("os.name");
+        System.out.println(os);
+        if (os.equals("Mac OS X"))
+          s.append("⬜");
+        else
+          s.append("🔳");
       } else {
         if (board[index].color.equals(Color.BLUE)) {
           s.append("🟦");
