@@ -44,6 +44,7 @@ public class GlobalGameUIController {
         gameChatTextField.clear();
         //TODO: Add functionality to update TextArea based on input from other players
     }
+    //TODO: Add functions to show the games/Make it possible to play
     @FXML protected void handleStartGameAction(ActionEvent event){
         Board nBoard = new Board(63,94,25);
         boardHolder.getChildren().add(nBoard);
@@ -57,6 +58,7 @@ public class GlobalGameUIController {
 
         gameEngine.toThread().start();
 
+
         GameEngine.TaskRun task = new GameEngine.TaskRun();
         task.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 lines.setText(String.format("lines %.0f", newProgress.doubleValue()*100)));
@@ -68,7 +70,7 @@ public class GlobalGameUIController {
     
 
 
-    //TODO: Add functions to show the games/Make it possible to play
+
 
 }
 

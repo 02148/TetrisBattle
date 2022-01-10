@@ -1,13 +1,30 @@
 package MainServer;
 
+import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 import MainServer.UserMgmt.UserRepo;
+import org.jspace.RemoteSpace;
 import org.jspace.SequentialSpace;
+import org.jspace.Space;
+import org.jspace.SpaceRepository;
+
+import java.rmi.Remote;
 
 public class MainServer {
     public static void main(String[] args) throws Exception {
         UserRepo users = new UserRepo();
         GameRoomRepo gameRooms = new GameRoomRepo();
+        ChatRepo globalChat = new ChatRepo();
+
+
+        SpaceRepository mainChannels = new SpaceRepository();
+        SequentialSpace mainChannel = new SequentialSpace();
+        mainChannels.add("main",mainChannel);
+        mainChannels.addGate("tcp://server:6969/?MainServer");
+        //SpaceRepository userChannels = new SpaceRepository();
+        SpaceRepository rooms = new SpaceRepository();
+
+
 
         users.create("niels");
         users.create("emilie");

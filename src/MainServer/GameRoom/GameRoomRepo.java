@@ -11,7 +11,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class GameRoomRepo {
-    Space s, conns;
+    static Space s;
+    Space conns;
 
     public GameRoomRepo() {
         this.s = new SequentialSpace();
@@ -27,7 +28,7 @@ public class GameRoomRepo {
         return new GameRoom(q);
     }
 
-    private GameRoom queryGameRoom(String uuid) throws InterruptedException {
+    private static GameRoom queryGameRoom(String uuid) throws InterruptedException {
         var q = s.queryp(new FormalField(String.class), new ActualField(uuid), new FormalField(Double.class));
         return new GameRoom(q);
     }
@@ -53,7 +54,7 @@ public class GameRoomRepo {
         insertGameRoom(gr);
     }
 
-    public boolean isHost(String uuid, String username) throws InterruptedException {
+    public static boolean isHost(String uuid, String username) throws InterruptedException {
         GameRoom gr = queryGameRoom(uuid);
 
         return gr.userHost.equals(username);
@@ -80,6 +81,13 @@ public class GameRoomRepo {
     public void close(String uuid) throws InterruptedException {
         getGameRoom(uuid); // remove room uuid from s
         conns.getAll(new FormalField(String.class), new ActualField(uuid)); // remove conns to room from conns
+    }
+
+    public boolean exists(String UUID) throws InterruptedException {
+        Object[] q = s.queryp(new FormalField(String.class),
+                new ActualField(UUID),
+                new FormalField(Double.class));
+        return q!= null;
     }
 
     public void queryAllRooms() throws InterruptedException {
