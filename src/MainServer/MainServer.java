@@ -62,7 +62,7 @@ class GlobalListener implements Runnable {
         this.users = users;
     }
 
-    public GlobalListener(SequentialSpace mainChannel) {this.mainChannel = mainChannel}
+    public GlobalListener(SequentialSpace mainChannel) {this.mainChannel = mainChannel;}
 
     public void run() {
         while(true) {
@@ -71,9 +71,11 @@ class GlobalListener implements Runnable {
                 userInput = mainChannel.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
 
                 if (userInput[1] == "login") {
-                    users.insertUser()
+                    users.create((String) userInput[1]);
                 }
             } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
