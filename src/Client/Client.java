@@ -74,11 +74,10 @@ public class Client extends Application {
       Object[] loginResponse = new Object[0];
       userToServer.put(userName, "login","something");
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
-      if (loginResponse[1] == "ok") {
+      if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
       } else {
         //Error message
-        System.out.println(loginResponse[1]);
       }
     } catch (IOException | InterruptedException e) {
       e.printStackTrace();
@@ -92,8 +91,9 @@ public class Client extends Application {
       Object[] roomResponse = new Object[0];
       userToServer.put(UUID, "create","");
       roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
-      if (roomResponse[1] == "ok") {
+      if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
+        System.out.println("ok");
         //Room can be started by UI
       } else {
         //Error message
@@ -110,7 +110,7 @@ public class Client extends Application {
       userToServer.put(UUID, "join", roomName);
       roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
-      if (roomResponse[1] == "ok") {
+      if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
         //Room can be started by UI
 
@@ -131,7 +131,7 @@ public class Client extends Application {
       room.put(UUID, "start");
       gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
-      if (gameResponse[1] == "ok") {
+      if (gameResponse[1].equals("ok")) {
         gameActive = true;
         //Game can be started by UI
 
