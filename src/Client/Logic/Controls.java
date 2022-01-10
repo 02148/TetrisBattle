@@ -77,8 +77,7 @@ public class Controls {
     boardState.insertTetromino(ghost_tetromino);
     boardState.insertTetromino(current_tetromino);
 
-    if(!isDead)
-      nBoard.loadBoardState(boardState);
+    nBoard.loadBoardState(boardState);
   }
 
   public boolean isDead() {
