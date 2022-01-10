@@ -46,7 +46,7 @@
                  <ToggleGroup fx:id="group" />
              </fx:define>
 
-             <RadioButton fx:id="Host" text="Host" toggleGroup="$group" >
+             <RadioButton fx:id="Host" text="Host" toggleGroup="$group"  >
                  <HBox.margin>
                      <Insets right="3.0"/>
                  </HBox.margin>

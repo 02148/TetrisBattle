@@ -1,5 +1,7 @@
 package Client.UI;
 
+import Client.Client;
+import Main.Main;
 import MainServer.Chat.ChatMessage;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoom;
@@ -10,6 +12,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -21,8 +24,10 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class GlobalChatUIController {
+public class GlobalChatUIController implements Initializable {
     @FXML private TextArea chatArea;
     @FXML private TextField chatTextField;
     private String user = "Username1";
@@ -33,11 +38,22 @@ public class GlobalChatUIController {
     private UserRepo testUserRepo = new UserRepo();
     private ChatRepo testChatRepo = new ChatRepo();
     private GameRoomRepo testGameRoomRepo = new GameRoomRepo();
+    private MainServer mainServer;
+    private Client client;
 
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
+    }
 
+    public void setMainServer(MainServer mainServer){
+        this.mainServer = mainServer;
+    }
 
+    public void  setClient(Client client){
+        this.client = client;
+    }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
         Platform.exit();
@@ -58,13 +74,18 @@ public class GlobalChatUIController {
             Platform.exit();
             System.exit(0);
         } else {
+            client.userName = username.getText();
+            client.login();
             //Check if room exists if not create one
             //Check if user want to join or host
             ToggleButton chosenButton = (ToggleButton) group.getSelectedToggle();
             String answer = chosenButton.getText();
             switch (answer){
                 case "Host":
-                        //User can host this
+                    //User can host this
+                        client.hostRoom();
+
+
                         testGameRoomRepo.create(username.getText());
                         primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
@@ -77,6 +98,9 @@ public class GlobalChatUIController {
                         username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     } else {
                         //User should join this room
+                        client.TryJoinRoom(roomUUID.getText());
+
+
                         if(testGameRoomRepo.exists(roomUUID.getText())){
                             testGameRoomRepo.addConnection(username.getText(), roomUUID.getText());
                             primaryStage.setScene(scene);
