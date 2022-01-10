@@ -1,6 +1,5 @@
 package MainServer.GameSession;
 
-import org.jspace.SequentialSpace;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.StackSpace;
@@ -10,8 +9,8 @@ public class GameSession {
     StackSpace sessDataIn, sessDataShared, sessDataOut;
     Space conns;
 
-    Producer p;
-    Consumer c;
+    Producer fullP, deltaP;
+    Consumer fullC, deltaC;
     String UUID;
 
     public GameSession(String uuid, Space conns) {
@@ -28,10 +27,16 @@ public class GameSession {
         // tcp://sess:6969/[room:UUID]?keep
         this.repo.addGate("tcp://localhost:6969/?keep");
 
-        this.c = new Consumer(this.sessDataIn, this.sessDataShared, this.conns);
-        this.p = new Producer(this.sessDataShared, this.sessDataOut, this.conns);
+        this.fullC = new Consumer(this.sessDataIn, this.sessDataShared, this.conns, "full");
+        this.fullP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
 
-        (new Thread(this.p)).start();
-        (new Thread(this.c)).start();
+        this.deltaC = new Consumer(this.sessDataIn, this.sessDataShared, this.conns, "delta");
+        this.deltaP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
+
+
+        (new Thread(this.fullP)).start();
+        (new Thread(this.fullC)).start();
+        (new Thread(this.deltaP)).start();
+        (new Thread(this.deltaC)).start();
     }
 }

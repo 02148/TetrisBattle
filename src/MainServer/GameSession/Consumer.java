@@ -10,14 +10,17 @@ import java.util.HashMap;
 
 public class Consumer implements Runnable {
     Space in, shared, conns;
+    String spaceKey;
     int noConns, T = 10;
     HashMap<String, Double> lastTimestamp; // maps each UUID to last received timestamp, to ensure chronological data receival
 
-    public Consumer(Space in, Space shared, Space conns) {
+    public Consumer(Space in, Space shared, Space conns, String spaceKey) {
         this.in = in;
         this.shared = shared;
         this.conns = conns;
+        this.spaceKey = spaceKey;
         this.lastTimestamp = new HashMap<>();
+        this.T = spaceKey.equals("full") ? 100 : 20; // if full sync, send once a second, else 500 times a second
     }
 
     @Override
@@ -38,35 +41,37 @@ public class Consumer implements Runnable {
                 HashMap<String, Object[]> allBoards = new HashMap<>();
                 for (var c : curConns) {
                     Object[] raw_data = in.getp(
+                            new ActualField(this.spaceKey),
                             new FormalField(Double.class),
                             new ActualField((String)c[0]),
-//                            new FormalField(String.class),
                             new FormalField(BitSet.class)
                     );
                     if (raw_data == null)
                         continue;
 
-                    String UUID = (String) raw_data[1];
-                    double curTimestamp = (double) raw_data[0];
+                    String UUID = (String) raw_data[2];
+                    double curTimestamp = (double) raw_data[1];
                     if (lastTimestamp.containsKey(UUID)) {
                         if (lastTimestamp.get(UUID) > curTimestamp) { // retrieved entry for user is older than last in pipeline
-                            System.out.println("Old data retrieved, dropping");
+                            System.out.println("CONS@" + this.spaceKey + " >> Old data retrieved, dropping");
                             continue;
                         }
                     }
 
                     lastTimestamp.put(UUID, curTimestamp);
 
-                    allBoards.put((String) c[0], raw_data);
+                    allBoards.put((String) UUID, raw_data);
                 }
                 shared.put(
+                        this.spaceKey,
                         Utils.getCurrentExactTimestamp(),
                         allBoards
                 );
 
-            } catch (Exception ignored) {
+
+            } catch (Exception e) {
                 System.out.println("Cons exception");
-                ignored.printStackTrace();
+                e.printStackTrace();
             }
 
         }

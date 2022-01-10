@@ -8,6 +8,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -112,11 +113,15 @@ public class GameEngine implements Runnable{
       System.out.println(boardState.toString());
 
       BitSet bitset = boardState.toBitArray();
-      for(int i = 0; i < bitset.length(); i++) {
-        if(i%30==0 && i != 0)
-          System.out.println();
-        System.out.print(bitset.get(i) ? "1 " : "0 ");
-      }
+
+      System.out.println(Arrays.toString(bitset.toLongArray()));
+
+//      for(int i = 0; i < bitset.length(); i++) {
+//        if(i%30==0 && i != 0)
+//          System.out.println();
+//        System.out.print(bitset.get(i) ? "1 " : "0 ");
+//      }
+//      System.out.println();
     }
 
     if(keyEvent.getCode() == KeyCode.C && allowedToSwitch) {
