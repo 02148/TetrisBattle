@@ -16,6 +16,7 @@ public class TestProducer implements Runnable {
     Random rnd;
     String uuid, spaceKey;
     int T; // T = 1/F
+    static int noConns = 4;
 
     public BitSet getDummyBoard() {
         return BitSet.valueOf(new long[] {1926344373436416L, 0, 8538824957113663488L, -5251191672863194661L, -355150468054712001L, 5761390391605366816L, 2696450152401329538L, -9027746953628520504L, 2618843117036503038L, 900900});
@@ -52,7 +53,7 @@ public class TestProducer implements Runnable {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        int noConns = 8;
+
         SequentialSpace conns = new SequentialSpace();
 
         for (int i = 0; i < noConns; i++)

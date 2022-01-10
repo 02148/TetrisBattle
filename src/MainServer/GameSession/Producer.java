@@ -73,7 +73,7 @@ public class Producer implements Runnable {
 //                    );
 
                     boardState.setBoardStateFromBitArray((BitSet) cur_data[3]);
-                    System.out.println(boardState + "\n>>>>");
+                    System.out.println("@" + (String)c[0] + "\n" + boardState + "\n>>>>");
 
                 }
             } catch (Exception e) {
