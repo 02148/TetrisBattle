@@ -44,7 +44,11 @@ class GlobalListener implements Runnable {
                 userInput = mainChannel.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
 
                 if (userInput[1] == "login") {
+<<<<<<< HEAD
                     users.create((String) userInput[0]);
+=======
+                    users.create((String) userInput[1]);
+>>>>>>> 79c123a2522d1ae38e93741c9779eb41a9992258
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
