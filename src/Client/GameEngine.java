@@ -24,6 +24,7 @@ public class GameEngine implements Runnable{
   private BitSet savedBoardState = null;
   private static Instrumentation instrumentation;
   private static boolean gameOver = false;
+  private boolean stop = false;
 
   public GameEngine(Board nBoard) {
     this.controller = new Controls();
@@ -42,7 +43,7 @@ public class GameEngine implements Runnable{
   @Override
   public void run() {
     try {
-      while(true) {
+      while(!stop) {
         Thread.sleep(1000);
         if(boardState.legalPosition(current_tetromino, 0, 1)) {
           controller.moveDown(current_tetromino, boardState);
@@ -57,6 +58,10 @@ public class GameEngine implements Runnable{
         }
       }
     } catch(Exception e){}
+  }
+
+  public void stop() {
+    this.stop = true;
   }
 
   public void newRandomTetromino() {
