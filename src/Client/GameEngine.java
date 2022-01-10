@@ -6,6 +6,7 @@ import Client.UI.Board;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
+import javafx.scene.paint.Color;
 
 import java.lang.instrument.Instrumentation;
 import java.util.BitSet;
@@ -14,6 +15,7 @@ import java.util.Random;
 public class GameEngine implements Runnable{
   private Controls controller;
   private Tetromino current_tetromino;
+  private Tetromino ghost_tetromino;
   private BoardState boardState;
   private static Board nBoard;
   private Random rnd = new Random();
@@ -29,8 +31,7 @@ public class GameEngine implements Runnable{
     this.controller = new Controls();
     this.boardState = new BoardState(200);
     this.nBoard = nBoard;
-    newRandomTetromino();
-
+    current_tetromino = newRandomTetromino();
     boardState.insertTetromino(current_tetromino);
     nBoard.loadBoardState(boardState);
   }
@@ -46,15 +47,22 @@ public class GameEngine implements Runnable{
         Thread.sleep(1000);
         if(boardState.legalPosition(current_tetromino, 0, 1)) {
           controller.moveDown(current_tetromino, boardState);
-          nBoard.loadBoardState(boardState);
         } else {
           controller.moveDown(current_tetromino, boardState);
           if(boardState.removeFilledRows(current_tetromino.posY)){
             nBoard.setNumRowsRemoved();
           }
-          newRandomTetromino();
+          current_tetromino = newRandomTetromino();
+          boardState.insertTetromino(current_tetromino);
           allowedToSwitch = true;
         }
+
+        if(!boardState.legalPosition(current_tetromino, 0, 0 )) {
+          System.out.println("YOU DEAD");
+          gameOver = true;
+        }
+
+        nBoard.loadBoardState(boardState);
       }
     } catch(Exception e){}
   }
@@ -63,53 +71,39 @@ public class GameEngine implements Runnable{
     this.stop = true;
   }
 
-  public void newRandomTetromino() {
+  public Tetromino newRandomTetromino() {
     lastTetromino = rnd.nextInt(7);
-    newTetromino(lastTetromino);
+    return newTetromino(lastTetromino);
   }
 
-  public void newTetromino(int index) {
+  public Tetromino newTetromino(int index) {
     switch(index) {
       case 0:
-        current_tetromino = new I_Block();
-        break;
+        return new I_Block();
       case 1:
-        current_tetromino = new J_Block();
-        break;
+        return new J_Block();
       case 2:
-        current_tetromino = new L_Block();
-        break;
+        return new L_Block();
       case 3:
-        current_tetromino = new O_Block();
-        break;
+        return new O_Block();
       case 4:
-        current_tetromino = new S_Block();
-        break;
+        return new S_Block();
       case 5:
-        current_tetromino = new T_Block();
-        break;
+        return new T_Block();
       case 6:
-        current_tetromino = new Z_Block();
-        break;
+        return new Z_Block();
     }
-
-    if(!boardState.legalPosition(current_tetromino, 0, 0 )) {
-      System.out.println("YOU DEAD");
-      gameOver = true;
-    }
-
-    boardState.insertTetromino(current_tetromino);
-    nBoard.loadBoardState(boardState);
+    return null;
   }
 
   public void keyDownEvent(KeyEvent keyEvent) {
     controller.keyDownEvent(keyEvent.getCode(), current_tetromino, boardState);
 
     if(keyEvent.getCode() == KeyCode.SPACE) {
-      boardState.dropTetromino(current_tetromino);
-      boardState.removeFilledRows(current_tetromino.posY);
+      controller.dropTetromino(current_tetromino, boardState);
 
-      newRandomTetromino();
+      current_tetromino = newRandomTetromino();
+      boardState.insertTetromino(current_tetromino);
       allowedToSwitch = true;
     }
 
@@ -131,10 +125,10 @@ public class GameEngine implements Runnable{
       if(savedTetromino != -1) {
         int tempTetro = savedTetromino;
         savedTetromino = lastTetromino;
-        newTetromino(tempTetro);
+        current_tetromino = newTetromino(tempTetro);
       } else {
         savedTetromino = lastTetromino;
-        newRandomTetromino();
+        current_tetromino = newRandomTetromino();
       }
 
       boardState.insertTetromino(current_tetromino);
@@ -147,6 +141,19 @@ public class GameEngine implements Runnable{
         boardState.setBoardStateFromBitArray(savedBoardState);
       }
     }
+
+    // Everytime a key is pressed, update the shadow
+    // This is also done in every gametick
+    int lowestY = boardState.getLowestLegalYcoord(current_tetromino);
+    if(ghost_tetromino != null && boardState.legalPosition(ghost_tetromino, 0, 0) )
+      boardState.removeTetromino(ghost_tetromino);
+    ghost_tetromino = newTetromino(lastTetromino);
+    ghost_tetromino.color = new Color(ghost_tetromino.color.getRed(), ghost_tetromino.color.getGreen(), ghost_tetromino.color.getBlue(), 0.8);
+    ghost_tetromino.color.brighter();
+    ghost_tetromino.posX = current_tetromino.posX;
+    ghost_tetromino.posY = lowestY;
+    ghost_tetromino.state = current_tetromino.state;
+    boardState.insertTetromino(ghost_tetromino);
 
     nBoard.loadBoardState(boardState);
   }

@@ -28,6 +28,11 @@ public class Controls {
     }
   }
 
+  public void dropTetromino(Tetromino tetromino, BoardState boardState) {
+    boardState.dropTetromino(tetromino);
+    boardState.removeFilledRows(tetromino.posY);
+  }
+
   public void rotateTetromino(BoardState boardState, Tetromino tetromino) {
     int[][] rightWallKickData = tetromino.getRightWallKickData();
     int whichKick = boardState.getLegalRotation(tetromino.getRightRotation(), rightWallKickData, tetromino.posX, tetromino.posY);

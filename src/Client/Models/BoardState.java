@@ -81,19 +81,23 @@ public class BoardState {
 
   // When using space to drop the tetromino
   public void dropTetromino(Tetromino tetromino) {
+    int newY = getLowestLegalYcoord(tetromino);
+    removeTetromino(tetromino);
+    tetromino.posY = newY;
+    placeTetromino(tetromino);
+  }
+
+  public int getLowestLegalYcoord(Tetromino tetromino) {
     int[] state = tetromino.getCurrentRotation();
     int posX = tetromino.posX;
     int posY = tetromino.posY;
 
-    removeTetromino(tetromino);
-
     for(int i = posY+1; i <= 20; i++) {
       if(!legalPosition(state, posX, i)) {
-        tetromino.posY = i-1;
-        placeTetromino(tetromino);
-        return;
+        return i -1;
       }
     }
+    return -1;
   }
 
   // Removes the rows that are filled. It will check row at posY and the following three rows, since a tetromino can, at most, influence 4 rows.
@@ -114,7 +118,7 @@ public class BoardState {
 
       }
     }
-    return  rowRemoved;
+    return rowRemoved;
   }
 
   public void removeRow(int y) {
