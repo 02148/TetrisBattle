@@ -29,7 +29,6 @@ public class Main extends Application {
             Parent root = fxmlLoader.load();
             //Get the controller and add client + main server
             GlobalChatUIController globalChatUIController = fxmlLoader.getController();
-            globalChatUIController.setMainServer(mainServer);
             globalChatUIController.setClient(currClient);
 
             Scene scene = new Scene(root,600,400);

@@ -1,12 +1,15 @@
 package Client.UI;
 
+import Client.Client;
 import Client.GameEngine;
+import MainServer.Chat.ChatRepo;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -19,29 +22,45 @@ import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class GlobalGameUIController {
+public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
-    private String user = "Username1";
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
+    private Client client;
+    private ChatRepo testChatRepo = new ChatRepo();
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
+
+    }
+    public void  setClient(Client client) {
+        this.client = client;
+    }
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load());
+
+        GlobalChatUIController globalChatUIController = loader.getController();
+        globalChatUIController.setClient(client);
+
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
         primaryStage.show();
 
 
     }
-    @FXML protected void  handleGameChatInputAction(ActionEvent event){
-        gameChatArea.appendText("\n"+ user + ": " + gameChatTextField.getText() );
-        gameChatTextField.clear();
+    @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
+            testChatRepo.create(gameChatTextField.getText());
+            gameChatArea.appendText("\n"+ client.userName + ": " + gameChatTextField.getText() );
+            gameChatTextField.clear();
+
         //TODO: Add functionality to update TextArea based on input from other players
     }
     //TODO: Add functions to show the games/Make it possible to play
