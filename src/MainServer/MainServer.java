@@ -1,5 +1,6 @@
 package MainServer;
 
+import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 import MainServer.UserMgmt.UserRepo;
 import org.jspace.SequentialSpace;
@@ -8,6 +9,7 @@ public class MainServer {
     public static void main(String[] args) throws Exception {
         UserRepo users = new UserRepo();
         GameRoomRepo gameRooms = new GameRoomRepo();
+        ChatRepo globalChat = new ChatRepo();
 
         users.create("niels");
         users.create("emilie");
