@@ -9,6 +9,10 @@ public abstract class Tetromino implements TetrominoInterface {
   public Color color;
   public int state = 0;
 
+  public void setColorOpacity(Color color, double opacity) {
+    this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
+  }
+
   @Override
   public int[] getCurrentRotation() {
     return rotations[state];
