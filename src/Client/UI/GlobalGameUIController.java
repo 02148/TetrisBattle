@@ -24,12 +24,14 @@ public class GlobalGameUIController {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
     private String user = "Username1";
+    private GameEngine gameEngine;
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
 
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
+        gameEngine.stop();
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load());
@@ -48,7 +50,7 @@ public class GlobalGameUIController {
     @FXML protected void handleStartGameAction(ActionEvent event){
         Board nBoard = new Board(63,94,25);
         boardHolder.getChildren().add(nBoard);
-        GameEngine gameEngine = new GameEngine(nBoard);
+        gameEngine = new GameEngine(nBoard);
         boardHolder.getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
@@ -56,16 +58,13 @@ public class GlobalGameUIController {
             }
         });
 
-        gameEngine.toThread().start();
+        Platform.runLater(() -> gameEngine.toThread().start());
 
 
         GameEngine.TaskRun task = new GameEngine.TaskRun();
         task.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 lines.setText(String.format("lines %.0f", newProgress.doubleValue()*100)));
         new Thread(task).start();
-
-
-
     }
     
 
