@@ -20,7 +20,7 @@ public class GameRoomRepo {
     }
 
     private void insertGameRoom(GameRoom gr) throws InterruptedException {
-        s.put(gr.userHost, gr.UUID, gr.timestamp);
+        s.put(gr.userHostUUID, gr.UUID, gr.timestamp);
     }
 
     private GameRoom getGameRoom(String uuid) throws InterruptedException {
@@ -34,42 +34,42 @@ public class GameRoomRepo {
     }
 
     /**
-     * @param username Username of user that created the room.
+     * @param userHostUUID User UUID of user that created the room.
      *                 This user will become host of the room.
      * @return UUID of room, used for connecting to room.
      */
-    public String create(String username) throws InterruptedException {
+    public String create(String userHostUUID) throws InterruptedException {
         GameRoom gr = new GameRoom(
-                username,
+                userHostUUID,
                 Utils.createUUID()
         );
         insertGameRoom(gr);
-        conns.put(username, gr.UUID);
+        conns.put(userHostUUID, gr.UUID);
         return gr.UUID;
     }
 
     public void changeHost(String uuid, String newHost) throws InterruptedException {
         GameRoom gr = getGameRoom(uuid);
-        gr.userHost = newHost;
+        gr.userHostUUID = newHost;
         insertGameRoom(gr);
     }
 
-    public static boolean isHost(String uuid, String username) throws InterruptedException {
+    public static boolean isHost(String uuid, String userHostUUID) throws InterruptedException {
         GameRoom gr = queryGameRoom(uuid);
 
-        return gr.userHost.equals(username);
+        return gr.userHostUUID.equals(userHostUUID);
     }
 
-    public void addConnection(String username, String uuid) throws InterruptedException {
-        conns.put(username, uuid);
+    public void addConnection(String userHostUUID, String uuid) throws InterruptedException {
+        conns.put(userHostUUID, uuid);
     }
 
-    public void removeConnection(String username, String uuid) throws InterruptedException {
-        conns.getp(new ActualField(username), new ActualField(uuid));
+    public void removeConnection(String userHostUUID, String uuid) throws InterruptedException {
+        conns.getp(new ActualField(userHostUUID), new ActualField(uuid));
         var curConns = queryConnections(uuid);
         if (curConns.isEmpty()) // no more connections, close room
             close(uuid);
-        else if (isHost(uuid, username)) // host has left, reassign role
+        else if (isHost(uuid, userHostUUID)) // host has left, reassign role
             changeHost(uuid, curConns.get(0));
     }
 
