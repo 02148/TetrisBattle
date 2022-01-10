@@ -65,7 +65,8 @@ public class GlobalChatUIController {
             switch (answer){
                 case "Host":
                         //User can host this
-                        testGameRoomRepo.create(username.getText());primaryStage.setScene(scene);
+                        testGameRoomRepo.create(username.getText());
+                        primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
                         primaryStage.show();
                     

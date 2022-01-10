@@ -55,8 +55,8 @@ public class GlobalGameUIController {
                 gameEngine.keyDownEvent(keyEvent);
             }
         });
+        Platform.runLater(() -> gameEngine.toThread().start());
 
-        gameEngine.toThread().start();
 
 
         GameEngine.TaskRun task = new GameEngine.TaskRun();

@@ -1,14 +1,18 @@
 package Client;
 
 import Client.UI.Board;
+import Main.Main;
 import javafx.application.Application;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.StackPane;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 import org.jspace.SpaceRepository;
 
 import java.io.IOException;
@@ -19,38 +23,18 @@ public class Client extends Application {
 
   @Override
   public void start(Stage primaryStage) {
-    Button btn = new Button();
-    btn.setText("Say 'Hello World' to client");
+    try {
+      FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
+      Parent root = fxmlLoader.load();
+      Scene scene = new Scene(root,600,400);
+      primaryStage.setScene(scene);
+      primaryStage.initStyle(StageStyle.UNDECORATED);
+      primaryStage.centerOnScreen(); ;
+    } catch (IOException e) {
+      e.printStackTrace();
+    }
 
-    Board nBoard = new Board(300, 30, 20);
-
-    StackPane root = new StackPane();
-    root.getChildren().add(btn);
-    root.getChildren().add(nBoard);
-    Scene scene = new Scene(root, 750, 500);
-
-
-    btn.setOnAction(new EventHandler<ActionEvent>() {
-      @Override
-      public void handle(ActionEvent event) {
-        System.out.println("Hello World!");
-      }
-    });
-
-    primaryStage.setTitle("Hello World!");
-    primaryStage.setScene(scene);
     primaryStage.show();
-
-    GameEngine gameEngine = new GameEngine(nBoard);
-
-    scene.addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-      @Override
-      public void handle(KeyEvent keyEvent) {
-        gameEngine.keyDownEvent(keyEvent);
-      }
-    });
-
-    gameEngine.toThread().start();
   }
   public static void main(String[] args) throws IOException {
     SpaceRepository repo = new SpaceRepository();
