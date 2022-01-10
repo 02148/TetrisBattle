@@ -71,7 +71,7 @@ public class Client extends Application {
       this.mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
 
       Object[] loginResponse = new Object[0];
-      mainServer.put(userName, "login");
+      mainServer.put(userName, "login","");
       loginResponse = mainServer.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1] == "ok") {
         UUID = (String) loginResponse[2];
@@ -89,7 +89,7 @@ public class Client extends Application {
 
     try {
       Object[] roomResponse = new Object[0];
-      mainServer.put(UUID, "create");
+      mainServer.put(UUID, "create","");
       roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
       if (roomResponse[1] == "ok") {
         roomUUID = (String) roomResponse[2];
