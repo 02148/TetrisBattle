@@ -20,9 +20,8 @@ import java.util.UUID;
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
   public String userName, UUID, roomUUID;
-  public RemoteSpace mainServer, room;
+  public RemoteSpace userToServer, serverToUser, room;
   public boolean gameActive = false;
-  public String uri = "tcp://LocalHost:6969/";
 
   @Override
   public void start(Stage primaryStage) {
@@ -60,19 +59,21 @@ public class Client extends Application {
     gameEngine.toThread().start();
   }
   public static void main(String[] args) throws IOException {
-    SpaceRepository repo = new SpaceRepository();
-    repo.addGate("tcp://server:6969/?keep");
+    //SpaceRepository repo = new SpaceRepository();
+    //repo.addGate("tcp://LocalHost:6969/?mainServer");
 
     launch(args);
   }
 
   public void login() {
     try {
-      this.mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
+      this.userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
+      this.serverToUser = new RemoteSpace("tcp://localhost:6969/ServerToUser?conn");
 
+      userName = "holder";
       Object[] loginResponse = new Object[0];
-      mainServer.put(userName, "login","");
-      loginResponse = mainServer.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
+      userToServer.put(userName, "login","something");
+      loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1] == "ok") {
         UUID = (String) loginResponse[2];
       } else {
@@ -89,8 +90,8 @@ public class Client extends Application {
 
     try {
       Object[] roomResponse = new Object[0];
-      mainServer.put(UUID, "create","");
-      roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      userToServer.put(UUID, "create","");
+      roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
       if (roomResponse[1] == "ok") {
         roomUUID = (String) roomResponse[2];
         //Room can be started by UI
@@ -106,8 +107,8 @@ public class Client extends Application {
   public void TryJoinRoom(String roomName) {
     try {
       Object[] roomResponse = new Object[0];
-      mainServer.put(UUID, "join", roomName);
-      roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      userToServer.put(UUID, "join", roomName);
+      roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
       if (roomResponse[1] == "ok") {
         roomUUID = (String) roomResponse[2];
@@ -128,7 +129,7 @@ public class Client extends Application {
     try {
       Object[] gameResponse = new Object[0];
       room.put(UUID, "start");
-      gameResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
       if (gameResponse[1] == "ok") {
         gameActive = true;
