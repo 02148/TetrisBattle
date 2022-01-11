@@ -1,15 +1,18 @@
 package Client.Models;
 
 
+import Client.GameSession.PackageHandler;
 import javafx.scene.paint.Color;
 
 import java.util.BitSet;
 
 public class BoardState {
+  private PackageHandler packageHandler;
   private Mino[] board;
 
-  public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
+  public BoardState(PackageHandler packageHandler, int size) { // Size is equal to the amount of cells in the tetris grid
     this.board = new Mino[size];
+    this.packageHandler = packageHandler;
   }
 
   public Mino[] getBoard() {
@@ -43,6 +46,7 @@ public class BoardState {
         int boardIndex = (posY + y)*10 + (posX+x);
         if(currentState[index] == 1 && boardIndex >= 0 && boardIndex < 200) {
           board[boardIndex] = insertOrRemove ? new Mino(posX+x, posY+y, tetromino.color, isPlaced) : null;
+          this.packageHandler.updateDelta(this.board, boardIndex);
         }
       }
     }
@@ -128,6 +132,7 @@ public class BoardState {
       } else {
         board[index] = null;
       }
+      this.packageHandler.updateDelta(this.board, index);
     }
   }
 
