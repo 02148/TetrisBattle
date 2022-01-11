@@ -20,7 +20,7 @@ public class Consumer implements Runnable {
         this.conns = conns;
         this.spaceKey = spaceKey;
         this.lastTimestamp = new HashMap<>();
-        this.T = spaceKey.equals("full") ? 100 : 20; // if full sync, send once a second, else 500 times a second
+        this.T = 20; //spaceKey.equals("full") ? 1000 : 20; // if full sync, send once a second, else 500 times a second
     }
 
     @Override

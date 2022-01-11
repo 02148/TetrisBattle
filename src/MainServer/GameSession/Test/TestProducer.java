@@ -59,6 +59,7 @@ public class TestProducer implements Runnable {
         for (int i = 0; i < noConns; i++)
             conns.put(""+i);
 
+        conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
         StackSpace s = new StackSpace();
 

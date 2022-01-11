@@ -20,7 +20,7 @@ public class Producer implements Runnable {
         this.conns = conns;
         this.spaceKeyIn = spaceKeyIn;
         this.spaceKeyOut = spaceKeyOut;
-        this.T = spaceKeyIn.equals("full") ? 100 : 20; // if full sync, send once a second, else 500 times a second
+        this.T = 20;//spaceKeyIn.equals("full") ? 2 : 20; // if full sync, send once a second, else 500 times a second
     }
 
     /**
