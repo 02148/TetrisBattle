@@ -28,11 +28,9 @@ import java.util.ResourceBundle;
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
-<<<<<<< HEAD
-=======
     private String user = "Username1";
     private GameEngine gameEngine;
->>>>>>> 79c123a2522d1ae38e93741c9779eb41a9992258
+
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
     private Client client;
@@ -81,11 +79,6 @@ public class GlobalGameUIController implements Initializable {
             }
         });
         Platform.runLater(() -> gameEngine.toThread().start());
-
-<<<<<<< HEAD
-=======
-        Platform.runLater(() -> gameEngine.toThread().start());
->>>>>>> 79c123a2522d1ae38e93741c9779eb41a9992258
 
 
         GameEngine.TaskRun task = new GameEngine.TaskRun();

@@ -12,45 +12,50 @@ import java.io.IOException;
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
   public String userName, UUID, roomUUID;
-  public RemoteSpace mainServer, room;
+  public RemoteSpace userToServer, serverToUser, room;
   public boolean gameActive = false;
-  public String uri = "tcp://LocalHost:6969/";
+  private static RemoteSpace mainServer;
 
-  @Override
+    @Override
   public void start(Stage primaryStage) {
 
   }
   public static void main(String[] args) throws IOException {
-    SpaceRepository repo = new SpaceRepository();
-    repo.addGate("tcp://server:6969/?keep");
+    //SpaceRepository repo = new SpaceRepository();
+    //repo.addGate("tcp://LocalHost:6969/?mainServer");
+    mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
 
     launch(args);
   }
 
   public String login() {
-    Object[] loginResponse = new Object[0];
+    Object[] loginResponse = new Object[3];
 
     try {
-      this.mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
+
+
       mainServer.put(userName, "login","");
       loginResponse = mainServer.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
+
       if (loginResponse[1] == "ok") {
         UUID = (String) loginResponse[2];
       } else {
         //Error message
         System.out.println(loginResponse[1]);
       }
-    } catch (IOException | InterruptedException e) {
+    } catch (InterruptedException e) {
       e.printStackTrace();
     }
     return (String) loginResponse[1];
   }
 
   public String hostRoom() {
-    Object[] roomResponse = new Object[0];
+    Object[] roomResponse = new Object[3];
     try {
+
       mainServer.put(UUID, "create","");
       roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+
       if (roomResponse[1] == "ok") {
         roomUUID = (String) roomResponse[2];
         //Room can be started by UI
@@ -65,10 +70,11 @@ public class Client extends Application {
   }
 
   public String TryJoinRoom(String roomName) {
-    Object[] roomResponse = new Object[0];
+    Object[] roomResponse = new Object[3];
     try {
       mainServer.put(UUID, "join", roomName);
       roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+
 
       if (roomResponse[1] == "ok") {
         roomUUID = (String) roomResponse[2];
@@ -91,7 +97,7 @@ public class Client extends Application {
     try {
       Object[] gameResponse = new Object[0];
       room.put(UUID, "start");
-      gameResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
       if (gameResponse[1] == "ok") {
         gameActive = true;

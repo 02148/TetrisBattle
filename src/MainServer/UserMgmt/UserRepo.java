@@ -26,16 +26,18 @@ public class UserRepo {
         return new User(q);
     }
 
-    public void create(String username) throws Exception {
+    public String create(String username) throws Exception {
         if (exists(username))
             throw new Exception("User already exists");
 
+        String UUID = Utils.createUUID();
         User u = new User(
                 username,
-                Utils.createUUID()
+                UUID
         );
 
         insertUser(u);
+        return UUID;
     }
 
     public void login(String username) throws Exception {

@@ -13,42 +13,79 @@ public class MainServer {
         GameRoomRepo gameRooms = new GameRoomRepo();
         ChatRepo globalChat = new ChatRepo();
 
-        SpaceRepository mainChannels = new SpaceRepository();
-        SequentialSpace mainChannel = new SequentialSpace();
-        mainChannels.add("main",mainChannel);
-        mainChannels.addGate("tcp://LocalHost:6969/?MainServer");
         //SpaceRepository userChannels = new SpaceRepository();
         SpaceRepository rooms = new SpaceRepository();
 
+        //users.create("niels");
+        //users.create("emilie");
+        //users.create("magn");
 
-        var gl = new GlobalListener(mainChannel);
+        //users.login("niels");
+        //users.login("magn");
+        //users.logout("magn");
+        //users.queryAllUsers();
+
+        //String roomId1 = gameRooms.create("niels");
+        //String roomId2 = gameRooms.create("emilie");
+        //String roomId3 = gameRooms.create("niels");
+
+        //gameRooms.addConnection("emilie", roomId1);
+        //gameRooms.addConnection("magn", roomId2);
+        //gameRooms.addConnection("magn", roomId3);
+
+        //gameRooms.close(roomId2);
+        //gameRooms.close(roomId3);
+
+        //System.out.println("\nBEFORE");
+        //gameRooms.queryAllRooms();
+        //gameRooms.removeConnection("niels", roomId1);
+        //gameRooms.addConnection("magn", roomId1);
+        //gameRooms.removeConnection("emilie", roomId1);
+        //System.out.println("\nAFTER");
+        //gameRooms.queryAllRooms();
+
+
+        var gl = new GlobalListener();
         gl.setUsers(users);
+        gl.setGameRooms(gameRooms);
         new Thread(gl).start();
     }
 }
 
 class GlobalListener implements Runnable {
-    private SequentialSpace mainChannel;
     private UserRepo users;
+    private GameRoomRepo gameRooms;
+
+    public void setGameRooms(GameRoomRepo gameRooms) {
+        this.gameRooms = gameRooms;
+    }
 
     public void setUsers(UserRepo users) {
         this.users = users;
     }
 
-    public GlobalListener(SequentialSpace mainChannel) {this.mainChannel = mainChannel;}
+    public GlobalListener() {
+    }
 
     public void run() {
-        while(true) {
-            Object[] userInput = new Object[0];
-            try {
-                userInput = mainChannel.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
+        SpaceRepository mainChannels = new SpaceRepository();
+        SequentialSpace userToServer = new SequentialSpace();
+        SequentialSpace serverToUser = new SequentialSpace();
+        mainChannels.add("userToServer",userToServer);
+        mainChannels.add("ServerToUser",serverToUser);
+        mainChannels.addGate("tcp://localhost:6969/?conn");
 
+        while(true) {
+            Object[] userInput = new Object[3];
+            try {
+                userInput = userToServer.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
                 if (userInput[1] == "login") {
-<<<<<<< HEAD
-                    users.create((String) userInput[0]);
-=======
-                    users.create((String) userInput[1]);
->>>>>>> 79c123a2522d1ae38e93741c9779eb41a9992258
+                    String UUID = users.create((String) userInput[0]);
+                    serverToUser.put(userInput[0], "ok", UUID);
+                } else if (userInput[1] == "create") {
+                    String UUID = gameRooms.create((String) userInput[0]);
+                    serverToUser.put(userInput[0],"ok", UUID);
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
