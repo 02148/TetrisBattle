@@ -1,6 +1,6 @@
 package MainServer.GameSession;
 
-import MainServer.GameSession.Modules.Producer;
+import MainServer.GameSession.Modules.Duplicator;
 import MainServer.GameSession.Modules.Transformer;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
@@ -11,7 +11,7 @@ public class GameSession {
     StackSpace sessDataIn, sessDataShared, sessDataOut;
     Space conns;
 
-    Producer fullP, deltaP;
+    Duplicator fullP, deltaP;
     Transformer fullC, deltaC;
     String UUID;
 
@@ -30,10 +30,10 @@ public class GameSession {
         this.repo.addGate("tcp://localhost:6969/?keep");
 
         this.fullC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "full");
-        this.fullP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
+        this.fullP = new Duplicator(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
 
         this.deltaC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "delta");
-        this.deltaP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
+        this.deltaP = new Duplicator(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
 
 
         (new Thread(this.fullP)).start();
