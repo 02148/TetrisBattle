@@ -2,6 +2,7 @@ package Client.GameSession;
 
 import Client.Models.BoardState;
 import Client.Models.Mino;
+import Client.Utility.Utils;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
@@ -17,7 +18,7 @@ public class PackageHandler {
 
     public void updateDelta(Mino[] board, int index) {
         if(board[index] != this.lastBoardSnapshot[index]) {
-            this.delta.put(index, minoToColorInt(board[index]));
+            this.delta.put(index, Utils.minoToColorInt(board[index]));
         } else if(this.delta.containsKey(index)) {
             this.delta.remove(index);
         }
@@ -31,30 +32,5 @@ public class PackageHandler {
         }
         delta.clear();
         return deltaClone;
-    }
-
-    private int minoToColorInt(Mino mino) {
-        if(mino != null)
-            return colorToInt(mino.color);
-        return -1;
-    }
-
-    private int colorToInt(Color color) {
-        if (color.equals(Color.BLUE)) {
-            return 0;
-        } else if(color.equals(Color.CYAN)) {
-            return 1;
-        } else if(color.equals(Color.ORANGE)) {
-            return 2;
-        } else if(color.equals(Color.YELLOW)) {
-            return 3;
-        } else if(color.equals(Color.GREEN)) {
-            return 4;
-        } else if(color.equals(Color.PINK)) {
-            return 5;
-        } else if(color.equals(Color.RED)) {
-            return 6;
-        }
-        return -1;
     }
 }

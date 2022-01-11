@@ -26,7 +26,8 @@ public class GameEngine implements Runnable{
 
   public GameEngine(Board nBoard) {
     this.packageHandler = new PackageHandler(200);
-    this.boardState = new BoardState(this.packageHandler, 200);
+    this.boardState = new BoardState(200);
+    this.boardState.addPackageHandler(this.packageHandler);
     this.nBoard = nBoard;
     this.controller = new Controls(nBoard, boardState);
   }

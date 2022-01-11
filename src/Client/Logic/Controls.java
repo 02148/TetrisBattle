@@ -2,6 +2,7 @@ package Client.Logic;
 
 import Client.Models.*;
 import Client.UI.Board;
+import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
@@ -124,7 +125,7 @@ public class Controls {
     if(savedTetromino != -1) {
       int tempTetro = savedTetromino;
       savedTetromino = lastTetromino;
-      current_tetromino = newTetromino(tempTetro);
+      current_tetromino = Utils.newTetromino(tempTetro);
       lastTetromino = tempTetro;
     } else {
       savedTetromino = lastTetromino;
@@ -138,7 +139,7 @@ public class Controls {
   public void updateGhost() {
     int lowestY = boardState.getLowestLegalYcoord(current_tetromino);
 
-    ghost_tetromino = newTetromino(lastTetromino);
+    ghost_tetromino = Utils.newTetromino(lastTetromino);
     ghost_tetromino.color = new Color(ghost_tetromino.color.getRed(), ghost_tetromino.color.getGreen(), ghost_tetromino.color.getBlue(), 0.8).brighter();
     ghost_tetromino.posX = current_tetromino.posX;
     ghost_tetromino.posY = lowestY;
@@ -148,29 +149,8 @@ public class Controls {
 
   public Tetromino newRandomTetromino() {
     lastTetromino = rnd.nextInt(7);
-    return newTetromino(lastTetromino);
+    return Utils.newTetromino(lastTetromino);
   }
-
-  public Tetromino newTetromino(int index) {
-    switch(index) {
-      case 0:
-        return new I_Block();
-      case 1:
-        return new J_Block();
-      case 2:
-        return new L_Block();
-      case 3:
-        return new O_Block();
-      case 4:
-        return new S_Block();
-      case 5:
-        return new T_Block();
-      case 6:
-        return new Z_Block();
-    }
-    return null;
-  }
-
 
   // MISC METHODS
   public void loadSavedState() {
