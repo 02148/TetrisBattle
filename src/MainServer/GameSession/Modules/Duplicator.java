@@ -3,36 +3,43 @@ package MainServer.GameSession.Modules;
 import org.jspace.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class Duplicator implements Runnable {
     Space in, conns;
-    List<RemoteSpace> out;
+    HashMap<String, Space> out;
     int T;
 
-    public Duplicator(Space in, List<String> out, Space conns) throws Exception {
+    public Duplicator(Space in, HashMap<String, Space> out, Space conns) throws Exception {
         this.in = in;
-
-        this.out = new ArrayList<>();
-        for (String UUID : out) {
-            String URI = "tcp://localhost:6969/" + UUID + "?conn";
-            try {
-                this.out.add(new RemoteSpace(URI));
-            } catch (Exception e) {
-                System.out.println(">>! Error adding USER-SESSION@" + URI);
-            }
-        }
-
-        if (this.out.isEmpty())
-            throw new Exception("Connecting to all RemoteSpaces failed.");
-
+        this.out = out;
         this.conns = conns;
         this.T = 100;
     }
 
     @Override
     public void run() {
+        while (true) {
+            try {
+                var curConns = conns.queryAll(new FormalField(String.class));
 
+                Object[] raw_data = in.getp(
+                        new FormalField(Object.class)
+                );
+                if (raw_data == null)
+                    throw new Exception("DUPLICATOR >> No new data");
+
+                var data = (HashMap<String, Object[]>) raw_data[0];
+
+                for (var c : curConns) {
+                    String userUUID = (String) c[0];
+
+                    if (out.containsKey(userUUID))
+                        out.get(userUUID).put(data);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
     }
 }

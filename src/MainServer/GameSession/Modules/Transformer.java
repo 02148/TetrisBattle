@@ -21,28 +21,30 @@ public class Transformer implements Runnable {
     @Override
     public void run() {
         var allBoards = new HashMap<String, Object[]>();
-        try {
-            if (!allBoards.isEmpty())
-                allBoards.clear();
-            var curConns = conns.queryAll(new FormalField(String.class));
+        while (true) {
+            try {
+                if (!allBoards.isEmpty())
+                    allBoards.clear();
+                var curConns = conns.queryAll(new FormalField(String.class));
 
-            for (var c : curConns) {
-                String userUUID = (String)c[0];
-                Object[] raw_data = in.getp(
-                        new ActualField(userUUID),
-                        new FormalField(Double.class),
-                        new FormalField(Object.class)
-                );
-                if (raw_data == null)
-                    continue;
+                for (var c : curConns) {
+                    String userUUID = (String) c[0];
+                    Object[] raw_data = in.getp(
+                            new ActualField(userUUID),
+                            new FormalField(Double.class),
+                            new FormalField(Object.class)
+                    );
+                    if (raw_data == null)
+                        continue;
 
-                allBoards.put(userUUID, raw_data);
+                    allBoards.put(userUUID, raw_data);
+                }
+
+                out.put(allBoards);
+            } catch (InterruptedException e) {
+                System.out.println("TRANSFORMER@" + Thread.currentThread() + " >> Exception");
+                e.printStackTrace();
             }
-
-            out.put(allBoards);
-        } catch (InterruptedException e) {
-            System.out.println("TRANSFORMER@" + Thread.currentThread() + " Exception");
-            e.printStackTrace();
         }
     }
 }
