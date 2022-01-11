@@ -24,9 +24,9 @@ public abstract class Utils {
     }
 
     public static int colorToInt(Color color) {
-        if (color.equals(Color.BLUE)) {
+        if (color.equals(Color.CYAN)) {
             return 0;
-        } else if(color.equals(Color.CYAN)) {
+        } else if(color.equals(Color.BLUE)) {
             return 1;
         } else if(color.equals(Color.ORANGE)) {
             return 2;
@@ -43,24 +43,38 @@ public abstract class Utils {
     }
 
     public static Color intToColor(int i) {
-        switch (i) {
-            case 0:
-                return Color.BLUE;
-            case 1:
-                return Color.CYAN;
-            case 2:
-                return Color.ORANGE;
-            case 3:
-                return Color.YELLOW;
-            case 4:
-                return Color.GREEN;
-            case 5:
-                return Color.PINK;
-            case 6:
-                return Color.RED;
-        }
-        return Color.BEIGE;
+        return switch (i) {
+            case 0 -> Color.CYAN;
+            case 1 -> Color.BLUE;
+            case 2 -> Color.ORANGE;
+            case 3 -> Color.YELLOW;
+            case 4 -> Color.GREEN;
+            case 5 -> Color.PINK;
+            case 6 -> Color.RED;
+            default -> Color.BEIGE;
+        };
     }
 
+    public static int tetrominoToInt(Class tetroClass) {
+        if(tetroClass.equals(I_Block.class)) {
+            return 0;
+        } else if(tetroClass.equals(J_Block.class)) {
+            return 1;
+        } else if(tetroClass.equals(L_Block.class)) {
+            return 2;
+        } else if(tetroClass.equals(O_Block.class)) {
+            return 3;
+        } else if(tetroClass.equals(S_Block.class)) {
+            return 4;
+        } else if(tetroClass.equals(T_Block.class)) {
+            return 5;
+        }
+        // Z_Block
+        return 6;
+    }
 
+    public static Color tetrominoTypeToColor(Class tetroClass) {
+        int tetroInt = tetrominoToInt(tetroClass);
+        return intToColor(tetroInt);
+    }
 }
