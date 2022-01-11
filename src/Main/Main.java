@@ -19,21 +19,22 @@ import javafx.stage.Stage;
 import org.jspace.SpaceRepository;
 
 public class Main extends Application {
-    Client currClient = new Client();
-    MainServer mainServer = new MainServer();
+    static Client currClient = new Client();
+
 
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
             Parent root = fxmlLoader.load();
+
             //Get the controller and add client + main server
             GlobalChatUIController globalChatUIController = fxmlLoader.getController();
             globalChatUIController.setClient(currClient);
 
             Scene scene = new Scene(root,600,400);
             primaryStage.setScene(scene);
-            primaryStage.initStyle(StageStyle.UNDECORATED);
+            //primaryStage.initStyle(StageStyle.UNDECORATED);
             primaryStage.centerOnScreen();
 
         } catch (IOException e) {
@@ -42,12 +43,16 @@ public class Main extends Application {
 
         primaryStage.show();
 
+
     }
 
     public static void main(String[] args) throws IOException {
-        SpaceRepository repo = new SpaceRepository();
-        repo.addGate("tcp://server:6969/?keep");
-
+        currClient.main(args);
         launch(args);
+
+
+
+
+
     }
 }

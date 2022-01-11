@@ -30,15 +30,12 @@ import java.util.ResourceBundle;
 public class GlobalChatUIController implements Initializable {
     @FXML private TextArea chatArea;
     @FXML private TextField chatTextField;
-    private String user = "Username1";
-    private String testUUID = "123456";
     @FXML private TextField username;
     @FXML private TextField roomUUID;
     @FXML private ToggleGroup group;
-    private UserRepo testUserRepo = new UserRepo();
-    private ChatRepo testChatRepo = new ChatRepo();
-    private GameRoomRepo testGameRoomRepo = new GameRoomRepo();
+
     private Client client;
+    private boolean isLoggedIn = false;
 
 
     @Override
@@ -65,7 +62,12 @@ public class GlobalChatUIController implements Initializable {
             username.setPromptText("Please input username");
             username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
         } else {
-            client.login();
+            if(!isLoggedIn){
+                client.userName = username.getText();
+                client.login();
+                isLoggedIn = true;
+            }
+
 
             //Check if room exists if not create one
             //Check if user want to join or host
@@ -75,7 +77,7 @@ public class GlobalChatUIController implements Initializable {
                 case "Host":
                     //User can host this
                     response = client.hostRoom();
-                    if(response == "ok"){
+                    if(response.equals("ok")){
                         primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
                         primaryStage.show();
@@ -95,7 +97,7 @@ public class GlobalChatUIController implements Initializable {
                         response = client.TryJoinRoom(roomUUID.getText());
 
                         //Handle response here
-                        if(response == "ok"){
+                        if(response.equals("ok")){
                             primaryStage.setScene(scene);
                             primaryStage.centerOnScreen();
                             primaryStage.show();
@@ -111,14 +113,34 @@ public class GlobalChatUIController implements Initializable {
 
 
     @FXML protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
-        String response = client.login();
-        if(response != "ok"){
-            username.setPromptText("Please input username");
-            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-        }else {
-            testChatRepo.create(chatTextField.getText());
-            chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
-            chatTextField.clear();
+        if(!isLoggedIn){
+            if(username.getText().trim().isEmpty()){
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            } else {
+                client.userName = username.getText();
+                String response = client.login();
+                if(response.equals("ok")){
+                    isLoggedIn = true;
+                    String chatResponse = client.sendGlobalChat(chatTextField.getText());
+                    if(chatResponse.equals("ok")){
+                        chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+                        chatTextField.clear();
+                    } else {
+                        //Something went wrong
+                    }
+                }
+
+            }
+        } else {
+            String chatResponse = client.sendGlobalChat(chatTextField.getText());
+            if(chatResponse.equals("ok")){
+                chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+                chatTextField.clear();
+            } else {
+                //Something went wrong
+            }
+
         }
     }
 

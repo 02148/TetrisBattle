@@ -3,6 +3,7 @@ package Client.UI;
 import Client.Models.BoardState;
 import Client.Models.Mino;
 import Client.Models.Position;
+import javafx.application.Platform;
 import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -40,19 +41,21 @@ public class Board extends Pane {
     }
 
     private void updateBlock(int x, int y, Color color, GraphicsContext gc) {
-        gc.setFill(Color.BLACK);
-        gc.fillRect(0,0,size,size);
-        gc.setFill(color);
+        Platform.runLater(() -> {
+            gc.setFill(Color.BLACK);
+            gc.fillRect(0,0,size,size);
+            gc.setFill(color);
 
-        if(x == 9 && y == 19) {
-            gc.fillRect(1,1,size-2,size-2);
-        } else if(y == 19) {
-            gc.fillRect(1,1,size-1,size-2);
-        } else if(x == 9) {
-            gc.fillRect(1,1,size-2,size-1);
-        } else {
-            gc.fillRect(1,1,size-1,size-1);
-        }
+            if(x == 9 && y == 19) {
+                gc.fillRect(1,1,size-2,size-2);
+            } else if(y == 19) {
+                gc.fillRect(1,1,size-1,size-2);
+            } else if(x == 9) {
+                gc.fillRect(1,1,size-2,size-1);
+            } else {
+                gc.fillRect(1,1,size-1,size-1);
+            }
+        });
     }
 
     public void setBlockColor(int x, int y, Color color) {

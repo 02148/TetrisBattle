@@ -34,7 +34,6 @@ public class GlobalGameUIController implements Initializable {
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
     private Client client;
-    private ChatRepo testChatRepo = new ChatRepo();
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -61,8 +60,8 @@ public class GlobalGameUIController implements Initializable {
 
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
-            testChatRepo.create(gameChatTextField.getText());
-            gameChatArea.appendText("\n"+ client.userName + ": " + gameChatTextField.getText() );
+            //testChatRepo.create(gameChatTextField.getText());
+            gameChatArea.appendText("\n"+ ": " + gameChatTextField.getText() );
             gameChatTextField.clear();
 
         //TODO: Add functionality to update TextArea based on input from other players

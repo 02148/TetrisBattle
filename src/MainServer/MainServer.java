@@ -13,6 +13,7 @@ public class MainServer {
         GameRoomRepo gameRooms = new GameRoomRepo();
         ChatRepo globalChat = new ChatRepo();
 
+
         //SpaceRepository userChannels = new SpaceRepository();
         SpaceRepository rooms = new SpaceRepository();
 
@@ -48,6 +49,7 @@ public class MainServer {
         var gl = new GlobalListener();
         gl.setUsers(users);
         gl.setGameRooms(gameRooms);
+        gl.setChats(globalChat);
         new Thread(gl).start();
     }
 }
@@ -55,6 +57,7 @@ public class MainServer {
 class GlobalListener implements Runnable {
     private UserRepo users;
     private GameRoomRepo gameRooms;
+    private ChatRepo chats;
 
     public void setGameRooms(GameRoomRepo gameRooms) {
         this.gameRooms = gameRooms;
@@ -64,6 +67,8 @@ class GlobalListener implements Runnable {
         this.users = users;
     }
 
+    public void setChats(ChatRepo chats){this.chats = chats;}
+
     public GlobalListener() {
     }
 
@@ -72,19 +77,29 @@ class GlobalListener implements Runnable {
         SequentialSpace userToServer = new SequentialSpace();
         SequentialSpace serverToUser = new SequentialSpace();
         mainChannels.add("userToServer",userToServer);
-        mainChannels.add("ServerToUser",serverToUser);
+        mainChannels.add("serverToUser",serverToUser);
+
         mainChannels.addGate("tcp://localhost:6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[3];
             try {
                 userInput = userToServer.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
-                if (userInput[1] == "login") {
+
+                if (userInput[1].equals("login")) {
+
                     String UUID = users.create((String) userInput[0]);
                     serverToUser.put(userInput[0], "ok", UUID);
-                } else if (userInput[1] == "create") {
+                    System.out.println("Login: Sent response to client");
+                } else if (userInput[1].equals("create")) {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
+                    System.out.println("Create Room: Server response sent");
+                } else if (userInput[1].equals("globalChat")){
+                    chats.create((String) userInput[0], (String) userInput[2]);
+                    serverToUser.put(userInput[0],"ok");
+                    System.out.println("Send global chat: Server response sent");
+
 
                 }
             } catch (InterruptedException e) {
