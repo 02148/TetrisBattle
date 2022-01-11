@@ -102,7 +102,7 @@ public class GlobalChatUIController implements Initializable {
                 case "Join":
                     if (roomUUID.getText().trim().isEmpty()){
                         roomUUID.setPromptText("Please input room ID");
-                        username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                        roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     } else {
                         //User should join this room
                         response = client.TryJoinRoom(roomUUID.getText());
@@ -114,7 +114,7 @@ public class GlobalChatUIController implements Initializable {
                             primaryStage.show();
                         } else {
                             roomUUID.setPromptText("Please input correct room ID");
-                            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                            roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                         }
                     }
                     break;

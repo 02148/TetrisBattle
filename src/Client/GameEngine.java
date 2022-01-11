@@ -10,18 +10,15 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.paint.Color;
 
 import java.lang.instrument.Instrumentation;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.Random;
 
 public class GameEngine implements Runnable{
   private Controls controller;
-  private Tetromino current_tetromino;
-  private Tetromino ghost_tetromino;
   private BoardState boardState;
   private static Board nBoard;
 
-  private boolean allowedToSwitch = true;
-  private BitSet savedBoardState = null;
   private static boolean gameOver = false;
   private boolean stop = false;
 

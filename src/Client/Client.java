@@ -36,7 +36,7 @@ public class Client extends Application {
   public void main(String[] args) throws IOException {
     //SpaceRepository repo = new SpaceRepository();
     //repo.addGate("tcp://LocalHost:6969/?mainServer");
-    mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
+    mainServer = new RemoteSpace("tcp://localhost:6969/main?mainServer");
     userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
     serverToUser = new RemoteSpace("tcp://localhost:6969/serverToUser?conn");
 
@@ -50,7 +50,7 @@ public class Client extends Application {
 
     try {
       //userName = "holder";
-      userToServer.put(userName, "login","something");
+      userToServer.put(userName, "login","");
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];

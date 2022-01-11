@@ -14,11 +14,11 @@ public class UserRepo {
     }
 
     private void insertUser(User u) throws InterruptedException {
-        s.put(u.username, u.UUID, u.noOfWins, u.timestamp, u.isLoggedIn);
+        s.put(u.UUID, u.username, u.noOfWins, u.timestamp, u.isLoggedIn);
     }
 
-    private User getUser(String username) throws InterruptedException {
-        Object[] q = s.getp(new ActualField(username),
+    private User getUser(String UUID) throws InterruptedException {
+        Object[] q = s.getp(new ActualField(UUID),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
                 new FormalField(Double.class),
@@ -27,8 +27,9 @@ public class UserRepo {
     }
 
     public String create(String username) throws Exception {
-        if (exists(username))
-            throw new Exception("User already exists");
+        //It should be possible for users to have the same username
+        /*if (exists(username))
+            throw new Exception("User already exists");*/
 
         String UUID = Utils.createUUID();
         User u = new User(
@@ -40,8 +41,8 @@ public class UserRepo {
         return UUID;
     }
 
-    public void login(String username) throws Exception {
-        User u = getUser(username);
+    public void login(String UUID) throws Exception {
+        User u = getUser(UUID);
         if (u.isLoggedIn)
             throw new Exception("User already logged in!");
         // if not logged in, log in
@@ -49,8 +50,8 @@ public class UserRepo {
         insertUser(u);
     }
 
-    public void logout(String username) throws Exception {
-        User u = getUser(username);
+    public void logout(String UUID) throws Exception {
+        User u = getUser(UUID);
         if (!u.isLoggedIn)
             throw new Exception("User is not logged in!");
         // if logged in, log out
@@ -58,8 +59,8 @@ public class UserRepo {
         insertUser(u);
     }
 
-    public boolean exists(String username) throws InterruptedException {
-        Object[] q = s.queryp(new ActualField(username),
+    public boolean exists(String UUID) throws InterruptedException {
+        Object[] q = s.queryp(new ActualField(UUID),
                  new FormalField(String.class),
                  new FormalField(Integer.class),
                  new FormalField(Double.class),

@@ -200,6 +200,7 @@ public class BoardState {
   }
 
   public void setBoardStateFromBitArray(BitSet bitArray) {
+    System.out.println("bits=" + bitArray.length());
     for(int index = 0; index < bitArray.length(); index += 3) {
       int indexInBoard = index/3;
       boolean leftBit = bitArray.get(index);
