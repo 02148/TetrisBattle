@@ -30,6 +30,7 @@ public class Controls {
     updateView();
   }
 
+  // Update View and BoardState Methods
   public void keyDownEvent(KeyCode keyCode) {
     if(keyCode == KeyCode.UP) {
       rotateTetromino(current_tetromino);
@@ -66,6 +67,10 @@ public class Controls {
 
      updateView();
   }
+
+
+
+
 
   public void updateView() {
     boardState.removeTetromino(current_tetromino);
