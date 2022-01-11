@@ -1,5 +1,7 @@
 package Client.UI;
 
+import Client.Client;
+import Main.Main;
 import MainServer.Chat.ChatMessage;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoom;
@@ -10,6 +12,7 @@ import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -21,99 +24,123 @@ import javafx.stage.Stage;
 
 
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 
-public class GlobalChatUIController {
+public class GlobalChatUIController implements Initializable {
     @FXML private TextArea chatArea;
     @FXML private TextField chatTextField;
-    private String user = "Username1";
-    private String testUUID = "123456";
     @FXML private TextField username;
     @FXML private TextField roomUUID;
     @FXML private ToggleGroup group;
-    private UserRepo testUserRepo = new UserRepo();
-    private ChatRepo testChatRepo = new ChatRepo();
-    private GameRoomRepo testGameRoomRepo = new GameRoomRepo();
+
+    private Client client;
+    private boolean isLoggedIn = false;
 
 
+    @Override
+    public void initialize(URL url, ResourceBundle resourceBundle) {
 
+    }
 
-
+    public void  setClient(Client client){
+        this.client = client;
+    }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
         Platform.exit();
         System.exit(0);
     }
     @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
+        String response = "";
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalGame.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(),1300,800);
         
         //Check if username and roomUUID was provided
         if(username.getText().trim().isEmpty()){
-            username.setText("Please input username");
+            username.setPromptText("Please input username");
             username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-        }
-        else if ((ToggleButton) group.getSelectedToggle() == null ){
-            //Need to choose wether to host or join
-            Platform.exit();
-            System.exit(0);
         } else {
+            if(!isLoggedIn){
+                client.userName = username.getText();
+                client.login();
+                isLoggedIn = true;
+            }
+
+
             //Check if room exists if not create one
             //Check if user want to join or host
             ToggleButton chosenButton = (ToggleButton) group.getSelectedToggle();
             String answer = chosenButton.getText();
             switch (answer){
                 case "Host":
-                        //User can host this
-                        testGameRoomRepo.create(username.getText());primaryStage.setScene(scene);
+                    //User can host this
+                    response = client.hostRoom();
+                    if(response.equals("ok")){
+                        primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
                         primaryStage.show();
-                    
+
+                    } else {
+                        roomUUID.setPromptText("Please input correct room ID");
+                        username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                    }
                     break;
+
                 case "Join":
                     if (roomUUID.getText().trim().isEmpty()){
-                        roomUUID.setText("Please input room ID");
-                        username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                        roomUUID.setPromptText("Please input room ID");
+                        roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     } else {
                         //User should join this room
-                        if(testGameRoomRepo.exists(roomUUID.getText())){
-                            testGameRoomRepo.addConnection(username.getText(), roomUUID.getText());
+                        response = client.TryJoinRoom(roomUUID.getText());
+
+                        //Handle response here
+                        if(response.equals("ok")){
                             primaryStage.setScene(scene);
                             primaryStage.centerOnScreen();
                             primaryStage.show();
                         } else {
-                            roomUUID.setText("Please input correct room ID");
-                            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                            roomUUID.setPromptText("Please input correct room ID");
+                            roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                         }
-
-
                     }
-
                     break;
             }
-
         }
-
-
     }
 
-    @FXML protected  void handlUsernameInputAction(ActionEvent event) throws Exception {
-        if(testUserRepo.exists(username.getText()) == false){
-            testUserRepo.create(username.getText());
-            username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
-        }
-
-    }
 
     @FXML protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
-        if(testUserRepo.exists(username.getText()) == false){
-            username.setText("Please input username");
-            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+        if(!isLoggedIn){
+            if(username.getText().trim().isEmpty()){
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            } else {
+                client.userName = username.getText();
+                String response = client.login();
+                if(response.equals("ok")){
+                    isLoggedIn = true;
+                    String chatResponse = client.sendGlobalChat(chatTextField.getText());
+                    if(chatResponse.equals("ok")){
+                        chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+                        chatTextField.clear();
+                    } else {
+                        //Something went wrong
+                    }
+                }
 
-        }else {
-            testChatRepo.create(chatTextField.getText());
-            chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
-            chatTextField.clear();
+            }
+        } else {
+            String chatResponse = client.sendGlobalChat(chatTextField.getText());
+            if(chatResponse.equals("ok")){
+                chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+                chatTextField.clear();
+            } else {
+                //Something went wrong
+            }
+
         }
     }
 

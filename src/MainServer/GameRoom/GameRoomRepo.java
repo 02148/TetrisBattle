@@ -20,16 +20,16 @@ public class GameRoomRepo {
     }
 
     private void insertGameRoom(GameRoom gr) throws InterruptedException {
-        s.put(gr.userHostUUID, gr.UUID, gr.timestamp);
+        s.put(gr.userHostUUID, gr.UUID, gr.number, gr.timestamp);
     }
 
     private GameRoom getGameRoom(String uuid) throws InterruptedException {
-        var q = s.getp(new FormalField(String.class), new ActualField(uuid), new FormalField(Double.class));
+        var q = s.getp(new FormalField(String.class), new ActualField(uuid), new FormalField(Integer.class), new FormalField(Double.class));
         return new GameRoom(q);
     }
 
     private static GameRoom queryGameRoom(String uuid) throws InterruptedException {
-        var q = s.queryp(new FormalField(String.class), new ActualField(uuid), new FormalField(Double.class));
+        var q = s.queryp(new FormalField(String.class), new ActualField(uuid), new FormalField(Integer.class), new FormalField(Double.class));
         return new GameRoom(q);
     }
 
@@ -41,7 +41,8 @@ public class GameRoomRepo {
     public String create(String userHostUUID) throws InterruptedException {
         GameRoom gr = new GameRoom(
                 userHostUUID,
-                Utils.createUUID()
+                Utils.createUUID(),
+                getNewNumber()
         );
         insertGameRoom(gr);
         conns.put(userHostUUID, gr.UUID);
@@ -60,8 +61,8 @@ public class GameRoomRepo {
         return gr.userHostUUID.equals(userHostUUID);
     }
 
-    public void addConnection(String userHostUUID, String uuid) throws InterruptedException {
-        conns.put(userHostUUID, uuid);
+    public void addConnection(String userUUID, String roomUUID) throws InterruptedException {
+        conns.put(userUUID, roomUUID);
     }
 
     public void removeConnection(String userHostUUID, String uuid) throws InterruptedException {
@@ -86,6 +87,7 @@ public class GameRoomRepo {
     public boolean exists(String UUID) throws InterruptedException {
         Object[] q = s.queryp(new FormalField(String.class),
                 new ActualField(UUID),
+                new FormalField(Integer.class),
                 new FormalField(Double.class));
         return q!= null;
     }
@@ -93,6 +95,7 @@ public class GameRoomRepo {
     public void queryAllRooms() throws InterruptedException {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
+                new FormalField(Integer.class),
                 new FormalField(Double.class)
         );
 
@@ -104,6 +107,41 @@ public class GameRoomRepo {
             for (var c : allConns)
                 System.out.println("    >> " + c);
         }
+    }
+
+    private int getNewNumber() throws InterruptedException {
+        var allRooms = s.queryAll(new FormalField(String.class),
+                new FormalField(String.class),
+                new FormalField(Integer.class),
+                new FormalField(Double.class)
+        );
+
+        ArrayList<Integer> numbers = new ArrayList();
+        for (var q : allRooms) {
+            numbers.add((int) q[2]);
+        }
+
+        for (int i = 1; i <= s.size(); i++) {
+            if (!numbers.contains(i)) {
+                return i;
+            }
+        }
+        return s.size()+1;
+    }
+
+    public String getUUID(String roomName) throws Exception {
+        var allRooms = s.queryAll(new FormalField(String.class),
+                new FormalField(String.class),
+                new FormalField(Integer.class),
+                new FormalField(Double.class)
+        );
+
+        for (var q : allRooms) {
+            if (roomName.equals("room " + q[2])) {
+                return (String) q[1];
+            }
+        }
+        throw new Exception("Room with this name does not exist");
     }
 
 }

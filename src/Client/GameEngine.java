@@ -3,6 +3,7 @@ package Client;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
@@ -15,13 +16,9 @@ import java.util.Random;
 
 public class GameEngine implements Runnable{
   private Controls controller;
-  private Tetromino current_tetromino;
-  private Tetromino ghost_tetromino;
   private BoardState boardState;
   private static Board nBoard;
 
-  private boolean allowedToSwitch = true;
-  private BitSet savedBoardState = null;
   private static boolean gameOver = false;
   private boolean stop = false;
 
