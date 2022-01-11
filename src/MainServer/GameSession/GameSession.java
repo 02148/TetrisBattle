@@ -1,5 +1,7 @@
 package MainServer.GameSession;
 
+import MainServer.GameSession.Modules.Producer;
+import MainServer.GameSession.Modules.Transformer;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.StackSpace;

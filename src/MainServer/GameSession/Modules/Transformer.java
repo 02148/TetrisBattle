@@ -1,4 +1,4 @@
-package MainServer.GameSession;
+package MainServer.GameSession.Modules;
 
 import MainServer.Utils;
 import org.jspace.ActualField;

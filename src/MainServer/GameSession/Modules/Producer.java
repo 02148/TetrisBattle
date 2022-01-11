@@ -1,4 +1,4 @@
-package MainServer.GameSession;
+package MainServer.GameSession.Modules;
 
 import Client.Models.BoardState;
 import org.jspace.ActualField;
