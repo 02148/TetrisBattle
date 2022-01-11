@@ -51,7 +51,7 @@ public class Client extends Application {
 
     try {
       //userName = "holder";
-      userToServer.put(userName, "login","something");
+      userToServer.put(userName, "login","");
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];

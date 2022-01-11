@@ -97,6 +97,13 @@ class GlobalListener implements Runnable {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
                     System.out.println("Create Room: Server response sent");
+                } else if (userInput[1].equals("join")) {
+                    if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
+                        serverToUser.put(userInput[0], "Already connected", "");
+                    } else {
+                        gameRooms.addConnection((String) userInput[0], (String) userInput[2]);
+                        serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
+                    }
                 } else if (userInput[1].equals("globalChat")){
                     chats.create((String) userInput[0], (String) userInput[2]);
                     serverToUser.put(userInput[0],"ok");
