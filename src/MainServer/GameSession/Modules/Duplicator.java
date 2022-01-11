@@ -3,6 +3,7 @@ package MainServer.GameSession.Modules;
 import org.jspace.*;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Duplicator implements Runnable {
@@ -24,12 +25,14 @@ public class Duplicator implements Runnable {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
                 Object[] raw_data = in.get(
-                        new FormalField(Object.class)
+                        new FormalField(HashMap.class)
                 );
                 if (raw_data == null)
                     throw new Exception("DUPLICATOR >> No new data");
 
                 var data = (HashMap<String, Object[]>) raw_data[0];
+
+                System.out.println(Arrays.toString(raw_data));
 
                 for (var c : curConns) {
                     String userUUID = (String) c[0];
@@ -37,7 +40,6 @@ public class Duplicator implements Runnable {
                     if (out.containsKey(userUUID))
                         out.get(userUUID).put(data);
                 }
-//                System.out.println(data);
             } catch (Exception e) {
                 e.printStackTrace();
             }

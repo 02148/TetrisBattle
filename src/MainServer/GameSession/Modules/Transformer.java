@@ -4,6 +4,7 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 
@@ -37,11 +38,13 @@ public class Transformer implements Runnable {
                     if (raw_data == null)
                         continue;
 
+                    System.out.println(Arrays.toString(raw_data));
+
                     allBoards.put(userUUID, raw_data);
                 }
 
                 out.put(allBoards);
-                System.out.println("Transformer >> " + allBoards);
+//                System.out.println("Transformer >> " + allBoards);
             } catch (InterruptedException e) {
                 System.out.println("TRANSFORMER@" + Thread.currentThread() + " >> Exception");
                 e.printStackTrace();
