@@ -13,40 +13,43 @@ public class MainServer {
         GameRoomRepo gameRooms = new GameRoomRepo();
         ChatRepo globalChat = new ChatRepo();
 
+
         //SpaceRepository userChannels = new SpaceRepository();
         SpaceRepository rooms = new SpaceRepository();
 
-        users.create("niels");
-        users.create("emilie");
-        users.create("magn");
+        //users.create("niels");
+        //users.create("emilie");
+        //users.create("magn");
 
-        users.login("niels");
-        users.login("magn");
-        users.logout("magn");
+        //users.login("niels");
+        //users.login("magn");
+        //users.logout("magn");
         //users.queryAllUsers();
 
-        String roomId1 = gameRooms.create("niels");
-        String roomId2 = gameRooms.create("emilie");
-        String roomId3 = gameRooms.create("niels");
+        //String roomId1 = gameRooms.create("niels");
+        //String roomId2 = gameRooms.create("emilie");
+        //String roomId3 = gameRooms.create("niels");
 
-        gameRooms.addConnection("emilie", roomId1);
-        gameRooms.addConnection("magn", roomId2);
-        gameRooms.addConnection("magn", roomId3);
+        //gameRooms.addConnection("emilie", roomId1);
+        //gameRooms.addConnection("magn", roomId2);
+        //gameRooms.addConnection("magn", roomId3);
 
-        gameRooms.close(roomId2);
-        gameRooms.close(roomId3);
+        //gameRooms.close(roomId2);
+        //gameRooms.close(roomId3);
 
         //System.out.println("\nBEFORE");
         //gameRooms.queryAllRooms();
-        gameRooms.removeConnection("niels", roomId1);
-        gameRooms.addConnection("magn", roomId1);
-        gameRooms.removeConnection("emilie", roomId1);
+        //gameRooms.removeConnection("niels", roomId1);
+        //gameRooms.addConnection("magn", roomId1);
+        //gameRooms.removeConnection("emilie", roomId1);
         //System.out.println("\nAFTER");
         //gameRooms.queryAllRooms();
+
 
         var gl = new GlobalListener();
         gl.setUsers(users);
         gl.setGameRooms(gameRooms);
+        gl.setChats(globalChat);
         new Thread(gl).start();
     }
 }
@@ -54,6 +57,7 @@ public class MainServer {
 class GlobalListener implements Runnable {
     private UserRepo users;
     private GameRoomRepo gameRooms;
+    private ChatRepo chats;
 
     public void setGameRooms(GameRoomRepo gameRooms) {
         this.gameRooms = gameRooms;
@@ -63,6 +67,8 @@ class GlobalListener implements Runnable {
         this.users = users;
     }
 
+    public void setChats(ChatRepo chats){this.chats = chats;}
+
     public GlobalListener() {
     }
 
@@ -71,20 +77,30 @@ class GlobalListener implements Runnable {
         SequentialSpace userToServer = new SequentialSpace();
         SequentialSpace serverToUser = new SequentialSpace();
         mainChannels.add("userToServer",userToServer);
-        mainChannels.add("ServerToUser",serverToUser);
+        mainChannels.add("serverToUser",serverToUser);
+
         mainChannels.addGate("tcp://localhost:6969/?conn");
 
         while(true) {
-            Object[] userInput = new Object[0];
+            Object[] userInput = new Object[3];
             try {
                 userInput = userToServer.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
+
                 if (userInput[1].equals("login")) {
 
                     String UUID = users.create((String) userInput[0]);
                     serverToUser.put(userInput[0], "ok", UUID);
+                    System.out.println("Login: Sent response to client");
                 } else if (userInput[1].equals("create")) {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
+                    System.out.println("Create Room: Server response sent");
+                } else if (userInput[1].equals("globalChat")){
+                    chats.create((String) userInput[0], (String) userInput[2]);
+                    serverToUser.put(userInput[0],"ok");
+                    System.out.println("Send global chat: Server response sent");
+
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -92,6 +108,7 @@ class GlobalListener implements Runnable {
                 e.printStackTrace();
             }
         }
+
     }
 }
 

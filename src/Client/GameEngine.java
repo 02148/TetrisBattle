@@ -3,6 +3,7 @@ package Client;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
