@@ -21,7 +21,7 @@ public class Dispatcher  implements Runnable {
         this.delta = delta;
         this.full = full;
         this.conns = conns;
-        this.T = 1;
+        this.T = 10;
         this.lastTimestamps = lastTimestamps;
     }
 

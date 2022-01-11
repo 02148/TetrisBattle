@@ -15,7 +15,7 @@ public class Transformer implements Runnable {
         this.in = in;
         this.out = out;
         this.conns = conns;
-        this.T = 10;
+        this.T = 100;
     }
 
     @Override
