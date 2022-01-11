@@ -52,6 +52,8 @@ public class Dispatcher  implements Runnable {
                         }
                     }
 
+                    System.out.println(userUUID + timestamp + packageData);
+
                     if (packageType.equals("full"))
                         this.full.put(userUUID, timestamp, (BitSet)packageData);
                     if (packageType.equals("delta"))

@@ -23,7 +23,7 @@ public class Duplicator implements Runnable {
             try {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
-                Object[] raw_data = in.getp(
+                Object[] raw_data = in.get(
                         new FormalField(Object.class)
                 );
                 if (raw_data == null)
@@ -37,6 +37,7 @@ public class Duplicator implements Runnable {
                     if (out.containsKey(userUUID))
                         out.get(userUUID).put(data);
                 }
+//                System.out.println(data);
             } catch (Exception e) {
                 e.printStackTrace();
             }

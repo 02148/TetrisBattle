@@ -1,5 +1,6 @@
 package MainServer.GameSession.Test;
 
+import Client.GameSession.Producer;
 import MainServer.GameSession.GameSession;
 import org.jspace.*;
 
@@ -53,27 +54,24 @@ public class TestProducer implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
-
         SequentialSpace conns = new SequentialSpace();
-
-        for (int i = 0; i < noConns; i++)
-            conns.put(""+i);
-
         conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
-        StackSpace s = new StackSpace();
 
-        for (int i = 0; i < noConns; i++) {
-            (new Thread(new TestProducer("tcp://localhost:6969/69420?keep",
-                    "" + i,
-                    "delta")))
-                    .start();
-            (new Thread(new TestProducer("tcp://localhost:6969/69420?keep",
-                    "" + i,
-                    "full")))
-                    .start();
+        Producer pDelta = new Producer("tcp://localhost:6969/69420?keep",
+                "player1",
+                "delta"
+                );
+        Producer pFull = new Producer("tcp://localhost:6969/69420?keep",
+                "player1",
+                "full"
+        );
+
+        (new Thread(pDelta)).start();
+        (new Thread(pFull)).start();
+
+        while (true){
+            Thread.sleep(1000);
         }
-
-        while (true){}
     }
 }

@@ -7,6 +7,7 @@ import org.jspace.SpaceRepository;
 import org.jspace.StackSpace;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class GameSession {
@@ -30,11 +31,14 @@ public class GameSession {
         this.deltaSpace = new StackSpace();
         this.tFullSpace = new StackSpace();
         this.tDeltaSpace = new StackSpace();
+        this.dupFullSpace = new HashMap<>();
+        this.dupDeltaSpace = new HashMap<>();
 
         // add spaces for consumers on client side (outgoing)
         var curConns = conns.queryAll(new FormalField(String.class));
+        System.out.println(curConns);
         for (var c : curConns) {
-            String curUserUUID = (String) c[0];
+            String curUserUUID = (String)c[0];
             StackSpace deltaOutSpace = new StackSpace();
             StackSpace fullOutSpace = new StackSpace();
             this.dupDeltaSpace.put(curUserUUID, deltaOutSpace);

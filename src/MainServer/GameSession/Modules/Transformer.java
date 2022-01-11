@@ -41,6 +41,7 @@ public class Transformer implements Runnable {
                 }
 
                 out.put(allBoards);
+                System.out.println("Transformer >> " + allBoards);
             } catch (InterruptedException e) {
                 System.out.println("TRANSFORMER@" + Thread.currentThread() + " >> Exception");
                 e.printStackTrace();
