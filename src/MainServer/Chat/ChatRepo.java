@@ -21,8 +21,9 @@ public class ChatRepo {
         return new ChatMessage(q);
     }
 
-    public void create(String UUID, String message) throws InterruptedException {
+    public ChatMessage create(String UUID, String message) throws InterruptedException {
         ChatMessage c = new ChatMessage(UUID, message);
         insertChatMessage(c);
+        return c;
     }
 }

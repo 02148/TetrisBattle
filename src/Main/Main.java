@@ -4,6 +4,7 @@ package Main;
 import Client.Client;
 import Client.UI.GlobalChatUIController;
 import MainServer.MainServer;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Rectangle2D;
 import javafx.scene.Parent;
@@ -49,10 +50,6 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         currClient.main(args);
         launch(args);
-
-
-
-
 
     }
 }

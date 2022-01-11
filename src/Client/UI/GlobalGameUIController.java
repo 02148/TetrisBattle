@@ -45,7 +45,9 @@ public class GlobalGameUIController implements Initializable {
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
-        gameEngine.stop();
+        if(gameEngine != null){
+            gameEngine.stop();
+        }
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load());
@@ -84,6 +86,7 @@ public class GlobalGameUIController implements Initializable {
         task.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 lines.setText(String.format("lines %.0f", newProgress.doubleValue()*100)));
         new Thread(task).start();
+
     }
     
 

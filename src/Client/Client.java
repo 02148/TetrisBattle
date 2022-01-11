@@ -1,18 +1,13 @@
 package Client;
 
 
-import Client.UI.GlobalChatUIController;
-import Main.Main;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
-import org.jspace.SpaceRepository;
+
+import java.awt.*;
 import java.io.IOException;
 
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
@@ -23,30 +18,34 @@ public class Client extends Application {
   public String roomUUID;
 
   public static RemoteSpace userToServer;
-  public static RemoteSpace serverToUser;
+  public RemoteSpace serverToUser;
   public RemoteSpace room;
 
-  public boolean gameActive = false;
+  public boolean isGameActive = false;
 
   private static RemoteSpace mainServer;
 
-    @Override
+
+  public static ChatListener chatListener;
+
+  @Override
   public void start(Stage primaryStage) {
 
 
   }
-  public static void main(String[] args) throws IOException {
+  public void main(String[] args) throws IOException {
     //SpaceRepository repo = new SpaceRepository();
     //repo.addGate("tcp://LocalHost:6969/?mainServer");
     mainServer = new RemoteSpace("tcp://LocalHost:6969/main?mainServer");
     userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
     serverToUser = new RemoteSpace("tcp://localhost:6969/serverToUser?conn");
 
+
     //launch(args);
   }
 
 
-  public static String login() {
+  public String login() {
     Object[] loginResponse = new Object[3];
 
     try {
@@ -75,6 +74,7 @@ public class Client extends Application {
 
         roomUUID = (String) roomResponse[2];
         System.out.println("Room can be started by UI");
+        isGameActive = true;
         //Room can be started by UI
       } else {
         //Error message
@@ -117,7 +117,7 @@ public class Client extends Application {
       gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
       if (gameResponse[1].equals("ok")) {
-        gameActive = true;
+        isGameActive = true;
         //Game can be started by UI
 
       } else {
@@ -130,17 +130,16 @@ public class Client extends Application {
     }
   }
 
-  public String sendGlobalChat(String message){
-    Object[] chatResponse = new Object[2];
+  public String[] sendGlobalChat(String message){
+    Object[] chatResponse = new Object[4];
     try {
       userToServer.put(UUID, "globalChat", message);
-      chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class));
+      chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
 
       if (chatResponse[1].equals("ok")) {
         System.out.println("Chat can be sent by UI");
 
         //Chat can be sent and UI updated
-
 
       } else {
         //Error message
@@ -150,7 +149,7 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return (String) chatResponse[1];
+    return new String[]{ (String) chatResponse[1],Double.toString((Double)chatResponse[3])};
 
   }
 
@@ -161,7 +160,7 @@ public class Client extends Application {
       gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
       if (gameResponse[1].equals("ok")) {
-        gameActive = true;
+        isGameActive= true;
         //Game can be started by UI
 
       } else {
@@ -175,6 +174,11 @@ public class Client extends Application {
 
   }
 
-
-
 }
+
+
+
+
+
+
+

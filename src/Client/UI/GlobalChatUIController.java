@@ -9,6 +9,9 @@ import MainServer.GameRoom.GameRoomRepo;
 import MainServer.MainServer;
 import MainServer.UserMgmt.UserRepo;
 import javafx.application.Platform;
+import javafx.concurrent.Service;
+import javafx.concurrent.Task;
+import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -21,6 +24,7 @@ import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
+import Client.ChatListener;
 
 
 import java.io.IOException;
@@ -36,7 +40,7 @@ public class GlobalChatUIController implements Initializable {
 
     private Client client;
     private boolean isLoggedIn = false;
-
+    private boolean inGlobalRoom = true;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -45,6 +49,11 @@ public class GlobalChatUIController implements Initializable {
 
     public void  setClient(Client client){
         this.client = client;
+        ChatListener chatListener = new ChatListener(chatArea);
+        chatListener.setClient(client);
+        chatListener.setServerToUser(client.serverToUser);
+        Thread chatUpdater = new Thread(chatListener);
+        Platform.runLater(()-> chatUpdater.start());
     }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
@@ -56,6 +65,8 @@ public class GlobalChatUIController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalGame.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(),1300,800);
+        GlobalGameUIController globalGameUIController = loader.getController();
+        globalGameUIController.setClient(client);
         
         //Check if username and roomUUID was provided
         if(username.getText().trim().isEmpty()){
@@ -122,9 +133,11 @@ public class GlobalChatUIController implements Initializable {
                 String response = client.login();
                 if(response.equals("ok")){
                     isLoggedIn = true;
-                    String chatResponse = client.sendGlobalChat(chatTextField.getText());
-                    if(chatResponse.equals("ok")){
-                        chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+
+                    String[] chatResponse = client.sendGlobalChat(chatTextField.getText());
+                    System.out.println(chatResponse[1]);
+                    if(chatResponse[0].equals("ok")){
+                        chatArea.appendText("\n"+ chatResponse[1] + " : " + username.getText() + ": " + chatTextField.getText() );
                         chatTextField.clear();
                     } else {
                         //Something went wrong
@@ -133,9 +146,9 @@ public class GlobalChatUIController implements Initializable {
 
             }
         } else {
-            String chatResponse = client.sendGlobalChat(chatTextField.getText());
-            if(chatResponse.equals("ok")){
-                chatArea.appendText("\n"+ username.getText() + ": " + chatTextField.getText() );
+            String[] chatResponse = client.sendGlobalChat(chatTextField.getText());
+            if(chatResponse[0].equals("ok")){
+                chatArea.appendText("\n"+ chatResponse[1] + " : " + username.getText() + ": " + chatTextField.getText() );
                 chatTextField.clear();
             } else {
                 //Something went wrong

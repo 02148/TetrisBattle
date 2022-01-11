@@ -1,5 +1,6 @@
 package MainServer;
 
+import MainServer.Chat.ChatMessage;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 import MainServer.UserMgmt.UserRepo;
@@ -96,8 +97,8 @@ class GlobalListener implements Runnable {
                     serverToUser.put(userInput[0],"ok", UUID);
                     System.out.println("Create Room: Server response sent");
                 } else if (userInput[1].equals("globalChat")){
-                    chats.create((String) userInput[0], (String) userInput[2]);
-                    serverToUser.put(userInput[0],"ok");
+                    ChatMessage chat = chats.create((String) userInput[0], (String) userInput[2]);
+                    serverToUser.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
                     System.out.println("Send global chat: Server response sent");
 
 
