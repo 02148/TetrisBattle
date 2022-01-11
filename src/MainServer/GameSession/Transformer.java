@@ -8,13 +8,13 @@ import org.jspace.Space;
 import java.util.BitSet;
 import java.util.HashMap;
 
-public class Consumer implements Runnable {
+public class Transformer implements Runnable {
     Space in, shared, conns;
     String spaceKey;
     int noConns, T = 10;
     HashMap<String, Double> lastTimestamp; // maps each UUID to last received timestamp, to ensure chronological data receival
 
-    public Consumer(Space in, Space shared, Space conns, String spaceKey) {
+    public Transformer(Space in, Space shared, Space conns, String spaceKey) {
         this.in = in;
         this.shared = shared;
         this.conns = conns;
@@ -34,7 +34,7 @@ public class Consumer implements Runnable {
                 var curConns = conns.queryAll(new FormalField(String.class));
                 noConns = curConns.size();
                 if (noConns == 0) {
-                    System.out.println("Consumer@"+ Thread.currentThread().getId() + " finished");
+                    System.out.println("Transformer@"+ Thread.currentThread().getId() + " finished");
                     Thread.currentThread().join(1);
                 }
 

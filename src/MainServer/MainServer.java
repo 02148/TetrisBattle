@@ -78,10 +78,11 @@ class GlobalListener implements Runnable {
             Object[] userInput = new Object[0];
             try {
                 userInput = userToServer.get(new FormalField(String.class), new FormalField(String.class), new FormalField(String.class));
-                if (userInput[1] == "login") {
+                if (userInput[1].equals("login")) {
+
                     String UUID = users.create((String) userInput[0]);
                     serverToUser.put(userInput[0], "ok", UUID);
-                } else if (userInput[1] == "create") {
+                } else if (userInput[1].equals("create")) {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
                 }

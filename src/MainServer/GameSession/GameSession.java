@@ -10,7 +10,7 @@ public class GameSession {
     Space conns;
 
     Producer fullP, deltaP;
-    Consumer fullC, deltaC;
+    Transformer fullC, deltaC;
     String UUID;
 
     public GameSession(String uuid, Space conns) {
@@ -27,10 +27,10 @@ public class GameSession {
         // tcp://sess:6969/[room:UUID]?keep
         this.repo.addGate("tcp://localhost:6969/?keep");
 
-        this.fullC = new Consumer(this.sessDataIn, this.sessDataShared, this.conns, "full");
+        this.fullC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "full");
         this.fullP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
 
-        this.deltaC = new Consumer(this.sessDataIn, this.sessDataShared, this.conns, "delta");
+        this.deltaC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "delta");
         this.deltaP = new Producer(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
 
 
