@@ -1,44 +1,57 @@
 package MainServer.GameSession;
 
-import MainServer.GameSession.Modules.Duplicator2;
-import MainServer.GameSession.Modules.Transformer2;
+import MainServer.GameSession.Modules.*;
+import org.jspace.FormalField;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.StackSpace;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class GameSession {
     SpaceRepository repo;
-    StackSpace sessDataIn, sessDataShared, sessDataOut;
+    StackSpace inSpace, fullSpace, deltaSpace, tFullSpace, tDeltaSpace;
+    HashMap<String, Space> dupFullSpace, dupDeltaSpace;
     Space conns;
 
-    Duplicator2 fullP, deltaP;
-    Transformer2 fullC, deltaC;
+    Dispatcher dispatcher;
+    Transformer transformerDelta, transformerFull;
+    Duplicator duplicatorDelta, duplicatorFull;
     String UUID;
 
-    public GameSession(String uuid, Space conns) {
+    public GameSession(String uuid, Space conns) throws Exception {
         this.UUID = uuid;
         this.repo = new SpaceRepository();
         this.conns = conns;
 
-        this.sessDataIn = new StackSpace();
-        this.sessDataShared = new StackSpace();
-        this.sessDataOut = new StackSpace();
+        this.inSpace = new StackSpace();
+        this.fullSpace = new StackSpace();
+        this.deltaSpace = new StackSpace();
+        this.tFullSpace = new StackSpace();
+        this.tDeltaSpace = new StackSpace();
 
-        this.repo.add(uuid, sessDataIn);
+        // add spaces for consumers on client side (outgoing)
+        var curConns = conns.queryAll(new FormalField(String.class));
+        for (var c : curConns) {
+            String curUserUUID = (String) c[0];
+            StackSpace deltaOutSpace = new StackSpace();
+            StackSpace fullOutSpace = new StackSpace();
+            this.dupDeltaSpace.put(curUserUUID, deltaOutSpace);
+            this.dupFullSpace.put(curUserUUID, fullOutSpace);
+            this.repo.add(curUserUUID, deltaSpace);
+        }
+
+        // add space for producers on client side (ingoing)
+        this.repo.add(uuid, this.inSpace);
 
         // tcp://sess:6969/[room:UUID]?keep
         this.repo.addGate("tcp://localhost:6969/?keep");
 
-        this.fullC = new Transformer2(this.sessDataIn, this.sessDataShared, this.conns, "full");
-        this.fullP = new Duplicator2(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
-
-        this.deltaC = new Transformer2(this.sessDataIn, this.sessDataShared, this.conns, "delta");
-        this.deltaP = new Duplicator2(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
-
-
-        (new Thread(this.fullP)).start();
-        (new Thread(this.fullC)).start();
-        (new Thread(this.deltaP)).start();
-        (new Thread(this.deltaC)).start();
+        this.dispatcher = new Dispatcher(this.inSpace, this.deltaSpace, this.fullSpace, this.conns);
+        this.transformerDelta = new Transformer(this.deltaSpace, this.tDeltaSpace, this.conns);
+        this.transformerFull = new Transformer(this.fullSpace, this.tFullSpace, this.conns);
+        this.duplicatorDelta = new Duplicator(this.tDeltaSpace, this.dupDeltaSpace, this.conns);
+        this.duplicatorFull = new Duplicator(this.tFullSpace, this.dupFullSpace, this.conns);
     }
 }

@@ -34,7 +34,7 @@ public class Duplicator2 implements Runnable {
 
     @Override
     public void run() {
-        BoardState boardState = new BoardState(200);
+//        BoardState boardState = new BoardState(200);
 
         while (true) {
             try {
@@ -72,8 +72,8 @@ public class Duplicator2 implements Runnable {
 //                            (BitSet) cur_data[3]
 //                    );
 
-                    boardState.setBoardStateFromBitArray((BitSet) cur_data[3]);
-                    System.out.println("@" + (String)c[0] + "\n" + boardState + "\n>>>>");
+//                    boardState.setBoardStateFromBitArray((BitSet) cur_data[3]);
+//                    System.out.println("@" + (String)c[0] + "\n" + boardState + "\n>>>>");
 
                 }
             } catch (Exception e) {

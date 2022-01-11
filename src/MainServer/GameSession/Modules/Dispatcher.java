@@ -15,14 +15,13 @@ public class Dispatcher  implements Runnable {
     public Dispatcher(Space in,
                       Space delta,
                       Space full,
-                      Space conns,
-                      HashMap<String, Double> lastTimestamps) {
+                      Space conns) {
         this.in = in;
         this.delta = delta;
         this.full = full;
         this.conns = conns;
         this.T = 10;
-        this.lastTimestamps = lastTimestamps;
+        this.lastTimestamps = new HashMap<>();
     }
 
     @Override
