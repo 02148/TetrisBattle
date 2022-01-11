@@ -83,7 +83,7 @@ public class GlobalChatUIController {
                             primaryStage.show();
                         } else {
                             roomUUID.setText("Please input correct room ID");
-                            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+                            roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                         }
 
 

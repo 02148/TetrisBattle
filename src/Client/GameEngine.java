@@ -14,13 +14,9 @@ import java.util.Random;
 
 public class GameEngine implements Runnable{
   private Controls controller;
-  private Tetromino current_tetromino;
-  private Tetromino ghost_tetromino;
   private BoardState boardState;
   private static Board nBoard;
 
-  private boolean allowedToSwitch = true;
-  private BitSet savedBoardState = null;
   private static boolean gameOver = false;
   private boolean stop = false;
 
