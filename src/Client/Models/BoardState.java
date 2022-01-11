@@ -46,7 +46,9 @@ public class BoardState {
         int boardIndex = (posY + y)*10 + (posX+x);
         if(currentState[index] == 1 && boardIndex >= 0 && boardIndex < 200) {
           board[boardIndex] = insertOrRemove ? new Mino(posX+x, posY+y, tetromino.color, isPlaced) : null;
-          this.packageHandler.updateDelta(this.board, boardIndex);
+
+          if(!tetromino.isGhost)
+            this.packageHandler.updateDelta(this.board, boardIndex);
         }
       }
     }
