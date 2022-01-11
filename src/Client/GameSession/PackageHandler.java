@@ -16,8 +16,10 @@ public class PackageHandler {
     }
 
     public void updateDelta(Mino[] board, int index) {
-        if(board[index] != this.lastBoardSnapshot[index] && delta.get(index) != minoToColorInt(board[index])) {
+        if(board[index] != this.lastBoardSnapshot[index]) {
             this.delta.put(index, minoToColorInt(board[index]));
+        } else if(this.delta.containsKey(index)) {
+            this.delta.remove(index);
         }
     }
 

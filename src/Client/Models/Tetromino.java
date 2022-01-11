@@ -8,6 +8,7 @@ public abstract class Tetromino implements TetrominoInterface {
   public int posY, posX;
   public Color color;
   public int state = 0;
+  public boolean isGhost = false;
 
   public void setColorOpacity(Color color, double opacity) {
     this.color = new Color(color.getRed(), color.getGreen(), color.getBlue(), opacity);
