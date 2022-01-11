@@ -120,6 +120,7 @@ public class Controls {
       int tempTetro = savedTetromino;
       savedTetromino = lastTetromino;
       current_tetromino = newTetromino(tempTetro);
+      lastTetromino = tempTetro;
     } else {
       savedTetromino = lastTetromino;
       current_tetromino = newRandomTetromino();
