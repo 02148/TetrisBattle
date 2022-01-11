@@ -54,7 +54,7 @@ public class Client extends Application {
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
-        System.out.println("Logged in repsonse got from server");
+        System.out.println("Logged in response got from server");
       } else {
         //Error message
       }

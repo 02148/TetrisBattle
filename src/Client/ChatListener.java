@@ -13,8 +13,6 @@ public class ChatListener implements Runnable {
 
     public ChatListener(TextArea chat) {
         this.globalChatArea = chat;
-        chat.appendText("\n" + "Testing if connecting is working ");
-
     }
 
 
