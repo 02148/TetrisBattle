@@ -25,14 +25,12 @@ public class Duplicator implements Runnable {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
                 Object[] raw_data = in.get(
-                        new FormalField(HashMap.class)
+                        new FormalField(Object.class)
                 );
                 if (raw_data == null)
                     throw new Exception("DUPLICATOR >> No new data");
 
                 var data = (HashMap<String, Object[]>) raw_data[0];
-
-                System.out.println(Arrays.toString(raw_data));
 
                 for (var c : curConns) {
                     String userUUID = (String) c[0];

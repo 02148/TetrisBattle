@@ -38,13 +38,15 @@ public class Transformer implements Runnable {
                     if (raw_data == null)
                         continue;
 
-                    System.out.println(Arrays.toString(raw_data));
+//                    System.out.println(Arrays.toString(raw_data));
 
                     allBoards.put(userUUID, raw_data);
                 }
 
-                out.put(allBoards);
+                if(!allBoards.isEmpty())
+                    out.put(allBoards);
 //                System.out.println("Transformer >> " + allBoards);
+                Thread.sleep(this.T);
             } catch (InterruptedException e) {
                 System.out.println("TRANSFORMER@" + Thread.currentThread() + " >> Exception");
                 e.printStackTrace();

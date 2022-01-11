@@ -5,6 +5,7 @@ import org.jspace.*;
 import java.io.IOException;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Random;
 
 import static MainServer.Utils.getCurrentExactTimestamp;
 
@@ -29,7 +30,7 @@ public class Producer implements Runnable {
     // TODO get actual delta map when connected to client!
     private HashMap<Integer, Integer> getDeltaPkg() {
         var map = new HashMap<Integer, Integer>();
-        map.put(69,420);
+        map.put(new Random().nextInt(199), new Random().nextInt(7));
         return map;
     }
 
