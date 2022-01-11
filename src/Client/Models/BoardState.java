@@ -2,22 +2,26 @@ package Client.Models;
 
 
 import Client.GameSession.PackageHandler;
+import Client.Utility.Utils;
 import javafx.scene.paint.Color;
+import jdk.jshell.execution.Util;
 
 import java.util.BitSet;
+import java.util.HashMap;
 
 public class BoardState {
   private PackageHandler packageHandler;
   private Mino[] board;
 
-  public BoardState(PackageHandler packageHandler, int size) { // Size is equal to the amount of cells in the tetris grid
+  public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
     this.board = new Mino[size];
-    this.packageHandler = packageHandler;
   }
 
   public Mino[] getBoard() {
     return board;
   }
+
+  public void addPackageHandler(PackageHandler packageHandler) { this.packageHandler = packageHandler; }
 
   public void setBoard(Mino[] board) {
     this.board = board;
@@ -47,7 +51,7 @@ public class BoardState {
         if(currentState[index] == 1 && boardIndex >= 0 && boardIndex < 200) {
           board[boardIndex] = insertOrRemove ? new Mino(posX+x, posY+y, tetromino.color, isPlaced) : null;
 
-          if(!tetromino.isGhost)
+          if(this.packageHandler != null && !tetromino.isGhost)
             this.packageHandler.updateDelta(this.board, boardIndex);
         }
       }
@@ -134,7 +138,8 @@ public class BoardState {
       } else {
         board[index] = null;
       }
-      this.packageHandler.updateDelta(this.board, index);
+      if(this.packageHandler != null)
+        this.packageHandler.updateDelta(this.board, index);
     }
   }
 
@@ -231,6 +236,12 @@ public class BoardState {
       } else if(leftBit && middleBit && rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.RED, true);
       }
+    }
+  }
+
+  public void updateBoardFromDelta(HashMap<Integer, Integer> delta) {
+    for(int k : delta.keySet()) {
+      this.board[k] = new Mino(k, Utils.intToColor(delta.get(k)), true);
     }
   }
 }
