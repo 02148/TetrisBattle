@@ -1,4 +1,4 @@
-package MainServer.GameSession.Modules;
+package Client.GameSession;
 
 import org.jspace.*;
 
@@ -15,6 +15,7 @@ public class Producer implements Runnable {
     RemoteSpace serverSpace;
     String clientUUID, packageType;
     int T; // Clock Period
+    //
 
     public Producer(String URI,
                     String clientUUID,
