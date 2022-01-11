@@ -1,6 +1,8 @@
 package Client.Models;
 
+import Client.Utility.Utils;
 import javafx.scene.paint.Color;
+import jdk.jshell.execution.Util;
 
 public class J_Block extends Tetromino{
   private final int[][] rotations_ = new int[][] {
@@ -36,7 +38,7 @@ public class J_Block extends Tetromino{
   public J_Block() {
     this.posX = 3;
     this.posY = -2;
-    this.color = Color.BLUE;
+    this.color = Utils.tetrominoTypeToColor(this.getClass());
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }
