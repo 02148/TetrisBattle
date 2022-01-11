@@ -1,7 +1,7 @@
 package MainServer.GameSession;
 
 import MainServer.GameSession.Modules.Duplicator;
-import MainServer.GameSession.Modules.Transformer;
+import MainServer.GameSession.Modules.Transformer2;
 import org.jspace.Space;
 import org.jspace.SpaceRepository;
 import org.jspace.StackSpace;
@@ -12,7 +12,7 @@ public class GameSession {
     Space conns;
 
     Duplicator fullP, deltaP;
-    Transformer fullC, deltaC;
+    Transformer2 fullC, deltaC;
     String UUID;
 
     public GameSession(String uuid, Space conns) {
@@ -29,10 +29,10 @@ public class GameSession {
         // tcp://sess:6969/[room:UUID]?keep
         this.repo.addGate("tcp://localhost:6969/?keep");
 
-        this.fullC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "full");
+        this.fullC = new Transformer2(this.sessDataIn, this.sessDataShared, this.conns, "full");
         this.fullP = new Duplicator(this.sessDataShared, this.sessDataOut, this.conns, "full", "sync");
 
-        this.deltaC = new Transformer(this.sessDataIn, this.sessDataShared, this.conns, "delta");
+        this.deltaC = new Transformer2(this.sessDataIn, this.sessDataShared, this.conns, "delta");
         this.deltaP = new Duplicator(this.sessDataShared, this.sessDataOut, this.conns, "delta", "changelist");
 
 
