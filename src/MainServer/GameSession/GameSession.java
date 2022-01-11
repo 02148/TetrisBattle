@@ -53,5 +53,11 @@ public class GameSession {
         this.transformerFull = new Transformer(this.fullSpace, this.tFullSpace, this.conns);
         this.duplicatorDelta = new Duplicator(this.tDeltaSpace, this.dupDeltaSpace, this.conns);
         this.duplicatorFull = new Duplicator(this.tFullSpace, this.dupFullSpace, this.conns);
+
+        (new Thread(this.dispatcher)).start();
+        (new Thread(this.transformerDelta)).start();
+        (new Thread(this.transformerFull)).start();
+        (new Thread(this.duplicatorDelta)).start();
+        (new Thread(this.duplicatorFull)).start();
     }
 }
