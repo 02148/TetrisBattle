@@ -30,7 +30,7 @@ public class Producer implements Runnable {
     // TODO get actual delta map when connected to client!
     private HashMap<Integer, Integer> getDeltaPkg() {
         var map = new HashMap<Integer, Integer>();
-        map.put(new Random().nextInt(199), new Random().nextInt(7));
+        map.put(new Random().nextInt(199), new Random().nextInt(6));
         return map;
     }
 
