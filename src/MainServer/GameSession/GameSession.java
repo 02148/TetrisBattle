@@ -43,7 +43,7 @@ public class GameSession {
             StackSpace fullOutSpace = new StackSpace();
             this.dupDeltaSpace.put(curUserUUID, deltaOutSpace);
             this.dupFullSpace.put(curUserUUID, fullOutSpace);
-            this.repo.add(curUserUUID, deltaSpace);
+            this.repo.add(curUserUUID, deltaOutSpace);
         }
 
         // add space for producers on client side (ingoing)

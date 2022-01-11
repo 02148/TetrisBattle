@@ -1,7 +1,9 @@
 package MainServer.GameSession.Test;
 
 import Client.GameSession.Producer;
+import Client.Models.BoardState;
 import MainServer.GameSession.GameSession;
+import MainServer.GameSession.Modules.Consumer;
 import org.jspace.*;
 
 import java.io.IOException;
@@ -67,11 +69,16 @@ public class TestProducer implements Runnable {
                 "full"
         );
 
+        var board = new BoardState(200);
+        Consumer consumerC = new Consumer("tcp://localhost:6969/player1?keep", board, "delta");
+
         (new Thread(pDelta)).start();
         (new Thread(pFull)).start();
+        (new Thread(consumerC)).start();
 
         while (true){
             Thread.sleep(1000);
+//            System.out.println(board.toString()+"\n");
         }
     }
 }

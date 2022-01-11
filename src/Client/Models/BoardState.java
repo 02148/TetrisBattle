@@ -3,11 +3,13 @@ package Client.Models;
 
 import Client.GameSession.PackageHandler;
 import Client.Utility.Utils;
+import com.google.gson.internal.LinkedTreeMap;
 import javafx.scene.paint.Color;
 import jdk.jshell.execution.Util;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BoardState {
   private PackageHandler packageHandler;
@@ -239,9 +241,16 @@ public class BoardState {
     }
   }
 
-  public void updateBoardFromDelta(HashMap<Integer, Integer> delta) {
+  public void updateBoardFromDelta(Map<Integer, Integer> delta) {
     for(int k : delta.keySet()) {
       this.board[k] = new Mino(k, Utils.intToColor(delta.get(k)), true);
+    }
+  }
+
+  public void updateBoardFromDeltaTreeMap(LinkedTreeMap<String, Double> delta) {
+    for(String k : delta.keySet()) {
+      int index = Integer.parseInt(k);
+      this.board[index] = new Mino(index, Utils.intToColor((int)Math.round(delta.get(k))), true);
     }
   }
 }
