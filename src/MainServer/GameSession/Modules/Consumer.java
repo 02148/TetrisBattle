@@ -28,9 +28,11 @@ public class Consumer implements Runnable {
                     this.boardState.setBoardStateFromBitArray(newBoardState);
                 } else if (this.packageType.equals("changelist")) {
                     HashMap<Integer,Integer> changeList = (HashMap<Integer,Integer>)data[0];
-                    this.boardState.
+                    this.boardState.updateBoardFromDelta(changeList);
+                } else {
+                    throw new Exception("Unknown Package Type!");
                 }
-            } catch (InterruptedException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
