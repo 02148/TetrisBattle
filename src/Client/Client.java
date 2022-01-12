@@ -1,11 +1,14 @@
 package Client;
 
 
+import Client.UI.GlobalChatUIController;
+import Main.Main;
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.RemoteSpace;
+import org.jspace.*;
 
 import java.awt.*;
 import java.io.IOException;
@@ -20,6 +23,7 @@ public class Client extends Application {
   public static RemoteSpace userToServer;
   public RemoteSpace serverToUser;
   public RemoteSpace room;
+  public RemoteSpace globalChat;
 
   public boolean isGameActive = false;
 
@@ -31,7 +35,6 @@ public class Client extends Application {
   @Override
   public void start(Stage primaryStage) {
 
-
   }
   public void main(String[] args) throws IOException {
     //SpaceRepository repo = new SpaceRepository();
@@ -39,6 +42,7 @@ public class Client extends Application {
     mainServer = new RemoteSpace("tcp://localhost:6969/main?mainServer");
     userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
     serverToUser = new RemoteSpace("tcp://localhost:6969/serverToUser?conn");
+    globalChat = new RemoteSpace("tcp://localhost:6971/globalChat?conn");
 
 
     //launch(args);
@@ -130,33 +134,25 @@ public class Client extends Application {
     }
   }
 
-  public String[] sendGlobalChat(String message){
-    Object[] chatResponse = new Object[4];
+  public void sendGlobalChat(String message){
     try {
-      userToServer.put(UUID, "globalChat", message,"");
-      chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
-
-      if (chatResponse[1].equals("ok")) {
-        System.out.println("Global Chat can be sent by UI");
-        //Chat can be sent and UI updated
-
-      } else {
-        //Error message
-        System.out.println(chatResponse[1]);
-      }
+      globalChat.put(UUID, "globalChat", message, "", userName);
+      System.out.println("Trying to send global chat");
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return new String[]{ (String) chatResponse[2],Double.toString((Double)chatResponse[3])};
-
   }
 
   public String[] sendGameRoomChat(String message){
     Object[] chatResponse = new Object[4];
     try {
-      userToServer.put(UUID, "gameRoomChat", message, roomUUID);
-      chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
+      globalChat.put(UUID,  "gameRoomChat", message, roomUUID, userName);
+      chatResponse = globalChat.get(new ActualField(UUID),
+              new FormalField(String.class),
+              new FormalField(String.class),
+              new FormalField(Double.class),
+              new FormalField(String.class));
 
       if (chatResponse[1].equals("ok")) {
         System.out.println("GameRoom Chat can be sent by UI");

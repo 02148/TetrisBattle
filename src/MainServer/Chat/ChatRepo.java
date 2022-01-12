@@ -14,16 +14,17 @@ public class ChatRepo {
 
     public ChatRepo() throws InterruptedException {
         this.globalChat = new SequentialSpace();
-        globalChat.put(new ActualField("global Lock"));
-        globalChat.put(new ActualField("reader Lock"));
-        globalChat.put(new ActualField("readers"), new ActualField(1));
+        globalChat.put("global Lock");
+        globalChat.put("reader Lock");
+        globalChat.put("readers",0);
 
         chatRepository.put("globalChat",globalChat);
     }
-
+    /*
     public void addGate(String port) {
         addGate("tcp://localhost:" + port + "/?conn");
     }
+     */
 
     public void insertChatMessage(ChatMessage m,String roomUUID) throws InterruptedException{
         chatRepository.get(roomUUID).put(m.UUID, m.message, m.timeStamp);

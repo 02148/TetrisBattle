@@ -10,12 +10,13 @@ import org.jspace.*;
 public class MainServer {
     public static UserRepo users;
     public static GameRoomRepo gameRooms;
-    public static ChatRepo globalChat;
+    public static ChatRepo chat;
+
 
     public static void main(String[] args) throws Exception {
         users = new UserRepo();
         gameRooms = new GameRoomRepo();
-        globalChat = new ChatRepo();
+        chat = new ChatRepo();
 
 
         //SpaceRepository userChannels = new SpaceRepository();
@@ -53,12 +54,11 @@ public class MainServer {
         var gl = new GlobalListener();
         gl.setUsers(users);
         gl.setGameRooms(gameRooms);
-        gl.setChats(globalChat);
         new Thread(gl).start();
 
         var cl = new GlobalChatListener();
-        cl.setChats(globalChat);
-        new Thread(gl).start();
+        cl.setChats(chat);
+        new Thread(cl).start();
     }
 }
 
@@ -69,13 +69,43 @@ class GlobalChatListener implements Runnable {
 
     public void run() {
         SpaceRepository chatChannels = new SpaceRepository();
-        SequentialSpace globalChat = new SequentialSpace();
+        SequentialSpace globalChat = (SequentialSpace) chats.globalChat;
         chatChannels.add("globalChat",globalChat);
 
-        chatChannels.addGate("tcp://localhost:4242/?conn");
-
+        chatChannels.addGate("tcp://localhost:6971/?conn");
+        System.out.println("Chat setup complete");
         while(true) {
+            Object[] userInput = new Object[0];
+            try {
+
+                userInput = globalChat.get(new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(String.class));
+
+                if (userInput[1].equals("globalChat")){
+                    ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2],"globalChat");
+                    globalChat.put(userInput[0],"recived", (String) userInput[2],chat.timeStamp, (String) userInput[4]);
+                    System.out.println("Send global chat: Server response sent");
+
+                } else if(userInput[1].equals("gameRoomChat")){
+                    Space newChatRoom = chats.createChatRoom((String) userInput[3]);
+                    if(newChatRoom != null){
+                        chatChannels.add((String) userInput[3], newChatRoom);
+                        System.out.println("room UUID: " + (String) userInput[3]);
+                    }
+                    ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2], (String) userInput[3]);
+                    globalChat.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
+                    System.out.println("Send local chat: Server response sent");
+                }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
     }
 }
 
@@ -94,7 +124,6 @@ class GlobalListener implements Runnable {
 
     public void setChats(ChatRepo chats){
         this.chats = chats;
-        this.chats.addGate("4242");
     }
 
     public void run() {
@@ -103,7 +132,7 @@ class GlobalListener implements Runnable {
         SequentialSpace serverToUser = new SequentialSpace();
         mainChannels.add("userToServer",userToServer);
         mainChannels.add("serverToUser",serverToUser);
-        mainChannels.add("globalChat", chats.globalChat);
+        //mainChannels.add("globalChat", chats.globalChat);
 
         mainChannels.addGate("tcp://localhost:6969/?conn");
 
@@ -116,7 +145,6 @@ class GlobalListener implements Runnable {
                         new FormalField(String.class));
 
                 if (userInput[1].equals("login")) {
-
                     String UUID = users.create((String) userInput[0]);
                     serverToUser.put(userInput[0], "ok", UUID);
                     System.out.println("Login: Sent response to client");
@@ -124,13 +152,9 @@ class GlobalListener implements Runnable {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
                     System.out.println("Create Room: Server response sent");
-
                     //Create chatroom for game
-                    Space newChatRoom = chats.createChatRoom(UUID);
-                    if(newChatRoom != null){
-                        mainChannels.add(UUID, newChatRoom);
-                        System.out.println("room UUID: " + UUID);
-                    }
+
+
 
                 } else if (userInput[1].equals("join")) {
                     if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
@@ -141,16 +165,6 @@ class GlobalListener implements Runnable {
                         serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
                         System.out.println("Join Room: Server response sent");
                     }
-
-                } else if (userInput[1].equals("globalChat")){
-                    ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2],"globalChat");
-                    serverToUser.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
-                    System.out.println("Send global chat: Server response sent");
-
-                } else if(userInput[1].equals("gameRoomChat")){
-                    ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2], (String) userInput[3]);
-                    serverToUser.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
-                    System.out.println("Send local chat: Server response sent");
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
