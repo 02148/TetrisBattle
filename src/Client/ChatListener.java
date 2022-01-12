@@ -1,5 +1,6 @@
 package Client;
 
+import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
@@ -11,6 +12,7 @@ public class ChatListener implements Runnable {
     public Client client;
     public TextArea chatArea;
     public RemoteSpace chatSpace;
+    public RemoteSpace serverToUser;
     public boolean stop = false;
 
     public ChatListener(TextArea chat, String roomUUID) {
@@ -29,6 +31,7 @@ public class ChatListener implements Runnable {
         this.client = client;
     }
 
+
     @Override
     public void run() {
         System.out.println("chatListener started running..");
@@ -37,7 +40,23 @@ public class ChatListener implements Runnable {
                 Object[] chatInput = new Object[3];
                 String[] message = new String[3];
 
-                chatInput = chatSpace.getp(new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
+                /*
+                chatSpace.get(new ActualField("reader Lock"));
+                Object[] readers = chatSpace.get(new ActualField("readers"), new FormalField(Integer.class));
+                chatSpace.put("readers", (Integer) readers[1] + 1 );
+                if((Integer) readers[1] == 0){
+                    chatSpace.get(new ActualField("lock"));
+                }
+                chatSpace.put("reader Lock");
+                */
+
+                chatInput = chatSpace.get(new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
+
+
+
+
+
+
                 if (chatInput != null) {
                     System.out.println("Got message from another client");
                     message[0] = (String) chatInput[0]; //UUID

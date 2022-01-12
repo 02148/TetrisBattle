@@ -15,12 +15,12 @@
     <items>
         <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="799.0" prefWidth="414.0" style="-fx-background-color: white;">
             <children>
-                <Button layoutX="157.0" layoutY="646.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Start Match" textFill="#7ed957" onAction="#handleStartGameAction">
+                <Button fx:id = "startGameButton" layoutX="157.0" layoutY="646.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Start Match" textFill="#7ed957" style="-fx-border-color: #7ed957" onAction="#handleStartGameAction">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Button>
-                <Button layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" text="Leave " textFill="#ff1616">
+                <Button layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" text="Leave " textFill="#ff1616" style="-fx-border-color: #ff1616">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
@@ -63,9 +63,8 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                         </GridPane>
-                        <TextArea fx:id = "score" editable="false" layoutX="43.0" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Score"/>
-                        <TextArea fx:id = "level" editable="false" layoutX="155.0" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level" />
-                        <TextArea fx:id = "lines" editable="false" layoutX="262.0" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Lines" />
+                        <TextArea fx:id = "level"  editable="false" layoutX="100" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level" />
+                        <TextArea fx:id = "lines"  editable="false" layoutX="200" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Lines" />
                     </children></AnchorPane>
 
 

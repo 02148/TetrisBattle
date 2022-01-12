@@ -18,6 +18,7 @@ public class Board extends Pane {
     private int posX, posY, size;
     private GridPane grid;
     private int numRowsRemoved = 0;
+    private int level = 1;
 
     public Board(int posX, int posY, int size) {
         super();
@@ -87,7 +88,16 @@ public class Board extends Pane {
     public int getNumRowsRemoved(){
         return numRowsRemoved;
     }
-    public void setNumRowsRemoved(){
-        numRowsRemoved++;
+
+    public void setNumRowsRemoved(int n){
+        numRowsRemoved += n;
+    }
+
+    public int getLevel(){
+        return level;
+    }
+
+    public void setLevel(int n){
+        level += n;
     }
 }

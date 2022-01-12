@@ -22,12 +22,12 @@
   <items>
     <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="398.0" prefWidth="224.0" style="-fx-background-color: white;" >
          <children>
-            <Button onAction="#handleGoToLobbyButtonAction" layoutX="38.0" layoutY="287.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Go To Lobby" textFill="#7ed957" >
+            <Button onAction="#handleGoToLobbyButtonAction" layoutX="38.0" layoutY="287.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Go To Lobby" textFill="#7ed957" style="-fx-border-color: #7ed957">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>
             </Button>
-            <Button onAction="#handleExitButtonAction" layoutX="37.0" layoutY="341.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Exit Game" textFill="#ff1616">
+            <Button onAction="#handleExitButtonAction" layoutX="37.0" layoutY="341.0" mnemonicParsing="false" prefHeight="42.0" prefWidth="99.0" text="Exit Game" textFill="#ff1616" style="-fx-border-color: #ff1616">
                <font>
                   <Font name="System Bold" size="12.0" />
                </font>

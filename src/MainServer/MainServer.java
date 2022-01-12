@@ -104,7 +104,11 @@ class GlobalListener implements Runnable {
                     System.out.println("Create Room: Server response sent");
 
                     //Create chatroom for game
-
+                    Space newChatRoom = chats.createChatRoom(UUID);
+                    if(newChatRoom != null){
+                        mainChannels.add(UUID, newChatRoom);
+                        System.out.println("room UUID: " + UUID);
+                    }
 
 
 
@@ -115,18 +119,13 @@ class GlobalListener implements Runnable {
                         gameRooms.addConnection((String) userInput[0], (String) userInput[2]);
                         serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
                     }
+
                 } else if (userInput[1].equals("globalChat")){
                     ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2],"globalChat");
                     serverToUser.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
                     System.out.println("Send global chat: Server response sent");
-                } else if(userInput[1].equals("gameRoomChat")){
-                    //Create new chatrepo/chatSpace
-                    Space newChatRoom = chats.createChatRoom((String) userInput[3]);
-                    if(newChatRoom != null){
-                        mainChannels.add((String) userInput[3], newChatRoom);
-                        System.out.println("room UUID: " + (String) userInput[3]);
-                    }
 
+                } else if(userInput[1].equals("gameRoomChat")){
                     ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2], (String) userInput[3]);
                     serverToUser.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
                     System.out.println("Send local chat: Server response sent");

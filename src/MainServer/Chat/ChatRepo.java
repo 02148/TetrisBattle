@@ -12,8 +12,12 @@ public class ChatRepo {
     public Space globalChat;
     public HashMap<String,Space> chatRepository = new HashMap<>();
 
-    public ChatRepo(){
+    public ChatRepo() throws InterruptedException {
         this.globalChat = new SequentialSpace();
+        globalChat.put(new ActualField("global Lock"));
+        globalChat.put(new ActualField("reader Lock"));
+        globalChat.put(new ActualField("readers"), new ActualField(1));
+
         chatRepository.put("globalChat",globalChat);
     }
 
