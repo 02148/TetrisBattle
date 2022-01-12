@@ -3,13 +3,10 @@ package Main;
 
 import Client.Client;
 import Client.UI.GlobalChatUIController;
-import MainServer.MainServer;
-import javafx.application.Platform;
+
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
+
 import javafx.scene.Parent;
-import javafx.stage.Screen;
-import javafx.stage.StageStyle;
 
 
 import java.io.IOException;
@@ -17,7 +14,7 @@ import java.io.IOException;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.jspace.SpaceRepository;
+
 
 public class Main extends Application {
     static Client currClient = new Client();

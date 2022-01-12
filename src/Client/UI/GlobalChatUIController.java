@@ -41,6 +41,7 @@ public class GlobalChatUIController implements Initializable {
     private Client client;
     private boolean isLoggedIn = false;
     private boolean inGlobalRoom = true;
+    private ChatListener chatListener;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
@@ -49,24 +50,26 @@ public class GlobalChatUIController implements Initializable {
 
     public void  setClient(Client client){
         this.client = client;
-        ChatListener chatListener = new ChatListener(chatArea);
+        chatListener = new ChatListener(chatArea, client.roomUUID);
         chatListener.setClient(client);
-        chatListener.setServerToUser(client.serverToUser);
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
     }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
+        chatListener.stop = true;
         Platform.exit();
         System.exit(0);
     }
     @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
         String response = "";
+
+
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalGame.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(),1300,800);
-        GlobalGameUIController globalGameUIController = loader.getController();
-        globalGameUIController.setClient(client);
+
         
         //Check if username and roomUUID was provided
         if(username.getText().trim().isEmpty()){
@@ -89,6 +92,9 @@ public class GlobalChatUIController implements Initializable {
                     //User can host this
                     response = client.hostRoom();
                     if(response.equals("ok")){
+                        chatListener.stop = true;
+                        GlobalGameUIController globalGameUIController = loader.getController();
+                        globalGameUIController.setClient(client);
                         primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
                         primaryStage.show();
@@ -104,11 +110,16 @@ public class GlobalChatUIController implements Initializable {
                         roomUUID.setPromptText("Please input room ID");
                         roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     } else {
+
                         //User should join this room
                         response = client.TryJoinRoom(roomUUID.getText());
 
                         //Handle response here
                         if(response.equals("ok")){
+                            chatListener.stop = true;
+
+                            GlobalGameUIController globalGameUIController = loader.getController();
+                            globalGameUIController.setClient(client);
                             primaryStage.setScene(scene);
                             primaryStage.centerOnScreen();
                             primaryStage.show();
@@ -133,29 +144,17 @@ public class GlobalChatUIController implements Initializable {
                 String response = client.login();
                 if(response.equals("ok")){
                     isLoggedIn = true;
-
-                    String[] chatResponse = client.sendGlobalChat(chatTextField.getText());
-                    System.out.println(chatResponse[1]);
-                    if(chatResponse[0].equals("ok")){
-                        chatArea.appendText("\n"+ chatResponse[1] + " : " + username.getText() + ": " + chatTextField.getText() );
-                        chatTextField.clear();
-                    } else {
-                        //Something went wrong
-                    }
+                    client.sendGlobalChat(chatTextField.getText());
+                    chatTextField.clear();
                 }
 
             }
         } else {
-            String[] chatResponse = client.sendGlobalChat(chatTextField.getText());
-            if(chatResponse[0].equals("ok")){
-                chatArea.appendText("\n"+ chatResponse[1] + " : " + username.getText() + ": " + chatTextField.getText() );
-                chatTextField.clear();
-            } else {
-                //Something went wrong
+            client.sendGlobalChat(chatTextField.getText());
+            chatTextField.clear();
             }
-
         }
     }
 
 
-}
+

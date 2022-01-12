@@ -20,6 +20,7 @@ import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+import Client.ChatListener;
 
 import java.io.IOException;
 import java.net.URL;
@@ -28,19 +29,23 @@ import java.util.ResourceBundle;
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
-    private String user = "Username1";
     private GameEngine gameEngine;
 
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
     private Client client;
+    private ChatListener chatListener;
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
 
     }
-    public void  setClient(Client client) {
+    public void  setClient(Client client) throws InterruptedException {
         this.client = client;
+        chatListener = new ChatListener(gameChatArea,client.roomUUID);
+        chatListener.setClient(client);
+        Thread chatUpdater = new Thread(chatListener);
+        Platform.runLater(()-> chatUpdater.start());
     }
 
     @FXML
@@ -48,6 +53,9 @@ public class GlobalGameUIController implements Initializable {
         if(gameEngine != null){
             gameEngine.stop();
         }
+        chatListener.stop = true;
+        client.roomUUID = "globalChat";
+
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load());
@@ -62,8 +70,7 @@ public class GlobalGameUIController implements Initializable {
 
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
-            //testChatRepo.create(gameChatTextField.getText());
-            gameChatArea.appendText("\n"+ ": " + gameChatTextField.getText() );
+            client.sendGameRoomChat(gameChatTextField.getText());
             gameChatTextField.clear();
 
         //TODO: Add functionality to update TextArea based on input from other players

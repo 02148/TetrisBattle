@@ -15,7 +15,7 @@ public class Client extends Application {
   public static String userName;
   public static String UUID;
 
-  public String roomUUID;
+  public String roomUUID = "globalChat";
 
   public static RemoteSpace userToServer;
   public RemoteSpace serverToUser;
@@ -50,7 +50,7 @@ public class Client extends Application {
 
     try {
       //userName = "holder";
-      userToServer.put(userName, "login","");
+      userToServer.put(userName, "login","","");
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
@@ -68,7 +68,7 @@ public class Client extends Application {
     Object[] roomResponse = new Object[3];
     try {
 
-      userToServer.put(UUID, "create","");
+      userToServer.put(UUID, "create","","");
       roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
       if (roomResponse[1].equals("ok")) {
 
@@ -89,7 +89,7 @@ public class Client extends Application {
   public String TryJoinRoom(String roomName) {
     Object[] roomResponse = new Object[3];
     try {
-      mainServer.put(UUID, "join", roomName);
+      mainServer.put(UUID, "join", roomName,"");
       roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
 
@@ -133,12 +133,11 @@ public class Client extends Application {
   public String[] sendGlobalChat(String message){
     Object[] chatResponse = new Object[4];
     try {
-      userToServer.put(UUID, "globalChat", message);
+      userToServer.put(UUID, "globalChat", message,"");
       chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
 
       if (chatResponse[1].equals("ok")) {
-        System.out.println("Chat can be sent by UI");
-
+        System.out.println("Global Chat can be sent by UI");
         //Chat can be sent and UI updated
 
       } else {
@@ -149,29 +148,34 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return new String[]{ (String) chatResponse[1],Double.toString((Double)chatResponse[3])};
+    return new String[]{ (String) chatResponse[2],Double.toString((Double)chatResponse[3])};
 
   }
 
-  public void sendGameRoomChat(){
+  public String[] sendGameRoomChat(String message){
+    Object[] chatResponse = new Object[4];
     try {
-      Object[] gameResponse = new Object[0];
-      room.put(UUID, "start");
-      gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      userToServer.put(UUID, "gameRoomChat", message, roomUUID);
+      chatResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class), new FormalField(Double.class));
 
-      if (gameResponse[1].equals("ok")) {
-        isGameActive= true;
-        //Game can be started by UI
+      if (chatResponse[1].equals("ok")) {
+        System.out.println("GameRoom Chat can be sent by UI");
+        //Chat can be sent and UI updated
 
       } else {
         //Error message
-        System.out.println(gameResponse[1]);
+        System.out.println(chatResponse[1]);
       }
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+    return new String[]{ (String) chatResponse[2],Double.toString((Double)chatResponse[3])};
 
+  }
+
+  public String getUserName(){
+    return userName;
   }
 
 }
