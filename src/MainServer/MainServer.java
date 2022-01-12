@@ -110,8 +110,6 @@ class GlobalListener implements Runnable {
                         System.out.println("room UUID: " + UUID);
                     }
 
-
-
                 } else if (userInput[1].equals("join")) {
                     if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
                         serverToUser.put(userInput[0], "Already connected", "");
