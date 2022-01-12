@@ -1,5 +1,6 @@
 package MainServer;
 
+import Client.ChatListener;
 import MainServer.Chat.ChatMessage;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
@@ -54,6 +55,27 @@ public class MainServer {
         gl.setGameRooms(gameRooms);
         gl.setChats(globalChat);
         new Thread(gl).start();
+
+        var cl = new GlobalChatListener();
+        cl.setChats(globalChat);
+        new Thread(gl).start();
+    }
+}
+
+class GlobalChatListener implements Runnable {
+    private ChatRepo chats;
+
+    public void setChats(ChatRepo chats){this.chats = chats;}
+
+    public void run() {
+        SpaceRepository chatChannels = new SpaceRepository();
+        SequentialSpace globalChat = new SequentialSpace();
+        chatChannels.add("globalChat",globalChat);
+
+        chatChannels.addGate("tcp://localhost:4242/?conn");
+
+        while(true) {
+        }
     }
 }
 
@@ -70,9 +92,9 @@ class GlobalListener implements Runnable {
         this.users = users;
     }
 
-    public void setChats(ChatRepo chats){this.chats = chats;}
-
-    public GlobalListener() {
+    public void setChats(ChatRepo chats){
+        this.chats = chats;
+        this.chats.addGate("4242");
     }
 
     public void run() {
@@ -115,9 +137,11 @@ class GlobalListener implements Runnable {
                 } else if (userInput[1].equals("join")) {
                     if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
                         serverToUser.put(userInput[0], "Already connected", "");
+                        System.out.println("Join Room: Server error response sent");
                     } else {
                         gameRooms.addConnection((String) userInput[0], (String) userInput[2]);
                         serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
+                        System.out.println("Join Room: Server response sent");
                     }
 
                 } else if (userInput[1].equals("globalChat")){
