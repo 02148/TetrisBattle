@@ -21,6 +21,10 @@ public class ChatRepo {
         chatRepository.put("globalChat",globalChat);
     }
 
+    public void addGate(String port) {
+        addGate("tcp://localhost:" + port + "/?conn");
+    }
+
     public void insertChatMessage(ChatMessage m,String roomUUID) throws InterruptedException{
         chatRepository.get(roomUUID).put(m.UUID, m.message, m.timeStamp);
         System.out.println("MESSAGE WAS INSERTED");
