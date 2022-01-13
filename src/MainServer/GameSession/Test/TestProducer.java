@@ -3,16 +3,14 @@ package MainServer.GameSession.Test;
 import Client.GameSession.Producer;
 import Client.Models.BoardState;
 import MainServer.GameSession.GameSession;
-import MainServer.GameSession.Modules.Consumer;
+import Client.GameSession.Consumer;
 import org.jspace.*;
 
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Date;
 import java.util.Random;
 
 import static MainServer.Utils.getCurrentExactTimestamp;
-import static MainServer.Utils.getCurrentTimestamp;
 
 public class TestProducer implements Runnable {
     RemoteSpace rs;

@@ -1,4 +1,4 @@
-package MainServer.GameSession.Modules;
+package Client.GameSession;
 
 import Client.Models.BoardState;
 import com.google.gson.internal.LinkedTreeMap;
