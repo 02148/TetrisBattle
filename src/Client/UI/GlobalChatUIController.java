@@ -47,6 +47,24 @@ public class GlobalChatUIController implements Initializable {
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
     }
+    @FXML protected void handleLoginAction(ActionEvent event){
+        if(!isLoggedIn){
+            client.userName = username.getText();
+            String response = client.login();
+            isLoggedIn = true;
+            if(response.equals("ok")){
+                isLoggedIn = true;
+
+                client.setUpGLobalChat();
+
+                setUpChatListner();
+                chatListener.stop = false;
+
+            }
+        }
+
+
+    }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
         if(chatListener != null){

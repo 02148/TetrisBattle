@@ -107,12 +107,11 @@ class GlobalChatListener implements Runnable {
                     } else {
                         personalChat = (SequentialSpace) users.getPersonalChatSpace((String) userInput[0]);
                     }
+
                     ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2],"globalChat");
                     //Added to the global chat
                     globalChat.put(userInput[0],"recived", (String) userInput[2],chat.timeStamp, (String) userInput[4]);
 
-                    //Also sent to the personal chat of the user
-                    personalChat.put(userInput[0],"recived", (String) userInput[2],chat.timeStamp, (String) userInput[4]);
                     //Add to all other current user chatSpaces
                     sendToAllUsers((String) userInput[2], chat.timeStamp, (String) userInput[4]);
 
@@ -128,6 +127,17 @@ class GlobalChatListener implements Runnable {
                     ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2], (String) userInput[3]);
                     globalChat.put(userInput[0],"ok",(String) userInput[2],chat.timeStamp);
                     System.out.println("Send local chat: Server response sent");
+                } else if( userInput[1].equals("setupGlobalChat")){
+                    SequentialSpace personalChat;
+                    //Create personal chatSpace for each user
+                    if(users.getPersonalChatSpace((String) userInput[0]) == null){
+                        users.setPersonalChatSpace((String) userInput[0]);
+                        personalChat = (SequentialSpace) users.getPersonalChatSpace((String) userInput[0]);
+                        chatChannels.add((String) userInput[0],personalChat);
+                        System.out.println("Personal chat created" );
+                    } else {
+                        personalChat = (SequentialSpace) users.getPersonalChatSpace((String) userInput[0]);
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

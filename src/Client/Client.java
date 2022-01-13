@@ -174,6 +174,16 @@ public class Client extends Application {
     return userName;
   }
 
+  public void setUpGLobalChat() {
+    try {
+      globalChat.put(UUID, "setupGlobalChat", "", "", userName);
+      System.out.println("Trying to setup global chat");
+
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+
+  }
 }
 
 

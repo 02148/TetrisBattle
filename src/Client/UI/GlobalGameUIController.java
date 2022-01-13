@@ -48,6 +48,8 @@ public class GlobalGameUIController implements Initializable {
         Platform.runLater(()-> chatUpdater.start());
     }
 
+
+
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
         if(gameEngine != null){
@@ -92,20 +94,15 @@ public class GlobalGameUIController implements Initializable {
 
 
         GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
+
         taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
         taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
                 level.setText("Level " + newProgress.toString()));
 
-
         Platform.runLater(() -> new Thread(taskRunLines).start());
 
-        /*
-        GameEngine.TaskRunLevel taskRunLevel = new GameEngine.TaskRunLevel();
-        taskRunLevel.progressProperty().addListener((obs,oldProgress,newProgress) ->
-                level.setText(String.format("Level %.0f", newProgress.doubleValue()*10)));
-        //Platform.runLater(() -> new Thread(taskRunLevel).start());
-        */
+
     }
     
 
