@@ -61,21 +61,14 @@ public class GameEngine implements Runnable{
     @Override
     protected Void call() throws Exception {
       while(!gameOver){
-        updateProgress(nBoard.getNumRowsRemoved()/2,50);
+        updateProgress(nBoard.getNumRowsRemoved(),50);
+        if(nBoard.getNumRowsRemovedLevel() > 9){
+          nBoard.setLevel(1);
+          nBoard.resetNumRowsRemovedLevel();
+          updateMessage(Integer.toString(nBoard.getLevel()));
+        }
       }
       return null;
     }
-
-  }
-  public static class TaskRunLevel extends Task<Void> {
-    @Override
-    protected Void call() throws Exception {
-      while(!gameOver){
-        if(nBoard.getNumRowsRemoved() == 10){nBoard.setLevel(1);}
-        updateProgress(nBoard.getLevel(),10);
-      }
-      return null;
-    }
-
   }
 }

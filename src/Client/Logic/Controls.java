@@ -85,6 +85,7 @@ public class Controls {
     int numRowsRemoved = boardState.removeFilledRows(current_tetromino.posY);
     if(numRowsRemoved > 0){
       nBoard.setNumRowsRemoved(numRowsRemoved);
+      nBoard.setNumRowsRemovedLevel(numRowsRemoved);
     }
     current_tetromino = newRandomTetromino();
     if(!boardState.legalPosition(current_tetromino, 0, 0))

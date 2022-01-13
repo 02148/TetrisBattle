@@ -2,24 +2,19 @@ package Client.UI;
 
 import Client.Client;
 import Client.GameEngine;
-import MainServer.Chat.ChatRepo;
 import javafx.application.Platform;
-import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.geometry.Rectangle2D;
 import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.SplitPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Screen;
 import javafx.stage.Stage;
 import Client.ChatListener;
 
@@ -66,7 +61,7 @@ public class GlobalGameUIController implements Initializable {
         Scene scene = new Scene(loader.load());
 
         GlobalChatUIController globalChatUIController = loader.getController();
-        globalChatUIController.setClient(client);
+        globalChatUIController.setUpChatListner();
 
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
@@ -98,14 +93,19 @@ public class GlobalGameUIController implements Initializable {
 
         GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
         taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
-                lines.setText(String.format("Lines %.0f", newProgress.doubleValue()*100)));
+                lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
+        taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
+                level.setText("Level " + newProgress.toString()));
+
+
         Platform.runLater(() -> new Thread(taskRunLines).start());
 
+        /*
         GameEngine.TaskRunLevel taskRunLevel = new GameEngine.TaskRunLevel();
         taskRunLevel.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 level.setText(String.format("Level %.0f", newProgress.doubleValue()*10)));
-        Platform.runLater(() -> new Thread(taskRunLevel).start());
-
+        //Platform.runLater(() -> new Thread(taskRunLevel).start());
+        */
     }
     
 

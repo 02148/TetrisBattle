@@ -63,7 +63,7 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                         </GridPane>
-                        <TextArea fx:id = "level"  editable="false" layoutX="100" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level" />
+                        <TextArea fx:id = "level"  editable="false" layoutX="100" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level 1" />
                         <TextArea fx:id = "lines"  editable="false" layoutX="200" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Lines" />
                     </children></AnchorPane>
 

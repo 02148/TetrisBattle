@@ -1,7 +1,9 @@
 package MainServer.UserMgmt;
 
 import MainServer.Utils;
+import org.jspace.RemoteSpace;
 
+import java.io.IOException;
 import java.util.Date;
 
 public class User {
@@ -35,6 +37,7 @@ public class User {
         this.timestamp = Utils.getCurrentTimestamp();
         this.isLoggedIn = false;
     }
+
 
     public String toString() {
         return  this.username + "@" +

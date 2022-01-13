@@ -14,10 +14,6 @@ public class ChatRepo {
 
     public ChatRepo() throws InterruptedException {
         this.globalChat = new SequentialSpace();
-        globalChat.put("global Lock");
-        globalChat.put("reader Lock");
-        globalChat.put("readers",0);
-
         chatRepository.put("globalChat",globalChat);
     }
     /*

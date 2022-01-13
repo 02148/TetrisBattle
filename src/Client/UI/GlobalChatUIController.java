@@ -1,17 +1,7 @@
 package Client.UI;
 
 import Client.Client;
-import Main.Main;
-import MainServer.Chat.ChatMessage;
-import MainServer.Chat.ChatRepo;
-import MainServer.GameRoom.GameRoom;
-import MainServer.GameRoom.GameRoomRepo;
-import MainServer.MainServer;
-import MainServer.UserMgmt.UserRepo;
 import javafx.application.Platform;
-import javafx.concurrent.Service;
-import javafx.concurrent.Task;
-import javafx.concurrent.WorkerStateEvent;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -22,7 +12,6 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.control.ToggleGroup;
-import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import Client.ChatListener;
 
@@ -48,22 +37,27 @@ public class GlobalChatUIController implements Initializable {
 
     }
 
-    public void  setClient(Client client){
+    public void setClient(Client client){
         this.client = client;
-        chatListener = new ChatListener(chatArea, client.roomUUID);
+    }
+
+    public void setUpChatListner(){
+        chatListener = new ChatListener(chatArea, client.UUID);
         chatListener.setClient(client);
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
     }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
-        chatListener.stop = true;
+        if(chatListener != null){
+            chatListener.stop = true;
+        }
+       
         Platform.exit();
         System.exit(0);
     }
     @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
         String response = "";
-
 
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalGame.fxml"));
@@ -92,7 +86,9 @@ public class GlobalChatUIController implements Initializable {
                     //User can host this
                     response = client.hostRoom();
                     if(response.equals("ok")){
-                        chatListener.stop = true;
+                        if(chatListener != null){
+                            chatListener.stop = true;
+                        }
                         GlobalGameUIController globalGameUIController = loader.getController();
                         globalGameUIController.setClient(client);
                         primaryStage.setScene(scene);
@@ -116,7 +112,9 @@ public class GlobalChatUIController implements Initializable {
 
                         //Handle response here
                         if(response.equals("ok")){
-                            chatListener.stop = true;
+                            if(chatListener != null){
+                                chatListener.stop = true;
+                            }
 
                             GlobalGameUIController globalGameUIController = loader.getController();
                             globalGameUIController.setClient(client);
@@ -144,8 +142,13 @@ public class GlobalChatUIController implements Initializable {
                 String response = client.login();
                 if(response.equals("ok")){
                     isLoggedIn = true;
+
                     client.sendGlobalChat(chatTextField.getText());
                     chatTextField.clear();
+
+                    setUpChatListner();
+                    chatListener.stop = false;
+
                 }
 
             }

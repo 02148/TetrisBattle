@@ -11,15 +11,15 @@ import javafx.scene.control.TextArea;
 public class ChatListener implements Runnable {
     public Client client;
     public TextArea chatArea;
-    public RemoteSpace chatSpace;
+    public RemoteSpace personalChatSpace;
     public RemoteSpace serverToUser;
-    public boolean stop = false;
+    public boolean stop = true;
 
-    public ChatListener(TextArea chat, String roomUUID) {
+    public ChatListener(TextArea chat, String UUID) {
         this.chatArea = chat;
         try {
-            System.out.println("URI for chat: " + "tcp://localhost:6971/" + roomUUID +"?conn");
-            chatSpace = new RemoteSpace("tcp://localhost:6971/" + roomUUID +"?conn");
+            System.out.println("URI for chat: " + "tcp://localhost:6971/" + UUID +"?conn");
+            personalChatSpace = new RemoteSpace("tcp://localhost:6971/" + UUID +"?conn");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -34,49 +34,28 @@ public class ChatListener implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("chatListener started running..");
+
         while (!stop) {
+            System.out.println("chatListener is running..");
             try {
                 Thread.sleep(1000);
                 Object[] chatInput = new Object[4];
-                String[] message = new String[4];
+                String[] message = new String[3];
 
-                chatSpace.get(new ActualField("reader Lock"));
-                System.out.println("Got reader lock");
-                Object[] readers = chatSpace.get(new ActualField("readers"), new FormalField(Integer.class));
-                chatSpace.put("readers", (Integer) readers[1] + 1 );
-                if((Integer) readers[1] == 0){
-                    chatSpace.get(new ActualField("global Lock"));
-                    System.out.println("Got global lock");
-                }
-                chatSpace.put("reader Lock");
-                if((Integer) readers[1] == 0){
-                    chatInput = chatSpace.get(new FormalField(String.class),
-                            new ActualField("recived"),
-                            new FormalField(String.class),
-                            new FormalField(Double.class),
-                            new FormalField(String.class));
-                } else {
-                    chatInput = chatSpace.query(new FormalField(String.class), new ActualField("recived"), new FormalField(String.class), new FormalField(Double.class),new FormalField(String.class));
-                }
 
-                chatSpace.get(new ActualField("reader Lock"));
-                readers = chatSpace.get(new ActualField("readers"), new FormalField(Integer.class));
-                chatSpace.put("readers", (Integer) readers[1]-1);
-                if ((Integer) readers[1] == 1){
-                    chatSpace.put("global Lock");
-                }
-                chatSpace.put("reader Lock");
+                chatInput = personalChatSpace.get(new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class)
+                );
 
 
                 if (chatInput != null) {
                     System.out.println("Got message from another client");
-                    message[0] = (String) chatInput[0]; //UUID
-                    message[1] = (String) chatInput[2]; //Message
-                    message[2] = Double.toString((Double) chatInput[3]); //Timestamp
-                    message[3] = (String) chatInput[4];
-                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3]) *1000));
-                    chatArea.appendText("\n" +  date + " " + message[3] + ": " + message[1]);
+                    message[0] = (String) chatInput[0]; //Message
+                    message[1] = Double.toString((Double) chatInput[1]); //Timestamp
+                    message[2] = (String) chatInput[2]; //Username
+                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[1]) *1000));
+                    chatArea.appendText("\n" +  date + " " + message[2] + ": " + message[0]);
                 }
 
 
@@ -86,7 +65,7 @@ public class ChatListener implements Runnable {
 
 
         }
-        System.out.println("GlobalChatListener Stopped Running");
+        System.out.println("GlobalChatListener is not running");
 
 
     }

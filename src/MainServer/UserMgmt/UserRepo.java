@@ -1,17 +1,21 @@
 package MainServer.UserMgmt;
 
 import MainServer.Utils;
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
+import org.jspace.*;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 public class UserRepo {
     Space s;
+    public HashMap<String,Space> localUserChatRepository = new HashMap<>();
 
     public UserRepo() {
         this.s = new SequentialSpace();
+
     }
+
 
     private void insertUser(User u) throws InterruptedException {
         s.put(u.UUID, u.username, u.noOfWins, u.timestamp, u.isLoggedIn);
@@ -58,6 +62,14 @@ public class UserRepo {
         u.isLoggedIn = false;
         insertUser(u);
     }
+    public void setPersonalChatSpace(String UUID) throws IOException {
+        SequentialSpace personalChatSpace = new SequentialSpace();
+        localUserChatRepository.put(UUID, personalChatSpace);
+    }
+
+    public Space getPersonalChatSpace(String UUID){
+        return localUserChatRepository.get(UUID);
+    }
 
     public boolean exists(String UUID) throws InterruptedException {
         Object[] q = s.queryp(new ActualField(UUID),
@@ -68,7 +80,7 @@ public class UserRepo {
         return q != null;
     }
 
-    public void queryAllUsers() throws InterruptedException {
+    public List<Object[]> queryAllUsers() throws InterruptedException {
         var allUsers = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
@@ -77,5 +89,7 @@ public class UserRepo {
 
         for (var q : allUsers)
             System.out.println(new User(q));
+
+        return allUsers;
     }
 }

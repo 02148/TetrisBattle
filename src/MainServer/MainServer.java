@@ -4,8 +4,12 @@ import Client.ChatListener;
 import MainServer.Chat.ChatMessage;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
+import MainServer.UserMgmt.User;
 import MainServer.UserMgmt.UserRepo;
+import javafx.beans.binding.ObjectExpression;
 import org.jspace.*;
+
+import java.util.List;
 
 public class MainServer {
     public static UserRepo users;
@@ -58,12 +62,18 @@ public class MainServer {
 
         var cl = new GlobalChatListener();
         cl.setChats(chat);
+        cl.setUsers(users);
         new Thread(cl).start();
     }
 }
 
 class GlobalChatListener implements Runnable {
     private ChatRepo chats;
+    private UserRepo users;
+
+    public void setUsers(UserRepo users) {
+        this.users = users;
+    }
 
     public void setChats(ChatRepo chats){this.chats = chats;}
 
@@ -73,7 +83,7 @@ class GlobalChatListener implements Runnable {
         chatChannels.add("globalChat",globalChat);
 
         chatChannels.addGate("tcp://localhost:6971/?conn");
-        System.out.println("Chat setup complete");
+        System.out.println("GlobalChatListner: Chat setup complete");
         while(true) {
             Object[] userInput = new Object[0];
             try {
@@ -85,9 +95,29 @@ class GlobalChatListener implements Runnable {
                         new FormalField(String.class));
 
                 if (userInput[1].equals("globalChat")){
+                    SequentialSpace personalChat;
+
+                    //Create personal chatSpace for each user
+                    if(users.getPersonalChatSpace((String) userInput[0]) == null){
+                        users.setPersonalChatSpace((String) userInput[0]);
+                        personalChat = (SequentialSpace) users.getPersonalChatSpace((String) userInput[0]);
+                        chatChannels.add((String) userInput[0],personalChat);
+                        System.out.println("Personal chat created" );
+
+                    } else {
+                        personalChat = (SequentialSpace) users.getPersonalChatSpace((String) userInput[0]);
+                    }
                     ChatMessage chat = chats.createMessage((String) userInput[0], (String) userInput[2],"globalChat");
+                    //Added to the global chat
                     globalChat.put(userInput[0],"recived", (String) userInput[2],chat.timeStamp, (String) userInput[4]);
+
+                    //Also sent to the personal chat of the user
+                    personalChat.put(userInput[0],"recived", (String) userInput[2],chat.timeStamp, (String) userInput[4]);
+                    //Add to all other current user chatSpaces
+                    sendToAllUsers((String) userInput[2], chat.timeStamp, (String) userInput[4]);
+
                     System.out.println("Send global chat: Server response sent");
+
 
                 } else if(userInput[1].equals("gameRoomChat")){
                     Space newChatRoom = chats.createChatRoom((String) userInput[3]);
@@ -106,6 +136,15 @@ class GlobalChatListener implements Runnable {
             }
         }
 
+    }
+
+    private void sendToAllUsers(String message, double timeStamp, String username) throws InterruptedException {
+        List<Object[]> userList = users.queryAllUsers();
+        for(Object[] p : userList){
+            String userUUID = (String) p[0];
+            users.getPersonalChatSpace(userUUID).put(message, timeStamp, username);
+            System.out.println("Chat sent to personal chat space of user: " + username);
+        }
     }
 }
 
@@ -148,12 +187,12 @@ class GlobalListener implements Runnable {
                     String UUID = users.create((String) userInput[0]);
                     serverToUser.put(userInput[0], "ok", UUID);
                     System.out.println("Login: Sent response to client");
+
                 } else if (userInput[1].equals("create")) {
                     String UUID = gameRooms.create((String) userInput[0]);
                     serverToUser.put(userInput[0],"ok", UUID);
                     System.out.println("Create Room: Server response sent");
                     //Create chatroom for game
-
 
 
                 } else if (userInput[1].equals("join")) {
