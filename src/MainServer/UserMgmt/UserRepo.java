@@ -3,13 +3,10 @@ package MainServer.UserMgmt;
 import MainServer.Utils;
 import org.jspace.*;
 
-import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 
 public class UserRepo {
     Space s;
-    public HashMap<String,Space> localUserChatRepository = new HashMap<>();
 
     public UserRepo() {
         this.s = new SequentialSpace();
@@ -61,14 +58,6 @@ public class UserRepo {
         // if logged in, log out
         u.isLoggedIn = false;
         insertUser(u);
-    }
-    public void setPersonalChatSpace(String UUID) throws IOException {
-        SequentialSpace personalChatSpace = new SequentialSpace();
-        localUserChatRepository.put(UUID, personalChatSpace);
-    }
-
-    public Space getPersonalChatSpace(String UUID){
-        return localUserChatRepository.get(UUID);
     }
 
     public boolean exists(String UUID) throws InterruptedException {
