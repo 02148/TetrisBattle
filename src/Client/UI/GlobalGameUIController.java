@@ -45,6 +45,7 @@ public class GlobalGameUIController implements Initializable {
         this.client = client;
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
+        chatListener.stop = false;
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
     }
