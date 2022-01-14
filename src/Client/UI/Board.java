@@ -18,6 +18,8 @@ public class Board extends Pane {
     private int posX, posY, size;
     private GridPane grid;
     private int numRowsRemoved = 0;
+    private int numRowsRemovedLevel = 0;
+    private int level = 1;
 
     public Board(int posX, int posY, int size) {
         super();
@@ -32,7 +34,7 @@ public class Board extends Pane {
         for(int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
                 Canvas canvas = new Canvas(size,size);
-                updateBlock(x, y, Color.BEIGE, canvas.getGraphicsContext2D());
+                updateBlock(x, y, Color.DARKSLATEGRAY, canvas.getGraphicsContext2D());
                 grid.add(canvas, x, y);
             }
         }
@@ -80,14 +82,35 @@ public class Board extends Pane {
             if(newBoard[i] != null) {
                 setBlockColor(i, newBoard[i].color);
             } else {
-                setBlockColor(i, Color.BEIGE);
+                setBlockColor(i, Color.LIGHTGRAY);
             }
         }
     }
     public int getNumRowsRemoved(){
         return numRowsRemoved;
     }
-    public void setNumRowsRemoved(){
-        numRowsRemoved++;
+
+    public void setNumRowsRemoved(int n){
+        numRowsRemoved += n;
+    }
+
+    public int getNumRowsRemovedLevel(){
+        return numRowsRemovedLevel;
+    }
+
+    public void setNumRowsRemovedLevel(int n){
+        numRowsRemovedLevel += n;
+    }
+
+    public void resetNumRowsRemovedLevel(){
+        numRowsRemovedLevel = 0;
+    }
+
+    public int getLevel(){
+        return level;
+    }
+
+    public void setLevel(int n){
+        level += n;
     }
 }

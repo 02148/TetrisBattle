@@ -31,7 +31,7 @@ public class Dispatcher  implements Runnable {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
                 for (var c : curConns) {
-                    Object[] raw_data = in.getp(
+                    Object[] raw_data = in.get(
                             new FormalField(String.class),
                             new FormalField(Double.class),
                             new ActualField((String)c[0]),

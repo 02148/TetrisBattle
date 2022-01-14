@@ -23,6 +23,7 @@ public class Controls {
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
+
   public Controls(Board nBoard, BoardState boardState) {
     this.nBoard = nBoard;
     this.boardState = boardState;
@@ -59,11 +60,6 @@ public class Controls {
       moveTetromino(current_tetromino, 0, 1);
     } else {
       dropTetromino();
-
-//      if(boardState.removeFilledRows(current_tetromino.posY)){
-//        nBoard.setNumRowsRemoved();
-//      }
-
     }
 
      updateView();
@@ -92,7 +88,11 @@ public class Controls {
 
   public void dropTetromino() {
     boardState.dropTetromino(current_tetromino);
-    boardState.removeFilledRows(current_tetromino.posY);
+    int numRowsRemoved = boardState.removeFilledRows(current_tetromino.posY);
+    if(numRowsRemoved > 0){
+      nBoard.setNumRowsRemoved(numRowsRemoved);
+      nBoard.setNumRowsRemovedLevel(numRowsRemoved);
+    }
     current_tetromino = newRandomTetromino();
     if(!boardState.legalPosition(current_tetromino, 0, 0))
       isDead = true;

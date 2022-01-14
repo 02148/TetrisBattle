@@ -61,14 +61,18 @@ public class GameEngine implements Runnable{
       controller.keyDownEvent(keyEvent.getCode());
   }
 
-  public static class TaskRun extends Task<Void> {
+  public static class TaskRunLines extends Task<Void> {
     @Override
     protected Void call() throws Exception {
       while(!gameOver){
         updateProgress(nBoard.getNumRowsRemoved(),50);
+        if(nBoard.getNumRowsRemovedLevel() > 9){
+          nBoard.setLevel(1);
+          nBoard.resetNumRowsRemovedLevel();
+          updateMessage(Integer.toString(nBoard.getLevel()));
+        }
       }
       return null;
     }
-
   }
 }

@@ -3,20 +3,21 @@ package Main;
 
 import Client.Client;
 import Client.UI.GlobalChatUIController;
-import MainServer.MainServer;
+
+import Client.UI.SplashScreenController;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.Rectangle2D;
+
 import javafx.scene.Parent;
-import javafx.stage.Screen;
-import javafx.stage.StageStyle;
 
 
 import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import org.jspace.SpaceRepository;
+import javafx.stage.StageStyle;
+
 
 public class Main extends Application {
     static Client currClient = new Client();
@@ -25,16 +26,14 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/GlobalChatUI.fxml"));
+            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("../Client/UI/SplashScreen.fxml"));
             Parent root = fxmlLoader.load();
-
-            //Get the controller and add client + main server
-            GlobalChatUIController globalChatUIController = fxmlLoader.getController();
-            globalChatUIController.setClient(currClient);
-
+            SplashScreenController splashScreenController = fxmlLoader.getController();
+            splashScreenController.setClient(currClient);
+            splashScreenController.splash();
             Scene scene = new Scene(root,600,400);
             primaryStage.setScene(scene);
-            //primaryStage.initStyle(StageStyle.UNDECORATED);
+            primaryStage.initStyle(StageStyle.UNDECORATED);
             primaryStage.centerOnScreen();
 
         } catch (IOException e) {
@@ -49,10 +48,6 @@ public class Main extends Application {
     public static void main(String[] args) throws IOException {
         currClient.main(args);
         launch(args);
-
-
-
-
 
     }
 }

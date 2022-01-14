@@ -113,8 +113,8 @@ public class BoardState {
   }
 
   // Removes the rows that are filled. It will check row at posY and the following three rows, since a tetromino can, at most, influence 4 rows.
-  public boolean removeFilledRows(int posY) {
-    boolean rowRemoved = false;
+  public int removeFilledRows(int posY) {
+    int numRowsRemoved = 0;
     for(int y = posY; y < posY+4 && y < 20; y++) {
       if(y < 0) continue;
 
@@ -125,12 +125,12 @@ public class BoardState {
           break;
         } else if(x == 9) {
           removeRow(y);
-          rowRemoved = true;
+          numRowsRemoved++;
         }
 
       }
     }
-    return rowRemoved;
+    return numRowsRemoved;
   }
 
   public void removeRow(int y) {

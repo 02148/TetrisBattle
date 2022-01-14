@@ -5,7 +5,7 @@ import MainServer.Utils;
 
 public class ChatMessage {
     public String UUID, message;
-    double timeStamp;
+    public double timeStamp;
 
 
 

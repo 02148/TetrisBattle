@@ -1,17 +1,18 @@
 package MainServer.UserMgmt;
 
 import MainServer.Utils;
-import org.jspace.ActualField;
-import org.jspace.FormalField;
-import org.jspace.SequentialSpace;
-import org.jspace.Space;
+import org.jspace.*;
+
+import java.util.List;
 
 public class UserRepo {
     Space s;
 
     public UserRepo() {
         this.s = new SequentialSpace();
+
     }
+
 
     private void insertUser(User u) throws InterruptedException {
         s.put(u.UUID, u.username, u.noOfWins, u.timestamp, u.isLoggedIn);
@@ -68,7 +69,7 @@ public class UserRepo {
         return q != null;
     }
 
-    public void queryAllUsers() throws InterruptedException {
+    public List<Object[]> queryAllUsers() throws InterruptedException {
         var allUsers = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
@@ -77,5 +78,7 @@ public class UserRepo {
 
         for (var q : allUsers)
             System.out.println(new User(q));
+
+        return allUsers;
     }
 }
