@@ -42,7 +42,7 @@ public class GlobalChatUIController implements Initializable {
     }
 
     public void setUpChatListner(){
-        chatListener = new ChatListener(chatArea, client.UUID);
+        chatListener = new ChatListener(chatArea);
         chatListener.setClient(client);
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
@@ -54,8 +54,6 @@ public class GlobalChatUIController implements Initializable {
             isLoggedIn = true;
             if(response.equals("ok")){
                 isLoggedIn = true;
-
-                client.setUpGLobalChat();
 
                 setUpChatListner();
                 chatListener.stop = false;
@@ -161,7 +159,7 @@ public class GlobalChatUIController implements Initializable {
                 if(response.equals("ok")){
                     isLoggedIn = true;
 
-                    client.sendGlobalChat(chatTextField.getText());
+                    client.sendChat(chatTextField.getText());
                     chatTextField.clear();
 
                     setUpChatListner();
@@ -171,7 +169,7 @@ public class GlobalChatUIController implements Initializable {
 
             }
         } else {
-            client.sendGlobalChat(chatTextField.getText());
+            client.sendChat(chatTextField.getText());
             chatTextField.clear();
             }
         }

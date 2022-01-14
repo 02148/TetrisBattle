@@ -11,24 +11,19 @@ import javafx.scene.control.TextArea;
 public class ChatListener implements Runnable {
     public Client client;
     public TextArea chatArea;
-    public RemoteSpace personalChatSpace;
+    public RemoteSpace chatSpace;
     public RemoteSpace serverToUser;
+    private Double lastMessageTime = 0.0;
     public boolean stop = true;
 
-    public ChatListener(TextArea chat, String UUID) {
+    public ChatListener(TextArea chat) {
         this.chatArea = chat;
-        try {
-            System.out.println("URI for chat: " + "tcp://localhost:6971/" + UUID +"?conn");
-            personalChatSpace = new RemoteSpace("tcp://localhost:6971/" + UUID +"?conn");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
     }
 
 
     public void setClient(Client client) {
         this.client = client;
+        chatSpace = client.chatSpace;
     }
 
 
@@ -38,23 +33,24 @@ public class ChatListener implements Runnable {
         while (!stop) {
             System.out.println("chatListener is running..");
             try {
-                Thread.sleep(1000);
+                //Thread.sleep(100); can't use since two chat send at the same time will be deleted by server while sleeping
                 Object[] chatInput = new Object[4];
                 String[] message = new String[3];
 
 
-                chatInput = personalChatSpace.get(new FormalField(String.class),
+                chatInput = chatSpace.query(new FormalField(String.class),
+                        new ActualField(client.roomUUID),
+                        new FormalField(String.class),
                         new FormalField(Double.class),
-                        new FormalField(String.class)
-                );
+                        new FormalField(String.class));
 
-
-                if (chatInput != null) {
+                if (chatInput != null && (Double) chatInput[3] > lastMessageTime) {
+                    lastMessageTime = (Double) chatInput[3];
                     System.out.println("Got message from another client");
-                    message[0] = (String) chatInput[0]; //Message
-                    message[1] = Double.toString((Double) chatInput[1]); //Timestamp
+                    message[0] = (String) chatInput[4]; //Message
+                    message[1] = Double.toString((Double) chatInput[3]); //Timestamp
                     message[2] = (String) chatInput[2]; //Username
-                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[1]) *1000));
+                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3]) *1000));
                     chatArea.appendText("\n" +  date + " " + message[2] + ": " + message[0]);
                 }
 

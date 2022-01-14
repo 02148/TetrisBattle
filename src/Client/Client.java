@@ -3,6 +3,7 @@ package Client;
 
 import Client.UI.GlobalChatUIController;
 import Main.Main;
+import MainServer.Utils;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -12,6 +13,7 @@ import org.jspace.*;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
@@ -23,7 +25,7 @@ public class Client extends Application {
   public static RemoteSpace userToServer;
   public RemoteSpace serverToUser;
   public RemoteSpace room;
-  public RemoteSpace globalChat;
+  public RemoteSpace chatSpace;
 
   public boolean isGameActive = false;
 
@@ -42,8 +44,6 @@ public class Client extends Application {
     mainServer = new RemoteSpace("tcp://localhost:6969/main?mainServer");
     userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
     serverToUser = new RemoteSpace("tcp://localhost:6969/serverToUser?conn");
-    globalChat = new RemoteSpace("tcp://localhost:6971/globalChat?conn");
-
 
     //launch(args);
   }
@@ -59,10 +59,15 @@ public class Client extends Application {
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
         System.out.println("Logged in response got from server");
+        chatSpace = new RemoteSpace("tcp://localhost:4242/globalChat?conn");
       } else {
         //Error message
       }
     } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return (String) loginResponse[1];
@@ -77,6 +82,7 @@ public class Client extends Application {
       if (roomResponse[1].equals("ok")) {
 
         roomUUID = (String) roomResponse[2];
+        chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
         System.out.println("Room can be started by UI");
         isGameActive = true;
         //Room can be started by UI
@@ -85,6 +91,10 @@ public class Client extends Application {
         System.out.println(roomResponse[1]);
       }
     } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return (String) roomResponse[1];
@@ -99,6 +109,7 @@ public class Client extends Application {
 
       if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
+        chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
         //Room can be started by UI
 
         //New thread waiting for game to start
@@ -108,6 +119,10 @@ public class Client extends Application {
       }
 
     } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
     return (String) roomResponse[1];
@@ -134,54 +149,25 @@ public class Client extends Application {
     }
   }
 
-  public void sendGlobalChat(String message){
-    try {
-      globalChat.put(UUID, "globalChat", message, "", userName);
-      System.out.println("Trying to send global chat");
-
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
-  }
-
-  public String[] sendGameRoomChat(String message){
+  public void sendChat(String message){
     Object[] chatResponse = new Object[4];
     try {
-      globalChat.put(UUID,  "gameRoomChat", message, roomUUID, userName);
-      chatResponse = globalChat.get(new ActualField(UUID),
-              new FormalField(String.class),
-              new FormalField(String.class),
-              new FormalField(Double.class),
-              new FormalField(String.class));
-
-      if (chatResponse[1].equals("ok")) {
-        System.out.println("GameRoom Chat can be sent by UI");
-        //Chat can be sent and UI updated
-
-      } else {
-        //Error message
-        System.out.println(chatResponse[1]);
-      }
+      chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentTimestamp(), message);
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return new String[]{ (String) chatResponse[2],Double.toString((Double)chatResponse[3])};
-
   }
 
   public String getUserName(){
     return userName;
   }
 
-  public void setUpGLobalChat() {
-    try {
-      globalChat.put(UUID, "setupGlobalChat", "", "", userName);
-      System.out.println("Trying to setup global chat");
+}
 
-    } catch (InterruptedException e) {
-      e.printStackTrace();
-    }
+class RecieveMessages implements Runnable {
+
+  public void run() {
 
   }
 }

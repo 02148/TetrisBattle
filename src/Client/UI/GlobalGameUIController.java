@@ -42,7 +42,7 @@ public class GlobalGameUIController implements Initializable {
     }
     public void  setClient(Client client) throws InterruptedException {
         this.client = client;
-        chatListener = new ChatListener(gameChatArea,client.roomUUID);
+        chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
@@ -72,7 +72,7 @@ public class GlobalGameUIController implements Initializable {
 
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
-            client.sendGameRoomChat(gameChatTextField.getText());
+            client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
 
         //TODO: Add functionality to update TextArea based on input from other players
