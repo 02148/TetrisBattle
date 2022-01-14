@@ -36,7 +36,7 @@ public class S_Block extends Tetromino{
   public S_Block() {
     this.posX = 3;
     this.posY = -2;
-    this.color = Color.GREEN;
+    this.color = Color.LIME;
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }

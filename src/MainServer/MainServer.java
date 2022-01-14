@@ -190,8 +190,8 @@ class GlobalListener implements Runnable {
             try {
                 userInput = userToServer.get(new FormalField(String.class),
                         new FormalField(String.class),
-                        new FormalField(String.class),
-                        new FormalField(String.class));
+                        new FormalField(String.class)
+                );
 
                 if (userInput[1].equals("login")) {
                     String UUID = users.create((String) userInput[0]);
@@ -203,7 +203,6 @@ class GlobalListener implements Runnable {
                     serverToUser.put(userInput[0],"ok", UUID);
                     System.out.println("Create Room: Server response sent");
                     //Create chatroom for game
-
 
                 } else if (userInput[1].equals("join")) {
                     if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
