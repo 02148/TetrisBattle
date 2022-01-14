@@ -73,6 +73,7 @@ class ChatRoomListener implements Runnable {
     }
 }
 
+
 class GlobalListener implements Runnable {
     private UserRepo users;
     private GameRoomRepo gameRooms;
@@ -121,6 +122,7 @@ class GlobalListener implements Runnable {
                     //Create chatroom for game
                     var crl = new ChatRoomListener(UUID);
                     SequentialSpace chat = new SequentialSpace();
+                    chatChannels.add(UUID,chat);
                     crl.setChat(chat);
                     new Thread(crl).start();
 
