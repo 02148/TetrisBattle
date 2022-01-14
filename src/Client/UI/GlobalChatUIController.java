@@ -54,6 +54,7 @@ public class GlobalChatUIController implements Initializable {
             isLoggedIn = true;
             if(response.equals("ok")){
                 isLoggedIn = true;
+                username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
 
                 setUpChatListner();
                 chatListener.stop = false;

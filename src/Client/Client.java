@@ -54,7 +54,7 @@ public class Client extends Application {
 
     try {
       //userName = "holder";
-      userToServer.put(userName, "login","","");
+      userToServer.put(userName, "login","");
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
@@ -77,7 +77,7 @@ public class Client extends Application {
     Object[] roomResponse = new Object[3];
     try {
 
-      userToServer.put(UUID, "create","","");
+      userToServer.put(UUID, "create","");
       roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
       if (roomResponse[1].equals("ok")) {
 
@@ -103,7 +103,7 @@ public class Client extends Application {
   public String TryJoinRoom(String roomName) {
     Object[] roomResponse = new Object[3];
     try {
-      mainServer.put(UUID, "join", roomName,"");
+      mainServer.put(UUID, "join", roomName);
       roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
 
 

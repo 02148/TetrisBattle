@@ -27,6 +27,7 @@ public class GlobalGameUIController implements Initializable {
     @FXML private TextField gameChatTextField;
     private GameEngine gameEngine;
     @FXML Button startGameButton;
+    @FXML Button leaveGameButton;
     @FXML AnchorPane boardHolder;
     @FXML TextArea lines;
     @FXML TextArea level;

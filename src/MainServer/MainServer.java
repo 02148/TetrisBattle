@@ -105,8 +105,8 @@ class GlobalListener implements Runnable {
             try {
                 userInput = userToServer.get(new FormalField(String.class),
                         new FormalField(String.class),
-                        new FormalField(String.class),
-                        new FormalField(String.class));
+                        new FormalField(String.class)
+                );
 
                 if (userInput[1].equals("login")) {
                     String UUID = users.create((String) userInput[0]);
