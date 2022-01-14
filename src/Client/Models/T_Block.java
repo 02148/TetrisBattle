@@ -37,11 +37,7 @@ public class T_Block extends Tetromino {
   public T_Block() {
     this.posX = 3;
     this.posY = -2;
-<<<<<<< HEAD
     this.color = Utils.tetrominoTypeToColor(this.getClass());
-=======
-    this.color = Color.DARKORCHID;
->>>>>>> origin/master
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }
