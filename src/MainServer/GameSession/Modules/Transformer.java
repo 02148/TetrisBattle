@@ -21,7 +21,19 @@ public class Transformer implements Runnable {
     @Override
     public void run() {
         var allBoards = new HashMap<String, Object[]>();
+        Object[] collectedData;
+        int counter;
         while (true) {
+            collectedData = new Object[]{new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object()};
+            counter = 0;
+
             try {
                 if (!allBoards.isEmpty())
                     allBoards.clear();
@@ -34,16 +46,20 @@ public class Transformer implements Runnable {
                             new FormalField(Double.class),
                             new FormalField(Object.class)
                     );
-                    if (raw_data == null)
+                    if (raw_data == null || raw_data[0] == null)
                         continue;
 
                     System.out.println("TRANSFORMER@"+Thread.currentThread()+ " >> " + Arrays.toString(raw_data));
 
+                    collectedData[counter*3]   = raw_data[0];
+                    collectedData[counter*3+1] = raw_data[1];
+                    collectedData[counter*3+2] = raw_data[2];
                     allBoards.put(userUUID, raw_data);
+                    counter++;
                 }
 
                 if(!allBoards.isEmpty())
-                    out.put(allBoards);
+                    out.put(collectedData);
 //                System.out.println("Transformer >> " + allBoards);
                 Thread.sleep(this.T);
             } catch (InterruptedException e) {

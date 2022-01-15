@@ -27,12 +27,11 @@ public class Collector implements Runnable {
                         new FormalField(Double.class),
                         new FormalField(Object.class));
 
-                if (deltaPkg != null)
-                    this.out.put(deltaPkg[0],
-                            deltaPkg[1],
-                            deltaPkg[2]);
-                if (fullPkg != null)
-                    this.out.put(fullPkg[0]); // :)
+                if (deltaPkg != null) {
+                    this.out.put(deltaPkg);
+                    if (fullPkg != null)
+                        this.out.put(fullPkg); // :)
+                }
             } catch (InterruptedException e) {
                 System.out.println("COLLECTOR EXCEPTION >> ");
                 e.printStackTrace();

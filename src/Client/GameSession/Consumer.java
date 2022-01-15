@@ -24,19 +24,23 @@ public class Consumer implements Runnable {
     public void run() {
         while (true) {
             try {
-                var data = rs.get(new FormalField(Object.class));
+
                 if (this.packageType.equals("full")) {
-                    var x = (HashMap<String,ArrayList>)data[0];
-                    var p1Data = x.get("player1");
-                    var bitList = (ArrayList<Double>)p1Data.get(2);
-                    BitSet newBoardState = new BitSet(600);
-                    for (Double i : bitList)
-                        newBoardState.set(i.intValue(),true);
+                    var data = rs.get(new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
+                                              new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
 
-                    this.boardState.setBoardStateFromBitArray(newBoardState);
+                    this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
                 } else if (this.packageType.equals("delta")) {
-                    continue; // TODO delta does not work
-
+                    var data = rs.get(new FormalField(Object.class),
+                                              new FormalField(Object.class),
+                                              new FormalField(Object.class));
+                    System.out.println();
 //                    var changeListDto = (HashMap<String, ArrayList>)data[0];
 //                    var res = changeListDto.get("player1");
 //                    var res2 =(LinkedTreeMap<String, Double>) res.get(2);

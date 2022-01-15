@@ -24,20 +24,32 @@ public class Duplicator implements Runnable {
             try {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
-                Object[] raw_data = in.get(
-                        new FormalField(Object.class)
-                );
-                if (raw_data == null)
+                Object[] raw_data_full = in.get(new FormalField(Object.class));
+                Object[] raw_data_delta = in.get(
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(Object.class));
+                if (raw_data_full == null && raw_data_delta == null) {
                     throw new Exception("DUPLICATOR >> No new data");
-
-                var data = (HashMap<String, Object[]>) raw_data[0];
-
-                for (var c : curConns) {
-                    String userUUID = (String) c[0];
-
-                    if (out.containsKey(userUUID))
-                        out.get(userUUID).put(data);
                 }
+
+                if(raw_data_full == null) {
+                    var data = (HashMap<String, Object[]>) raw_data_delta[0];
+
+                    var dataPlayer = data.get("player1");
+                    var name = dataPlayer[0];
+                    var time = dataPlayer[1];
+                    var datad = dataPlayer[2];
+                    Object[] transObj = new Object[]{name, time, datad};
+
+                    for (var c : curConns) {
+                        String userUUID = (String) c[0];
+
+                        if (out.containsKey(userUUID))
+                            out.get(userUUID).put(transObj);
+                    }
+                }
+
             } catch (Exception e) {
                 e.printStackTrace();
             }

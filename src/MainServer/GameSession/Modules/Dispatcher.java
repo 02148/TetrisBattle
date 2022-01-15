@@ -52,9 +52,9 @@ public class Dispatcher  implements Runnable {
 //                    System.out.println(userUUID + timestamp + packageData);
 
                 if (packageType.equals("full"))
-                    this.full.put(userUUID, timestamp, (BitSet)packageData);
+                    this.full.put(userUUID, timestamp, packageData);
                 if (packageType.equals("delta"))
-                    this.delta.put(userUUID, timestamp, (HashMap<Integer,Integer>)packageData);
+                    this.delta.put(userUUID, timestamp, packageData);
 
                 lastTimestamps.put(userUUID, timestamp);
 

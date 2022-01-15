@@ -13,6 +13,7 @@ public class GameSession {
 
     Dispatcher dispatcher;
     Transformer transformer;
+    DispatcherAndDuplicator DisAndDup1, DisAndDup2;
     Collector collector;
     Duplicator duplicator;
     String UUID;
@@ -47,12 +48,15 @@ public class GameSession {
 
         this.dispatcher = new Dispatcher(this.p1, this.p2, this.p3, this.conns);
         this.transformer = new Transformer(this.p3, this.p4, this.conns);
-        this.collector = new Collector(this.p2, this.p4, this.p5);
-        this.duplicator = new Duplicator(this.p5, this.p6s, this.conns);
+        this.DisAndDup1 = new DispatcherAndDuplicator(this.p2, this.p6s, this.conns, "delta");
+        this.DisAndDup2 = new DispatcherAndDuplicator(this.p4, this.p6s, this.conns, "full");
+
+//        this.collector = new Collector(this.p2, this.p4, this.p5);
+//        this.duplicator = new Duplicator(this.p5, this.p6s, this.conns);
 
         (new Thread(this.dispatcher)).start();
         (new Thread(this.transformer)).start();
-        (new Thread(this.collector)).start();
-        (new Thread(this.duplicator)).start();
+        (new Thread(this.DisAndDup1)).start();
+        (new Thread(this.DisAndDup2)).start();
     }
 }
