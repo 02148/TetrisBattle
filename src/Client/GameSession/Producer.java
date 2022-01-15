@@ -25,6 +25,7 @@ public class Producer implements Runnable {
         this.serverSpace = new RemoteSpace(URI);
         this.clientUUID = clientUUID;
         this.packageType = packageType;
+        this.boardState = new BoardState(200);
         T = packageType.equals("full") ? 1000 : 100;
     }
 
@@ -41,17 +42,24 @@ public class Producer implements Runnable {
 
     // TODO get actual delta map when connected to client!
     private HashMap<Integer, Integer> getDeltaPkg() {
-        if (this.boardState == null) {
+//        if (this.boardState == null) {
+//            var map = new HashMap<Integer, Integer>();
+//            map.put(new Random().nextInt(199), new Random().nextInt(6));
+//            return map;
+//        }
+        try {
+            return this.boardState.getLatestDeltaAndReset();
+        } catch (Exception e) {
             var map = new HashMap<Integer, Integer>();
             map.put(new Random().nextInt(199), new Random().nextInt(6));
             return map;
         }
-        return this.boardState.getLatestDeltaAndReset();
     }
 
     // TODO get actual board state BitSet when connected to client!
     private BitSet getFullPkg() {
         var curState = BitSet.valueOf(new long[] {1926344373436416L, 0, 8538824957113663488L, -5251191672863194661L, -355150468054712001L, 5761390391605366816L, 2696450152401329538L, -9027746953628520504L, 2618843117036503038L, 900900});
+        curState.set((int) (Math.random() * 100));
         return curState;
     }
 
@@ -61,6 +69,11 @@ public class Producer implements Runnable {
             try {
                 if (packageType.equals("full")) {
                     var boardState = getFullPkg();
+
+                    // TODO TEMP PRINT current board state
+                    this.boardState.setBoardStateFromBitArray(boardState);
+//                    System.out.println(this.boardState);
+
                     serverSpace.put(this.packageType,
                             getCurrentExactTimestamp(),
                             this.clientUUID,

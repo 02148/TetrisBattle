@@ -17,7 +17,7 @@ public class Collector implements Runnable {
         while (true) {
             try {
                 // (HashMap<String,BitSet>)packageData
-                var fullPkg = this.fullIn.getp(
+                var fullPkg = this.fullIn.get(
                         new FormalField(Object.class)
                 );
 

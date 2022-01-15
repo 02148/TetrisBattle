@@ -26,15 +26,23 @@ public class Consumer implements Runnable {
             try {
                 var data = rs.get(new FormalField(Object.class));
                 if (this.packageType.equals("full")) {
-                    BitSet newBoardState = (BitSet)data[0];
+                    var x = (HashMap<String,ArrayList>)data[0];
+                    var p1Data = x.get("player1");
+                    var bitList = (ArrayList<Double>)p1Data.get(2);
+                    BitSet newBoardState = new BitSet(600);
+                    for (Double i : bitList)
+                        newBoardState.set(i.intValue(),true);
+
                     this.boardState.setBoardStateFromBitArray(newBoardState);
                 } else if (this.packageType.equals("delta")) {
-                    var changeListDto = (HashMap<String, ArrayList>)data[0];
-                    var res = changeListDto.get("player1");
-                    var res2 =(LinkedTreeMap<String, Double>) res.get(2);
+                    continue; // TODO delta does not work
 
-                    System.out.println();
-                    this.boardState.updateBoardFromDeltaTreeMap(res2);
+//                    var changeListDto = (HashMap<String, ArrayList>)data[0];
+//                    var res = changeListDto.get("player1");
+//                    var res2 =(LinkedTreeMap<String, Double>) res.get(2);
+//
+//                    System.out.println();
+//                    this.boardState.updateBoardFromDeltaTreeMap(res2);
 
                     //TODO: Take into account all players
                 } else {
