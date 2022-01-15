@@ -35,6 +35,7 @@ public class Consumer implements Runnable {
 
                     System.out.println();
                     this.boardState.updateBoardFromDeltaTreeMap(res2);
+
                     //TODO: Take into account all players
                 } else {
                     throw new Exception("Unknown Package Type!");

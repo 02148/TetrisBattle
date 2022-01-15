@@ -54,25 +54,30 @@ public class TestProducer implements Runnable {
     }
 
     public static void main(String[] args) throws Exception {
+        int PORT = 1337;
+
         SequentialSpace conns = new SequentialSpace();
         conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
 
-        Producer pDelta = new Producer("tcp://localhost:6969/69420?keep",
+        Producer pDelta = new Producer("tcp://localhost:" + PORT + "/69420?keep",
                 "player1",
                 "delta"
-                );
-        Producer pFull = new Producer("tcp://localhost:6969/69420?keep",
+        );
+
+        Producer pFull = new Producer("tcp://localhost:" + PORT + "/69420?keep",
                 "player1",
                 "full"
         );
 
         var board = new BoardState(200);
-        Consumer consumerC = new Consumer("tcp://localhost:6969/player1?keep", board, "delta");
+        Consumer consumerDelta = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, "delta");
+        Consumer consumerFull = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, "full");
 
         (new Thread(pDelta)).start();
         (new Thread(pFull)).start();
-        (new Thread(consumerC)).start();
+        (new Thread(consumerDelta)).start();
+        (new Thread(consumerFull)).start();
 
         while (true){
             Thread.sleep(1000);

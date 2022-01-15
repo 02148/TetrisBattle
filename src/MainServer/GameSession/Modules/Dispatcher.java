@@ -28,39 +28,35 @@ public class Dispatcher  implements Runnable {
     public void run() {
         while (true) {
             try {
-                var curConns = conns.queryAll(new FormalField(String.class));
+                Object[] raw_data = in.get(
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class),
+                        new FormalField(Object.class)
+                );
+                if (raw_data == null)
+                    continue;
 
-                for (var c : curConns) {
-                    Object[] raw_data = in.get(
-                            new FormalField(String.class),
-                            new FormalField(Double.class),
-                            new ActualField((String)c[0]),
-                            new FormalField(Object.class)
-                    );
-                    if (raw_data == null)
+                String packageType = (String)raw_data[0];
+                double timestamp = (double)raw_data[1];
+                String userUUID = (String)raw_data[2];
+                Object packageData = raw_data[3];
+
+                if (lastTimestamps.containsKey(userUUID)) {
+                    if (lastTimestamps.get(userUUID) > timestamp) { // retrieved entry for user is older than last in pipeline
+                        System.out.println("DISPATCHER@" + Thread.currentThread() + " >> Old data retrieved, dropping");
                         continue;
-
-                    String packageType = (String)raw_data[0];
-                    double timestamp = (double)raw_data[1];
-                    String userUUID = (String)raw_data[2];
-                    Object packageData = raw_data[3];
-
-                    if (lastTimestamps.containsKey(userUUID)) {
-                        if (lastTimestamps.get(userUUID) > timestamp) { // retrieved entry for user is older than last in pipeline
-                            System.out.println("DISPATCHER@" + Thread.currentThread() + " >> Old data retrieved, dropping");
-                            continue;
-                        }
                     }
+                }
 
 //                    System.out.println(userUUID + timestamp + packageData);
 
-                    if (packageType.equals("full"))
-                        this.full.put(userUUID, timestamp, (BitSet)packageData);
-                    if (packageType.equals("delta"))
-                        this.delta.put(userUUID, timestamp, (HashMap<Integer,Integer>)packageData);
+                if (packageType.equals("full"))
+                    this.full.put(userUUID, timestamp, (BitSet)packageData);
+                if (packageType.equals("delta"))
+                    this.delta.put(userUUID, timestamp, (HashMap<Integer,Integer>)packageData);
 
-                    lastTimestamps.put(userUUID, timestamp);
-                }
+                lastTimestamps.put(userUUID, timestamp);
 
 
             } catch (InterruptedException e) {

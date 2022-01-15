@@ -16,26 +16,23 @@ public class Collector implements Runnable {
     public void run() {
         while (true) {
             try {
+                // (HashMap<String,BitSet>)packageData
+                var fullPkg = this.fullIn.getp(
+                        new FormalField(Object.class)
+                );
+
                 // userUUID, timestamp, (HashMap<Integer,Integer>)packageData
-                var deltaPkg = this.deltaIn.getp(
+                var deltaPkg = this.deltaIn.get(
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(Object.class));
-                // userUUID, timestamp, (BitSet)packageData
-                var fullPkg = this.fullIn.getp(
-                        new FormalField(String.class),
-                        new FormalField(Double.class),
-                        new FormalField(Object.class)
-                );
 
                 if (deltaPkg != null)
                     this.out.put(deltaPkg[0],
                             deltaPkg[1],
                             deltaPkg[2]);
                 if (fullPkg != null)
-                    this.out.put(deltaPkg[0],
-                            fullPkg[1],
-                            fullPkg[2]);
+                    this.out.put(fullPkg[0]); // :)
             } catch (InterruptedException e) {
                 System.out.println("COLLECTOR EXCEPTION >> ");
                 e.printStackTrace();

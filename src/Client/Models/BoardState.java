@@ -253,4 +253,8 @@ public class BoardState {
       this.board[index] = new Mino(index, Utils.intToColor((int)Math.round(delta.get(k))), true);
     }
   }
+
+  public HashMap<Integer,Integer> getLatestDeltaAndReset() {
+    return this.packageHandler.retrieveAndResetDelta(this.board);
+  }
 }

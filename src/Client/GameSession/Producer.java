@@ -1,5 +1,6 @@
 package Client.GameSession;
 
+import Client.Models.BoardState;
 import org.jspace.*;
 
 import java.io.IOException;
@@ -16,7 +17,7 @@ public class Producer implements Runnable {
     RemoteSpace serverSpace;
     String clientUUID, packageType;
     int T; // Clock Period
-    //
+    BoardState boardState;
 
     public Producer(String URI,
                     String clientUUID,
@@ -27,11 +28,25 @@ public class Producer implements Runnable {
         T = packageType.equals("full") ? 1000 : 100;
     }
 
+    public Producer(RemoteSpace serverSpace,
+                    String clientUUID,
+                    String packageType,
+                    BoardState boardState) {
+        this.serverSpace = serverSpace;
+        this.clientUUID = clientUUID;
+        this.packageType = packageType;
+        T = 100;
+        this.boardState = boardState;
+    }
+
     // TODO get actual delta map when connected to client!
     private HashMap<Integer, Integer> getDeltaPkg() {
-        var map = new HashMap<Integer, Integer>();
-        map.put(new Random().nextInt(199), new Random().nextInt(6));
-        return map;
+        if (this.boardState == null) {
+            var map = new HashMap<Integer, Integer>();
+            map.put(new Random().nextInt(199), new Random().nextInt(6));
+            return map;
+        }
+        return this.boardState.getLatestDeltaAndReset();
     }
 
     // TODO get actual board state BitSet when connected to client!
