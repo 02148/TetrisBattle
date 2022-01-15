@@ -35,7 +35,7 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
 
-//                    this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
+                    this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
                 } else if (this.packageType.equals("delta")) {
                     var data = rs.get(new FormalField(Object.class),
                                               new FormalField(Object.class),

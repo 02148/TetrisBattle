@@ -60,22 +60,22 @@ public class TestProducer implements Runnable {
         conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
 
-        Producer pDelta = new Producer("tcp://localhost:" + PORT + "/69420?keep",
-                "player1",
-                "delta"
-        );
-
-        Producer pFull = new Producer("tcp://localhost:" + PORT + "/69420?keep",
-                "player1",
-                "full"
-        );
+//        Producer pDelta = new Producer("tcp://localhost:" + PORT + "/69420?keep",
+//                "player1",
+//                "delta"
+//        );
+//
+//        Producer pFull = new Producer("tcp://localhost:" + PORT + "/69420?keep",
+//                "player1",
+//                "full"
+//        );
 
         var board = new BoardState(200);
         Consumer consumerDelta = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, "delta");
         Consumer consumerFull = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, "full");
 
-        (new Thread(pDelta)).start();
-        (new Thread(pFull)).start();
+//        (new Thread(pDelta)).start();
+//        (new Thread(pFull)).start();
         (new Thread(consumerDelta)).start();
         (new Thread(consumerFull)).start();
 

@@ -5,9 +5,12 @@ import Client.UI.Board;
 import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import org.jspace.RemoteSpace;
 
 import java.util.BitSet;
 import java.util.Random;
+
+import static MainServer.Utils.getCurrentExactTimestamp;
 
 public class Controls {
   private Board nBoard;
@@ -23,11 +26,16 @@ public class Controls {
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
+  private RemoteSpace server;
+
 
   public Controls(Board nBoard, BoardState boardState) {
     this.nBoard = nBoard;
     this.boardState = boardState;
     this.current_tetromino = newRandomTetromino();
+    try {
+      this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
+    } catch(Exception e) {}
 
     updateView();
   }
@@ -50,6 +58,16 @@ public class Controls {
       loadSavedState();
     } else if(keyCode == KeyCode.P) {
       print();
+    } else if(keyCode == KeyCode.S) {
+      try {
+        this.server.put("full",
+                getCurrentExactTimestamp(),
+                "player1",
+                this.boardState.toBitArray()
+        );
+      } catch (Exception e) {}
+
+
     }
 
     updateView();
