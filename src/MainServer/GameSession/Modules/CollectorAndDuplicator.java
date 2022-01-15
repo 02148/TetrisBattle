@@ -6,13 +6,13 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 
-public class DispatcherAndDuplicator implements Runnable {
+public class CollectorAndDuplicator implements Runnable {
   private Space in, conns;
   private HashMap<String, Space> out;
   private String type;
   private int T;
 
-  public DispatcherAndDuplicator(Space in, HashMap<String, Space> out, Space conns, String type) throws Exception {
+  public CollectorAndDuplicator(Space in, HashMap<String, Space> out, Space conns, String type) throws Exception {
     this.in = in;
     this.out = out;
     this.conns = conns;

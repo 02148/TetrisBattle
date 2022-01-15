@@ -35,7 +35,7 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
 
-                    this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
+//                    this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
                 } else if (this.packageType.equals("delta")) {
                     var data = rs.get(new FormalField(Object.class),
                                               new FormalField(Object.class),
@@ -46,7 +46,7 @@ public class Consumer implements Runnable {
 //                    var res2 =(LinkedTreeMap<String, Double>) res.get(2);
 //
 //                    System.out.println();
-//                    this.boardState.updateBoardFromDeltaTreeMap(res2);
+                    this.boardState.updateBoardFromDeltaIntegerArray((int[])data[2]);
 
                     //TODO: Take into account all players
                 } else {

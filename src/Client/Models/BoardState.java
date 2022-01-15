@@ -254,6 +254,12 @@ public class BoardState {
     }
   }
 
+  public void updateBoardFromDeltaIntegerArray(int[] delta) {
+    for(int i = 0; i < delta.length; i += 2) {
+      this.board[delta[i]] = new Mino(delta[i], Utils.intToColor(delta[i+1]), true);
+    }
+  }
+
   public HashMap<Integer,Integer> getLatestDeltaAndReset() {
     return this.packageHandler.retrieveAndResetDelta(this.board);
   }
