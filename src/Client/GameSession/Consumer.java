@@ -1,5 +1,6 @@
 package Client.GameSession;
 
+import Client.Logic.Controls;
 import Client.Models.BoardState;
 import com.google.gson.internal.LinkedTreeMap;
 import org.jspace.*;
@@ -10,13 +11,15 @@ import java.util.BitSet;
 import java.util.HashMap;
 
 public class Consumer implements Runnable {
-    RemoteSpace rs;
-    BoardState boardState;
-    String packageType;
+    private RemoteSpace rs;
+    public BoardState boardState;
+    public Controls controller;
+    private String packageType;
 
-    public Consumer(String URI, BoardState boardState, String packageType) throws IOException, InterruptedException {
+    public Consumer(String URI, BoardState boardState, Controls controller, String packageType) throws IOException, InterruptedException {
         this.rs = new RemoteSpace(URI);
         this.boardState = boardState;
+        this.controller = controller;
         this.packageType = packageType;
     }
 
@@ -36,6 +39,8 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
 
                     this.boardState.setBoardStateFromBitArray((BitSet) data[2]);
+                    if(this.controller != null)
+                        this.controller.updateView();
                 } else if (this.packageType.equals("delta")) {
                     var data = rs.get(new FormalField(Object.class),
                                               new FormalField(Object.class),

@@ -29,7 +29,7 @@ public class GameEngine implements Runnable{
     this.boardState = new BoardState(200);
     this.boardState.addPackageHandler(this.packageHandler);
     this.nBoard = nBoard;
-    this.controller = new Controls(nBoard, boardState);
+    this.controller = new Controls(nBoard, boardState, false);
   }
 
   public Thread toThread() {

@@ -15,6 +15,7 @@ import static MainServer.Utils.getCurrentExactTimestamp;
 public class Controls {
   private Board nBoard;
   private BoardState boardState;
+  private boolean viewOnly;
 
   private Tetromino current_tetromino;
   private Tetromino ghost_tetromino;
@@ -29,10 +30,12 @@ public class Controls {
   private RemoteSpace server;
 
 
-  public Controls(Board nBoard, BoardState boardState) {
+  public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
     this.nBoard = nBoard;
     this.boardState = boardState;
-    this.current_tetromino = newRandomTetromino();
+    if(!viewOnly)
+      this.current_tetromino = newRandomTetromino();
+    this.viewOnly = viewOnly;
     try {
       this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
     } catch(Exception e) {}
@@ -59,16 +62,15 @@ public class Controls {
     } else if(keyCode == KeyCode.P) {
       print();
     } else if(keyCode == KeyCode.S) {
-      try {
-        this.server.put("full",
-                getCurrentExactTimestamp(),
-                "player1",
-                this.boardState.toBitArray()
-        );
-      } catch (Exception e) {}
-
-
     }
+
+    try {
+      this.server.put("full",
+              getCurrentExactTimestamp(),
+              "player1",
+              this.boardState.toBitArray()
+      );
+    } catch (Exception e) {}
 
     updateView();
   }
@@ -80,6 +82,13 @@ public class Controls {
       dropTetromino();
     }
 
+    try {
+      this.server.put("full",
+              getCurrentExactTimestamp(),
+              "player1",
+              this.boardState.toBitArray()
+      );
+    } catch (Exception e) {}
      updateView();
   }
 
@@ -88,14 +97,15 @@ public class Controls {
 
 
   public void updateView() {
-    boardState.removeTetromino(current_tetromino);
     if(ghost_tetromino != null && boardState.legalPosition(ghost_tetromino, 0, 0) )
       boardState.removeTetromino(ghost_tetromino);
 
-    updateGhost();
-
-    boardState.insertTetromino(ghost_tetromino);
-    boardState.insertTetromino(current_tetromino);
+    if(!this.viewOnly) {
+      boardState.removeTetromino(current_tetromino);
+      updateGhost();
+      boardState.insertTetromino(ghost_tetromino);
+      boardState.insertTetromino(current_tetromino);
+    }
 
     nBoard.loadBoardState(boardState);
   }

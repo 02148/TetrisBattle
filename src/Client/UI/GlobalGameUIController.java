@@ -2,6 +2,9 @@ package Client.UI;
 
 import Client.Client;
 import Client.GameEngine;
+import Client.GameSession.Consumer;
+import Client.Logic.Controls;
+import Client.Models.BoardState;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -86,13 +89,24 @@ public class GlobalGameUIController implements Initializable {
         Board nBoard = new Board(63,94,25);
         boardHolder.getChildren().add(nBoard);
         gameEngine = new GameEngine(nBoard);
-        boardHolder.getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+        nBoard.getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
                 gameEngine.keyDownEvent(keyEvent);
             }
         });
         Platform.runLater(() -> gameEngine.toThread().start());
+
+
+        // Making a second board for testing purposes
+        Board nBoard2 = new Board(300,94,10);
+        boardHolder.getChildren().add(nBoard2);
+        BoardState boardState2 = new BoardState(200);
+        Controls controls2 = new Controls(nBoard2, boardState2, true);
+        try {
+            Consumer consumerFull = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "full");
+            (new Thread(consumerFull)).start();
+        } catch (Exception e) {}
 
 
         GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
