@@ -3,6 +3,8 @@ package Client.Utility;
 import Client.Models.*;
 import javafx.scene.paint.Color;
 
+import java.util.HashMap;
+
 public abstract class Utils {
     public static Color[] tetroColors = new Color[]{Color.CYAN, Color.DARKSLATEBLUE, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.PINK, Color.FIREBRICK};
 
@@ -59,5 +61,16 @@ public abstract class Utils {
     public static Color tetrominoTypeToColor(Class tetroClass) {
         int tetroInt = tetrominoToInt(tetroClass);
         return intToColor(tetroInt);
+    }
+
+    public static int[] deltaHashmapToArray(HashMap<Integer, Integer> delta) {
+        int[] deltaArray = new int[delta.size()*2];
+        int counter = 0;
+        for(var key : delta.keySet()) {
+            deltaArray[counter*2]   = key;
+            deltaArray[counter*2+1] = delta.get(key);
+            counter++;
+        }
+        return deltaArray;
     }
 }

@@ -64,14 +64,6 @@ public class Controls {
     } else if(keyCode == KeyCode.S) {
     }
 
-    try {
-      this.server.put("full",
-              getCurrentExactTimestamp(),
-              "player1",
-              this.boardState.toBitArray()
-      );
-    } catch (Exception e) {}
-
     updateView();
   }
 
@@ -82,14 +74,7 @@ public class Controls {
       dropTetromino();
     }
 
-    try {
-      this.server.put("full",
-              getCurrentExactTimestamp(),
-              "player1",
-              this.boardState.toBitArray()
-      );
-    } catch (Exception e) {}
-     updateView();
+    updateView();
   }
 
 
@@ -108,6 +93,9 @@ public class Controls {
     }
 
     nBoard.loadBoardState(boardState);
+
+    if(!this.viewOnly)
+      sentBoard();
   }
 
   public boolean isDead() {
@@ -197,5 +185,16 @@ public class Controls {
         System.out.println();
       System.out.print(bitset.get(i) ? "1 " : "0 ");
     }
+  }
+
+  public void sentBoard() {
+//    var gg = boardState.getLatestDeltaAndReset();
+    try {
+      this.server.put("full",
+              getCurrentExactTimestamp(),
+              "player1",
+              this.boardState.toBitArray()
+      );
+    } catch (Exception e) {}
   }
 }

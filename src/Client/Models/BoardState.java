@@ -193,7 +193,7 @@ public class BoardState {
     for(int i = 0; i < 200; i++) {
       if(board[i] == null) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
-      } else if (board[i].color.equals(Color.BLUE)) {
+      } else if (board[i].color.equals(Color.DARKSLATEBLUE)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
       } else if(board[i].color.equals(Color.CYAN)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
@@ -205,7 +205,7 @@ public class BoardState {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
       } else if(board[i].color.equals(Color.PINK)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
-      } else if(board[i].color.equals(Color.RED)) {
+      } else if(board[i].color.equals(Color.FIREBRICK)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
       }
     }
@@ -224,7 +224,7 @@ public class BoardState {
       if(!leftBit && !middleBit && !rightBit) {
         board[indexInBoard] = null;
       } else if (!leftBit && !middleBit && rightBit) {
-        board[indexInBoard] = new Mino(indexInBoard, Color.BLUE, true);
+        board[indexInBoard] = new Mino(indexInBoard, Color.DARKSLATEBLUE, true);
       } else if(!leftBit && middleBit && !rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.CYAN, true);
       } else if(!leftBit && middleBit && rightBit) {
@@ -236,7 +236,7 @@ public class BoardState {
       } else if(leftBit && middleBit && !rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.PINK, true);
       } else if(leftBit && middleBit && rightBit) {
-        board[indexInBoard] = new Mino(indexInBoard, Color.RED, true);
+        board[indexInBoard] = new Mino(indexInBoard, Color.FIREBRICK, true);
       }
     }
   }
@@ -256,11 +256,15 @@ public class BoardState {
 
   public void updateBoardFromDeltaIntegerArray(int[] delta) {
     for(int i = 0; i < delta.length; i += 2) {
-      this.board[delta[i]] = new Mino(delta[i], Utils.intToColor(delta[i+1]), true);
+      if(delta[i+1] == -1) {
+        this.board[delta[i]] = null;
+      } else {
+        this.board[delta[i]] = new Mino(delta[i], Utils.intToColor(delta[i+1]), true);
+      }
     }
   }
 
-  public HashMap<Integer,Integer> getLatestDeltaAndReset() {
-    return this.packageHandler.retrieveAndResetDelta(this.board);
+  public int[] getLatestDeltaAndReset() {
+    return Utils.deltaHashmapToArray(this.packageHandler.retrieveAndResetDelta(this.board));
   }
 }

@@ -58,7 +58,7 @@ public class CollectorAndDuplicator implements Runnable {
 
   public void evaluateFullPackage() throws  Exception {
     var curConns = conns.queryAll(new FormalField(String.class));
-
+                                            // userUUID                           Timestamp                       Bitset
     Object[] raw_data_full = this.in.get(new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                          new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                          new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),

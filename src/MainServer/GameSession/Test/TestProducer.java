@@ -70,14 +70,14 @@ public class TestProducer implements Runnable {
 //                "full"
 //        );
 
-        var board = new BoardState(200);
+//        var board = new BoardState(200);
 //        Consumer consumerDelta = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, null, "delta");
-        Consumer consumerFull = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, null, "full");
+//        Consumer consumerFull = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, null, "full");
 
 //        (new Thread(pDelta)).start();
 //        (new Thread(pFull)).start();
 //        (new Thread(consumerDelta)).start();
-        (new Thread(consumerFull)).start();
+//        (new Thread(consumerFull)).start();
 
         while (true){
             Thread.sleep(1000);
