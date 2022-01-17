@@ -1,9 +1,13 @@
 package Client.Logic;
 
+import Client.GameSession.DeltaPkgProducer;
+import Client.GameSession.FullPkgProducer;
 import Client.Models.*;
 import Client.UI.Board;
+import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
+import org.jspace.RemoteSpace;
 
 import java.util.BitSet;
 import java.util.Random;
@@ -11,6 +15,7 @@ import java.util.Random;
 public class Controls {
   private Board nBoard;
   private BoardState boardState;
+  private boolean viewOnly;
 
   private Tetromino current_tetromino;
   private Tetromino ghost_tetromino;
@@ -22,15 +27,40 @@ public class Controls {
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
+  private RemoteSpace server;
 
-  public Controls(Board nBoard, BoardState boardState) {
+  private FullPkgProducer fullPkgProducer;
+  private DeltaPkgProducer deltaPkgProducer;
+
+
+  public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
     this.nBoard = nBoard;
     this.boardState = boardState;
-    this.current_tetromino = newRandomTetromino();
+    if(!viewOnly)
+      this.current_tetromino = newRandomTetromino();
+    this.viewOnly = viewOnly;
+    try {
+//      this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
+      this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/69420?keep",
+              "player1",
+              this.boardState);
+
+      (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
+
+      this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/69420?keep",
+              "player1",
+              this.boardState);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
 
     updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
+  // Update View and BoardState Methods
   public void keyDownEvent(KeyCode keyCode) {
     if(keyCode == KeyCode.UP) {
       rotateTetromino(current_tetromino);
@@ -48,9 +78,13 @@ public class Controls {
       loadSavedState();
     } else if(keyCode == KeyCode.P) {
       print();
+    } else if(keyCode == KeyCode.S) {
     }
 
     updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
   public void gameTick() {
@@ -60,18 +94,26 @@ public class Controls {
       dropTetromino();
     }
 
-     updateView();
+    updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
+
+
+
+
   public void updateView() {
-    boardState.removeTetromino(current_tetromino);
     if(ghost_tetromino != null && boardState.legalPosition(ghost_tetromino, 0, 0) )
       boardState.removeTetromino(ghost_tetromino);
 
-    updateGhost();
-
-    boardState.insertTetromino(ghost_tetromino);
-    boardState.insertTetromino(current_tetromino);
+    if(!this.viewOnly) {
+      boardState.removeTetromino(current_tetromino);
+      updateGhost();
+      boardState.insertTetromino(ghost_tetromino);
+      boardState.insertTetromino(current_tetromino);
+    }
 
     nBoard.loadBoardState(boardState);
   }
@@ -119,7 +161,7 @@ public class Controls {
     if(savedTetromino != -1) {
       int tempTetro = savedTetromino;
       savedTetromino = lastTetromino;
-      current_tetromino = newTetromino(tempTetro);
+      current_tetromino = Utils.newTetromino(tempTetro);
       lastTetromino = tempTetro;
     } else {
       savedTetromino = lastTetromino;
@@ -133,38 +175,18 @@ public class Controls {
   public void updateGhost() {
     int lowestY = boardState.getLowestLegalYcoord(current_tetromino);
 
-    ghost_tetromino = newTetromino(lastTetromino);
+    ghost_tetromino = Utils.newTetromino(lastTetromino);
     ghost_tetromino.color = new Color(ghost_tetromino.color.getRed(), ghost_tetromino.color.getGreen(), ghost_tetromino.color.getBlue(), 0.8).brighter();
     ghost_tetromino.posX = current_tetromino.posX;
     ghost_tetromino.posY = lowestY;
+    ghost_tetromino.isGhost = true;
     ghost_tetromino.state = current_tetromino.state;
   }
 
   public Tetromino newRandomTetromino() {
     lastTetromino = rnd.nextInt(7);
-    return newTetromino(lastTetromino);
+    return Utils.newTetromino(lastTetromino);
   }
-
-  public Tetromino newTetromino(int index) {
-    switch(index) {
-      case 0:
-        return new I_Block();
-      case 1:
-        return new J_Block();
-      case 2:
-        return new L_Block();
-      case 3:
-        return new O_Block();
-      case 4:
-        return new S_Block();
-      case 5:
-        return new T_Block();
-      case 6:
-        return new Z_Block();
-    }
-    return null;
-  }
-
 
   // MISC METHODS
   public void loadSavedState() {

@@ -1,11 +1,18 @@
 package Client.Models;
 
 
+import Client.GameSession.PackageHandler;
+import Client.Utility.Utils;
+import com.google.gson.internal.LinkedTreeMap;
 import javafx.scene.paint.Color;
+import jdk.jshell.execution.Util;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BoardState {
+  private PackageHandler packageHandler;
   private Mino[] board;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
@@ -15,6 +22,8 @@ public class BoardState {
   public Mino[] getBoard() {
     return board;
   }
+
+  public void addPackageHandler(PackageHandler packageHandler) { this.packageHandler = packageHandler; }
 
   public void setBoard(Mino[] board) {
     this.board = board;
@@ -43,6 +52,9 @@ public class BoardState {
         int boardIndex = (posY + y)*10 + (posX+x);
         if(currentState[index] == 1 && boardIndex >= 0 && boardIndex < 200) {
           board[boardIndex] = insertOrRemove ? new Mino(posX+x, posY+y, tetromino.color, isPlaced) : null;
+
+          if(this.packageHandler != null && !tetromino.isGhost)
+            this.packageHandler.updateDelta(this.board, boardIndex);
         }
       }
     }
@@ -128,6 +140,8 @@ public class BoardState {
       } else {
         board[index] = null;
       }
+      if(this.packageHandler != null)
+        this.packageHandler.updateDelta(this.board, index);
     }
   }
 
@@ -179,7 +193,7 @@ public class BoardState {
     for(int i = 0; i < 200; i++) {
       if(board[i] == null) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
-      } else if (board[i].color.equals(Color.BLUE)) {
+      } else if (board[i].color.equals(Color.DARKSLATEBLUE)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
       } else if(board[i].color.equals(Color.CYAN)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
@@ -191,7 +205,7 @@ public class BoardState {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
       } else if(board[i].color.equals(Color.PINK)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
-      } else if(board[i].color.equals(Color.RED)) {
+      } else if(board[i].color.equals(Color.FIREBRICK)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
       }
     }
@@ -210,7 +224,7 @@ public class BoardState {
       if(!leftBit && !middleBit && !rightBit) {
         board[indexInBoard] = null;
       } else if (!leftBit && !middleBit && rightBit) {
-        board[indexInBoard] = new Mino(indexInBoard, Color.BLUE, true);
+        board[indexInBoard] = new Mino(indexInBoard, Color.DARKSLATEBLUE, true);
       } else if(!leftBit && middleBit && !rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.CYAN, true);
       } else if(!leftBit && middleBit && rightBit) {
@@ -222,8 +236,35 @@ public class BoardState {
       } else if(leftBit && middleBit && !rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.PINK, true);
       } else if(leftBit && middleBit && rightBit) {
-        board[indexInBoard] = new Mino(indexInBoard, Color.RED, true);
+        board[indexInBoard] = new Mino(indexInBoard, Color.FIREBRICK, true);
       }
     }
+  }
+
+  public void updateBoardFromDelta(Map<Integer, Integer> delta) {
+    for(int k : delta.keySet()) {
+      this.board[k] = new Mino(k, Utils.intToColor(delta.get(k)), true);
+    }
+  }
+
+  public void updateBoardFromDeltaTreeMap(LinkedTreeMap<String, Double> delta) {
+    for(String k : delta.keySet()) {
+      int index = Integer.parseInt(k);
+      this.board[index] = new Mino(index, Utils.intToColor((int)Math.round(delta.get(k))), true);
+    }
+  }
+
+  public void updateBoardFromDeltaIntegerArray(int[] delta) {
+    for(int i = 0; i < delta.length; i += 2) {
+      if(delta[i+1] == -1) {
+        this.board[delta[i]] = null;
+      } else {
+        this.board[delta[i]] = new Mino(delta[i], Utils.intToColor(delta[i+1]), true);
+      }
+    }
+  }
+
+  public int[] getLatestDeltaAndReset() {
+    return Utils.deltaHashmapToArray(this.packageHandler.retrieveAndResetDelta(this.board));
   }
 }

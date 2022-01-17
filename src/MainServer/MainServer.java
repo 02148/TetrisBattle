@@ -3,6 +3,7 @@ package MainServer;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 
+import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.UserRepo;
 import org.jspace.*;
 
@@ -32,6 +33,8 @@ public class MainServer {
         var crl = new ChatRoomListener("globalChat");
         crl.setChat(globalChat);
         new Thread(crl).start();
+
+        TestProducer.main(new String[]{}); // Delete me pls 🥵
     }
 }
 

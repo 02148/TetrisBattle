@@ -1,5 +1,6 @@
 package Client;
 
+import Client.GameSession.PackageHandler;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
@@ -16,6 +17,7 @@ import java.util.Random;
 
 public class GameEngine implements Runnable{
   private Controls controller;
+  private PackageHandler packageHandler;
   private BoardState boardState;
   private static Board nBoard;
 
@@ -23,9 +25,11 @@ public class GameEngine implements Runnable{
   private boolean stop = false;
 
   public GameEngine(Board nBoard) {
+    this.packageHandler = new PackageHandler(200);
     this.boardState = new BoardState(200);
+    this.boardState.addPackageHandler(this.packageHandler);
     this.nBoard = nBoard;
-    this.controller = new Controls(nBoard, boardState);
+    this.controller = new Controls(nBoard, boardState, false);
   }
 
   public Thread toThread() {
