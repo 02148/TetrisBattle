@@ -1,5 +1,7 @@
 package Client.Logic;
 
+import Client.GameSession.DeltaPkgProducer;
+import Client.GameSession.FullPkgProducer;
 import Client.Models.*;
 import Client.UI.Board;
 import Client.Utility.Utils;
@@ -9,8 +11,6 @@ import org.jspace.RemoteSpace;
 
 import java.util.BitSet;
 import java.util.Random;
-
-import static MainServer.Utils.getCurrentExactTimestamp;
 
 public class Controls {
   private Board nBoard;
@@ -29,6 +29,9 @@ public class Controls {
 
   private RemoteSpace server;
 
+  private FullPkgProducer fullPkgProducer;
+  private DeltaPkgProducer deltaPkgProducer;
+
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
     this.nBoard = nBoard;
@@ -37,10 +40,24 @@ public class Controls {
       this.current_tetromino = newRandomTetromino();
     this.viewOnly = viewOnly;
     try {
-      this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
-    } catch(Exception e) {}
+//      this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
+      this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/69420?keep",
+              "player1",
+              this.boardState);
+
+      (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
+
+      this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/69420?keep",
+              "player1",
+              this.boardState);
+    } catch(Exception e) {
+      e.printStackTrace();
+    }
 
     updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
   // Update View and BoardState Methods
@@ -65,6 +82,9 @@ public class Controls {
     }
 
     updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
   public void gameTick() {
@@ -75,6 +95,9 @@ public class Controls {
     }
 
     updateView();
+
+    if(!this.viewOnly)
+      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
   }
 
 
@@ -93,9 +116,6 @@ public class Controls {
     }
 
     nBoard.loadBoardState(boardState);
-
-    if(!this.viewOnly)
-      sentBoard();
   }
 
   public boolean isDead() {
@@ -185,16 +205,5 @@ public class Controls {
         System.out.println();
       System.out.print(bitset.get(i) ? "1 " : "0 ");
     }
-  }
-
-  public void sentBoard() {
-//    var gg = boardState.getLatestDeltaAndReset();
-    try {
-      this.server.put("full",
-              getCurrentExactTimestamp(),
-              "player1",
-              this.boardState.toBitArray()
-      );
-    } catch (Exception e) {}
   }
 }

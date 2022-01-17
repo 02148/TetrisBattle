@@ -104,8 +104,10 @@ public class GlobalGameUIController implements Initializable {
         BoardState boardState2 = new BoardState(200);
         Controls controls2 = new Controls(nBoard2, boardState2, true);
         try {
-            Consumer consumerFull = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "full");
+            Consumer consumerFull = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "full"); // haps haps full
+            Consumer consumerDelta = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "delta"); // haps haps delta
             (new Thread(consumerFull)).start();
+            (new Thread(consumerDelta)).start();
         } catch (Exception e) {}
 
 

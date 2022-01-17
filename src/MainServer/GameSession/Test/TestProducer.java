@@ -1,9 +1,6 @@
 package MainServer.GameSession.Test;
 
-import Client.GameSession.Producer;
-import Client.Models.BoardState;
 import MainServer.GameSession.GameSession;
-import Client.GameSession.Consumer;
 import org.jspace.*;
 
 import java.io.IOException;
@@ -60,12 +57,12 @@ public class TestProducer implements Runnable {
         conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
 
-//        Producer pDelta = new Producer("tcp://localhost:" + PORT + "/69420?keep",
+//        FullPkgProducer pDelta = new FullPkgProducer("tcp://localhost:" + PORT + "/69420?keep",
 //                "player1",
 //                "delta"
 //        );
 //
-//        Producer pFull = new Producer("tcp://localhost:" + PORT + "/69420?keep",
+//        FullPkgProducer pFull = new FullPkgProducer("tcp://localhost:" + PORT + "/69420?keep",
 //                "player1",
 //                "full"
 //        );
