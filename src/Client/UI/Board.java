@@ -34,7 +34,24 @@ public class Board extends Pane {
         for(int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
                 Canvas canvas = new Canvas(size,size);
-                updateBlock(x, y, Color.DARKSLATEGRAY, canvas.getGraphicsContext2D());
+                updateBlock(x, y, Color.LIGHTGRAY, canvas.getGraphicsContext2D());
+                grid.add(canvas, x, y);
+            }
+        }
+
+        this.getChildren().add(grid);
+    }
+
+    public Board(int size) {
+        super();
+        this.size = size;
+        grid = new GridPane();
+
+
+        for(int y = 0; y < 20; y++) {
+            for (int x = 0; x < 10; x++) {
+                Canvas canvas = new Canvas(size,size);
+                updateBlock(x, y, Color.LIGHTGRAY, canvas.getGraphicsContext2D());
                 grid.add(canvas, x, y);
             }
         }

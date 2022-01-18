@@ -2,7 +2,7 @@ package Main;
 
 
 import Client.Client;
-import Client.UI.GlobalChatUIController;
+
 
 import Client.UI.SplashScreenController;
 import javafx.fxml.FXMLLoader;

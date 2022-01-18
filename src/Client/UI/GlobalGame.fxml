@@ -19,51 +19,15 @@
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Button>
-                <Button fx:id = "leaveGameButton" layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #ff1616" text="Leave " textFill="#ff1616" focusTraversable="false">
+                <Button fx:id="leaveGameButton" focusTraversable="false" layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #ff1616" text="Leave " textFill="#ff1616">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Button>
                 <AnchorPane fx:id="boardHolder" layoutX="8.0" layoutY="23.0" prefHeight="614.0" prefWidth="394.0">
                     <children>
-                        <GridPane fx:id="gameBoard" gridLinesVisible="false" layoutX="63.0" layoutY="94.0" prefHeight="510" prefWidth="256" style="-fx-background-color: gray">
-                            <columnConstraints>
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-                            </columnConstraints>
-                            <rowConstraints>
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                            </rowConstraints>
-                        </GridPane>
-                        <TextArea fx:id="level" editable="false" layoutX="100" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level 1" focusTraversable="false"/>
-                        <TextArea fx:id="lines" editable="false" layoutX="200" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Lines 0" focusTraversable="false" />
+                        <TextArea fx:id="level" editable="false" focusTraversable="false" layoutX="100" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Level 1" />
+                        <TextArea fx:id="lines" editable="false" focusTraversable="false" layoutX="200" layoutY="25.0" prefHeight="42.0" prefWidth="84.0" text="Lines 0" />
                     </children></AnchorPane>
 
 
@@ -83,13 +47,23 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
+                     <children>
+                        <AnchorPane fx:id="player1" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="player2" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
+                        <AnchorPane fx:id="player3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" />
+                        <AnchorPane fx:id="player4" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />
+                        <AnchorPane fx:id="player5" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player6" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player8" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                     </children>
                         </GridPane>
                     </children>
                 </AnchorPane>
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="221.0" prefWidth="974.0">
                     <children>
-                        <TextArea fx:id="gameChatArea" editable="false" prefHeight="235.0" prefWidth="882.0" text="Game Chat" wrapText="true" focusTraversable="false"/>
-                        <TextField fx:id="gameChatTextField" layoutY="240.0" onAction="#handleGameChatInputAction" prefHeight="32.0" prefWidth="882.0" promptText="Type To Chat..." focusTraversable="false" />
+                        <TextArea fx:id="gameChatArea" editable="false" focusTraversable="false" prefHeight="235.0" prefWidth="882.0" text="Game Chat" wrapText="true" />
+                        <TextField fx:id="gameChatTextField" focusTraversable="false" layoutY="240.0" onAction="#handleGameChatInputAction" prefHeight="32.0" prefWidth="882.0" promptText="Type To Chat..." />
                     </children>
                 </AnchorPane>
             </items>

@@ -134,7 +134,7 @@ public class Controls {
     int lowestY = boardState.getLowestLegalYcoord(current_tetromino);
 
     ghost_tetromino = newTetromino(lastTetromino);
-    ghost_tetromino.color = new Color(ghost_tetromino.color.getRed(), ghost_tetromino.color.getGreen(), ghost_tetromino.color.getBlue(), 0.8).brighter();
+    ghost_tetromino.color = new Color(ghost_tetromino.color.getRed(), ghost_tetromino.color.getGreen(), ghost_tetromino.color.getBlue(), 0.4).brighter();
     ghost_tetromino.posX = current_tetromino.posX;
     ghost_tetromino.posY = lowestY;
     ghost_tetromino.state = current_tetromino.state;

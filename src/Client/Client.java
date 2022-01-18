@@ -159,17 +159,7 @@ public class Client extends Application {
     }
   }
 
-  public String getUserName(){
-    return userName;
-  }
 
-}
-
-class RecieveMessages implements Runnable {
-
-  public void run() {
-
-  }
 }
 
 

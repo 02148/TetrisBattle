@@ -36,7 +36,7 @@ public class O_Block extends Tetromino{
   public O_Block() {
     this.posX = 3;
     this.posY = -2;
-    this.color = Color.YELLOW;
+    this.color = Color.GOLD;
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }

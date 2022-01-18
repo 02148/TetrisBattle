@@ -29,12 +29,28 @@ public class GlobalGameUIController implements Initializable {
     @FXML Button startGameButton;
     @FXML Button leaveGameButton;
     @FXML AnchorPane boardHolder;
+
+    //Players
+    @FXML AnchorPane player1;
+    @FXML AnchorPane player2;
+    @FXML AnchorPane player3;
+    @FXML AnchorPane player4;
+    @FXML AnchorPane player5;
+    @FXML AnchorPane player6;
+    @FXML AnchorPane player7;
+    @FXML AnchorPane player8;
+
+
+
+
     @FXML TextArea lines;
     @FXML TextArea level;
+    @FXML TextArea status;
 
 
     private Client client;
     private ChatListener chatListener;
+
 
 
     @Override
@@ -65,6 +81,7 @@ public class GlobalGameUIController implements Initializable {
         Scene scene = new Scene(loader.load());
 
         GlobalChatUIController globalChatUIController = loader.getController();
+        globalChatUIController.setClient(client);
         globalChatUIController.setUpChatListner();
 
         primaryStage.setScene(scene);
@@ -99,10 +116,26 @@ public class GlobalGameUIController implements Initializable {
 
         taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
                 lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
-        taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
-                level.setText("Level " + newProgress.toString()));
+        taskRunLines.messageProperty().addListener((obs,oldMessage,newMessage) ->
+                level.setText("Level " + newMessage.toString()));
 
         Platform.runLater(() -> new Thread(taskRunLines).start());
+
+        Board player1Board = new Board(12);
+        addPlayerBoard(player1Board, player1);
+
+        GameEngine gameEngine2 = new GameEngine(player1Board);
+        Platform.runLater(() -> gameEngine2.toThread().start());
+    }
+
+    private void addPlayerBoard(Board playerBoard, AnchorPane pane){
+        AnchorPane.setBottomAnchor(playerBoard, 5.0);
+        AnchorPane.setTopAnchor(playerBoard,8.0);
+        AnchorPane.setLeftAnchor(playerBoard, 50.0);
+        AnchorPane.setRightAnchor(playerBoard, 5.0);
+        pane.getChildren().add(playerBoard);
+
+
 
 
     }
