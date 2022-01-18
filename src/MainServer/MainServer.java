@@ -22,7 +22,6 @@ public class MainServer {
 
         SpaceRepository chatChannels = new SpaceRepository();
         SequentialSpace globalChat = new SequentialSpace();
-        chatChannels.add("globalChat",globalChat);
         chatChannels.addGate("tcp://localhost:4242/?conn");
 
         var gl = new GlobalListener();
@@ -32,7 +31,8 @@ public class MainServer {
         new Thread(gl).start();
 
         var crl = new ChatRoomListener("globalChat");
-        crl.setChat(globalChat);
+        crl.setRooms(gameRooms);
+        crl.setChat(chatChannels);
         new Thread(crl).start();
 
         TestProducer.main(new String[]{}); // Delete me pls 🥵
@@ -41,33 +41,47 @@ public class MainServer {
 
 //Deletes old messages in Space
 class ChatRoomListener implements Runnable {
+    private GameRoomRepo rooms;
+    private SpaceRepository chatChannels;
     private SequentialSpace chat;
     private String roomUUID;
 
-    public void setChat(SequentialSpace chat){this.chat = chat;}
+    public void setRooms(GameRoomRepo rooms) {
+        this.rooms = rooms;
+    }
+
+    public void setChat(SpaceRepository chatChannels) {
+        this.chatChannels = chatChannels;
+        this.chat = new SequentialSpace();
+        this.chatChannels.add(roomUUID,chat);
+    }
 
     public ChatRoomListener(String roomUUID) {
         this.roomUUID = roomUUID;
     }
 
     Object[] input = new Object[4];
+
     public void run() {
-        while (true)
         try {
-            input = chat.query(new FormalField(String.class),
-                    new ActualField(roomUUID),
-                    new FormalField(String.class),
-                    new FormalField(Double.class),
-                    new FormalField(String.class));
-            if ((Double) input[3] > Utils.getCurrentTimestamp() - 100) {
-                Thread.sleep(100);
+            while (rooms.exists(roomUUID)) {
+
+                input = chat.query(new FormalField(String.class),
+                        new ActualField(roomUUID),
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class));
+                if ((Double) input[3] > Utils.getCurrentTimestamp() - 100) {
+                    Thread.sleep(100);
+                }
+                System.out.println("Deleted chatMessage in room " + roomUUID);
+                chat.get(new FormalField(String.class),
+                        new ActualField(roomUUID),
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class));
             }
-            System.out.println("Deleted chatMessage in room " + roomUUID);
-            chat.get(new FormalField(String.class),
-                    new ActualField(roomUUID),
-                    new FormalField(String.class),
-                    new FormalField(Double.class),
-                    new FormalField(String.class));
+            chatChannels.remove(roomUUID);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -122,9 +136,8 @@ class GlobalListener implements Runnable {
 
                     //Create chatroom for game
                     var crl = new ChatRoomListener(UUID);
-                    SequentialSpace chat = new SequentialSpace();
-                    chatChannels.add(UUID,chat);
-                    crl.setChat(chat);
+                    crl.setChat(chatChannels);
+                    crl.setRooms(gameRooms);
                     new Thread(crl).start();
 
                 } else if (userInput[1].equals("join")) {
