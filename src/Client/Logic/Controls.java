@@ -1,13 +1,11 @@
 package Client.Logic;
 
-import Client.GameSession.DeltaPkgProducer;
-import Client.GameSession.FullPkgProducer;
+import Client.GameSession.PackageHandlerProducer;
 import Client.Models.*;
 import Client.UI.Board;
 import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
-import org.jspace.RemoteSpace;
 
 import java.util.BitSet;
 import java.util.Random;
@@ -27,10 +25,7 @@ public class Controls {
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
-  private RemoteSpace server;
-
-  private FullPkgProducer fullPkgProducer;
-  private DeltaPkgProducer deltaPkgProducer;
+  private PackageHandlerProducer packageHandlerProducer;
 
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
@@ -39,24 +34,15 @@ public class Controls {
     if(!viewOnly)
       this.current_tetromino = newRandomTetromino();
     this.viewOnly = viewOnly;
-    try {
-      this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/69420?keep",
-              "player1",
-              this.boardState);
 
-      (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
+    updateViewModel();
 
-      this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/69420?keep",
-              "player1",
-              this.boardState);
-    } catch(Exception e) {
-      e.printStackTrace();
-    }
+//    if(!this.viewOnly)
+//      this.packageHandlerProducer.sendDeltaPackage();
+  }
 
-    updateView();
-
-    if(!this.viewOnly)
-      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
+  public void setPackageHandlerFull(PackageHandlerProducer packageHandlerProducer) {
+    this.packageHandlerProducer = packageHandlerProducer;
   }
 
   // Update View and BoardState Methods
@@ -73,17 +59,14 @@ public class Controls {
       dropTetromino();
     } else if(keyCode == KeyCode.C && allowedToSwitch) {
       switchCurrentTetromino();
-    } else if(keyCode == KeyCode.T) {
-      loadSavedState();
     } else if(keyCode == KeyCode.P) {
       print();
-    } else if(keyCode == KeyCode.S) {
     }
 
-    updateView();
+    updateViewModel();
 
     if(!this.viewOnly)
-      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
+      this.packageHandlerProducer.sendDeltaPackage();
   }
 
   public void gameTick() {
@@ -93,17 +76,17 @@ public class Controls {
       dropTetromino();
     }
 
-    updateView();
+    updateViewModel();
 
     if(!this.viewOnly)
-      this.deltaPkgProducer.sendBoard(); // TODO bruh moment
+      this.packageHandlerProducer.sendDeltaPackage();
   }
 
 
 
 
 
-  public void updateView() {
+  public void updateViewModel() {
     if(ghost_tetromino != null && boardState.legalPosition(ghost_tetromino, 0, 0) )
       boardState.removeTetromino(ghost_tetromino);
 

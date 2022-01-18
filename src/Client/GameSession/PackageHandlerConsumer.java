@@ -2,23 +2,26 @@ package Client.GameSession;
 
 import Client.Models.BoardState;
 import Client.Models.Mino;
+import Client.UI.Board;
 import Client.Utility.Utils;
 
 import java.util.*;
 
-public class PackageHandler {
+public class PackageHandlerConsumer {
     private Mino[] lastBoardSnapshot;
     private HashMap<Integer, Integer> delta = new HashMap<Integer, Integer>();
     private HashMap<Integer, Integer> deltaClone = new HashMap<Integer, Integer>();
+    private BoardState boardState;
+    private Board nBoard;
+    private Queue<DeltaDataObject> deltaQueue;
 
-    Queue<DeltaDataObject> deltaQueue;
-
-    public PackageHandler(int size) {
-        lastBoardSnapshot = new Mino[size];
+    public PackageHandlerConsumer(int size, BoardState boardState, Board nBoard) {
+        this.lastBoardSnapshot = new Mino[size];
+        this.boardState = boardState;
+        this.nBoard = nBoard;
 
         Comparator<DeltaDataObject> deltaComp = Comparator.comparingDouble(DeltaDataObject::getTimestamp);
-
-        deltaQueue = new PriorityQueue<>(deltaComp);
+        this.deltaQueue = new PriorityQueue<>(deltaComp);
     }
 
     public void updateDelta(Mino[] board, int index) {
@@ -39,24 +42,41 @@ public class PackageHandler {
         return deltaClone;
     }
 
+
     public void addDeltaToQueue(double timestamp, int[] newDelta) {
         deltaQueue.add(new DeltaDataObject(timestamp, newDelta));
     }
 
-    public void reapplyDelta(BoardState boardState) {
+    public void applyFull(BitSet newBoardState) {
+        this.boardState.setBoardStateFromBitArray(newBoardState);
+    }
+
+    public void applyDelta(int[] newDelta) {
+        this.boardState.updateBoardFromDelta(newDelta);
+    }
+
+    public void reapplyDeltas() {
         for (var deltaDataObject : this.deltaQueue)
-            boardState.updateBoardFromDeltaIntegerArray(deltaDataObject.getDeltaPkg());
+            this.boardState.updateBoardFromDelta(deltaDataObject.getDeltaPkg());
     }
 
     public void removeOldDeltas(double lastFullPkgTimestamp) {
         var curDelta = this.deltaQueue.peek();
         if (curDelta == null)
-            return;
+            curDelta = new DeltaDataObject(0, null);
 
-        while (curDelta.getTimestamp() < lastFullPkgTimestamp) {
+        while (curDelta != null && curDelta.getTimestamp() < lastFullPkgTimestamp) {
             this.deltaQueue.remove();
             curDelta = this.deltaQueue.peek();
         }
+    }
+
+    public void updateViewModel() {
+        this.nBoard.loadBoardState(boardState);
+    }
+
+    public void printBoard() {
+        System.out.println(this.boardState);
     }
 }
 

@@ -4,6 +4,8 @@ import Client.Client;
 import Client.GameEngine;
 import Client.GameSession.Consumer;
 import Client.Logic.Controls;
+import Client.Logic.LocalGame;
+import Client.Logic.Opponent;
 import Client.Models.BoardState;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
@@ -86,29 +88,24 @@ public class GlobalGameUIController implements Initializable {
     @FXML protected void handleStartGameAction(ActionEvent event){
         startGameButton.setDisable(true);
         startGameButton.setVisible(false);
-        Board nBoard = new Board(63,94,25);
-        boardHolder.getChildren().add(nBoard);
-        gameEngine = new GameEngine(nBoard);
-        nBoard.getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+
+        // Making local game
+        LocalGame localGame = new LocalGame(63, 94, "player1");
+        boardHolder.getChildren().add(localGame.getViewModel());
+        localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
             public void handle(KeyEvent keyEvent) {
-                gameEngine.keyDownEvent(keyEvent);
+                localGame.keyDownEvent(keyEvent);
             }
         });
-        Platform.runLater(() -> gameEngine.toThread().start());
+        Platform.runLater(() -> localGame.toThread().start());
 
 
         // Making a second board for testing purposes
-        Board nBoard2 = new Board(300,94,10);
-        boardHolder.getChildren().add(nBoard2);
-        BoardState boardState2 = new BoardState(200);
-        Controls controls2 = new Controls(nBoard2, boardState2, true);
-        try {
-            Consumer consumerFull = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "full"); // haps haps full
-            Consumer consumerDelta = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "delta"); // haps haps delta
-            (new Thread(consumerFull)).start();
-            (new Thread(consumerDelta)).start();
-        } catch (Exception e) {}
+        Opponent opponent1 = new Opponent(300, 95, "player1");
+        boardHolder.getChildren().add(opponent1.getBoardView());
+
 
 
         GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
