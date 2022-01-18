@@ -34,7 +34,7 @@ public class Board extends Pane {
         for(int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
                 Canvas canvas = new Canvas(size,size);
-                updateBlock(x, y, Color.LIGHTSKYBLUE, canvas.getGraphicsContext2D());
+                updateBlock(x, y, Color.WHITE, canvas.getGraphicsContext2D());
                 grid.add(canvas, x, y);
             }
         }
@@ -51,7 +51,7 @@ public class Board extends Pane {
         for(int y = 0; y < 20; y++) {
             for (int x = 0; x < 10; x++) {
                 Canvas canvas = new Canvas(size,size);
-                updateBlock(x, y, Color.LIGHTSKYBLUE, canvas.getGraphicsContext2D());
+                updateBlock(x, y, Color.WHITE, canvas.getGraphicsContext2D());
                 grid.add(canvas, x, y);
             }
         }
@@ -61,7 +61,7 @@ public class Board extends Pane {
 
     private void updateBlock(int x, int y, Color color, GraphicsContext gc) {
         Platform.runLater(() -> {
-            gc.setFill(Color.DEEPSKYBLUE);
+            gc.setFill(Color.rgb(194, 233, 244));
             gc.fillRect(0,0,size,size);
             gc.setFill(color);
 
@@ -99,7 +99,7 @@ public class Board extends Pane {
             if(newBoard[i] != null) {
                 setBlockColor(i, newBoard[i].color);
             } else {
-                setBlockColor(i, Color.LIGHTSKYBLUE);
+                setBlockColor(i, Color.WHITE);
             }
         }
     }
