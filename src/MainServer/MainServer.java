@@ -81,7 +81,7 @@ class ChatRoomListener implements Runnable {
                 chat.get(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
-                        new FormalField(Double.class),
+                        new ActualField(messageInput[3]),
                         new FormalField(String.class));
                 System.out.println("Deleted chatMessage in room " + roomUUID);
 
