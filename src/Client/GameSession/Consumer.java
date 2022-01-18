@@ -6,14 +6,14 @@ import java.io.IOException;
 import java.util.BitSet;
 
 public class Consumer implements Runnable {
-    private RemoteSpace rs;
-    private String packageType;
-    double lastTimeStamp = 0;
-
+    private final RemoteSpace rs;
+    private final String packageType, userUUID;
+    double lastTimestampDelta = 0, lastTimestampFull = 0;
     PackageHandlerConsumer packageHandlerConsumer;
 
-    public Consumer(String URI, PackageHandlerConsumer packageHandlerConsumer, String packageType) throws IOException, InterruptedException {
-        this.rs = new RemoteSpace(URI);
+    public Consumer(String userUUID, PackageHandlerConsumer packageHandlerConsumer, String packageType) throws IOException, InterruptedException {
+        this.userUUID = userUUID;
+        this.rs = new RemoteSpace("tcp://10.209.231.86:1337/" + userUUID + "?keep");
         this.packageType = packageType;
         this.packageHandlerConsumer = packageHandlerConsumer;
     }
@@ -32,11 +32,11 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
-                    double newTimestamp = (double)data[1];
-                    if(newTimestamp > lastTimeStamp) {
+                    double newTimestampFull = (double)data[1];
+                    if(newTimestampFull > lastTimestampFull) {
                         BitSet full = (BitSet) data[2];
-                        lastTimeStamp = newTimestamp;
-                        this.packageHandlerConsumer.removeOldDeltas(newTimestamp);
+                        lastTimestampFull = newTimestampFull;
+                        this.packageHandlerConsumer.removeOldDeltas(newTimestampFull);
                         this.packageHandlerConsumer.applyFull(full);
                         this.packageHandlerConsumer.reapplyDeltas();
                         this.packageHandlerConsumer.updateViewModel();
@@ -46,11 +46,11 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class),
                                               new FormalField(Object.class));
 
-                    double newTimestamp = (double)data[1];
-                    if(newTimestamp > lastTimeStamp) {
+                    double newTimestampDelta = (double)data[1];
+                    if(newTimestampDelta > lastTimestampDelta) {
                         int[] delta = (int[]) data[2];
-                        lastTimeStamp = newTimestamp;
-                        this.packageHandlerConsumer.addDeltaToQueue(newTimestamp, delta);
+                        lastTimestampDelta = newTimestampDelta;
+                        this.packageHandlerConsumer.addDeltaToQueue(newTimestampDelta, delta);
                         this.packageHandlerConsumer.applyDelta(delta);
                         this.packageHandlerConsumer.updateViewModel();
                     }

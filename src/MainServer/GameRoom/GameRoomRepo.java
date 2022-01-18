@@ -14,9 +14,15 @@ public class GameRoomRepo {
     static Space s;
     Space conns;
 
-    public GameRoomRepo() {
+    public GameRoomRepo() throws InterruptedException {
         this.s = new SequentialSpace();
         this.conns = new SequentialSpace();
+        GameRoom gr = new GameRoom(
+                "globalHost",
+                "globalChat",
+                0
+        );
+        insertGameRoom(gr);
     }
 
     private void insertGameRoom(GameRoom gr) throws InterruptedException {

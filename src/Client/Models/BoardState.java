@@ -159,7 +159,7 @@ public class BoardState {
         {
           s.append("🟥");
         } else {
-          if (board[index].color.equals(Color.BLUE)) {
+          if (board[index].color.equals(Color.DARKSLATEBLUE)) {
             s.append("🟦");
           } else if(board[index].color.equals(Color.CYAN)) {
             s.append("🟪");
@@ -171,7 +171,7 @@ public class BoardState {
             s.append("🟩");
           } else if(board[index].color.equals(Color.PINK)) {
             s.append("🟫");
-          } else if(board[index].color.equals(Color.RED)) {
+          } else if(board[index].color.equals(Color.FIREBRICK)) {
             s.append("🟥");
           } else {
             s.append("⬛");
