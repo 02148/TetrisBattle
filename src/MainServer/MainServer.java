@@ -23,7 +23,7 @@ public class MainServer {
         SpaceRepository chatChannels = new SpaceRepository();
         SequentialSpace globalChat = new SequentialSpace();
         chatChannels.add("globalChat",globalChat);
-        chatChannels.addGate("tcp://localhost:4242/?conn");
+        chatChannels.addGate("tcp://10.209.231.86:4242/?conn");
 
         var gl = new GlobalListener();
         gl.setUsers(users);
@@ -100,7 +100,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://localhost:6969/?conn");
+        mainChannels.addGate("tcp://10.209.231.86:6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];

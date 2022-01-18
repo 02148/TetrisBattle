@@ -29,13 +29,13 @@ public class LocalGame implements Runnable {
         this.boardState = new BoardState(boardSize);
 
             try {
-              this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/69420?keep",
+              this.fullPkgProducer = new FullPkgProducer("tcp://10.209.231.86:1337/69420?keep",
                       "player1",
                       this.boardState);
 
               (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
-              this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/69420?keep",
+              this.deltaPkgProducer = new DeltaPkgProducer("tcp://10.209.231.86:1337/69420?keep",
                       "player1",
                       this.boardState);
 

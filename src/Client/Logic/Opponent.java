@@ -19,8 +19,8 @@ public class Opponent {
             this.boardState = new BoardState(boardSize);
             this.packageHandlerConsumer = new PackageHandlerConsumer(boardSize, boardState, nBoard);
 
-            Consumer consumerFull = new Consumer("tcp://localhost:1337/" + userUUID + "?keep", packageHandlerConsumer, "full"); // haps haps full
-            Consumer consumerDelta = new Consumer("tcp://localhost:1337/" + userUUID + "?keep", packageHandlerConsumer, "delta"); // haps haps delta
+            Consumer consumerFull = new Consumer(userUUID, packageHandlerConsumer, "full"); // haps haps full
+            Consumer consumerDelta = new Consumer(userUUID, packageHandlerConsumer, "delta"); // haps haps delta
 
             this.controller = new Controls(nBoard, boardState, true);
 

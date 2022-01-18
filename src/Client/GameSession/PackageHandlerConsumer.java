@@ -65,7 +65,7 @@ public class PackageHandlerConsumer {
         if (curDelta == null)
             curDelta = new DeltaDataObject(0, null);
 
-        while (curDelta != null && curDelta.getTimestamp() < lastFullPkgTimestamp) {
+        while (!deltaQueue.isEmpty() && curDelta.getTimestamp() < lastFullPkgTimestamp) {
             this.deltaQueue.remove();
             curDelta = this.deltaQueue.peek();
         }

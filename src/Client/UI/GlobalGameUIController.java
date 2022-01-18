@@ -93,7 +93,7 @@ public class GlobalGameUIController implements Initializable {
 
 
         // Making local game
-        LocalGame localGame = new LocalGame(63, 94, "player1");
+        LocalGame localGame = new LocalGame(63, 94, "player2");
         boardHolder.getChildren().add(localGame.getViewModel());
         localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
             @Override
