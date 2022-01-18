@@ -2,14 +2,10 @@ package Client.GameSession;
 
 import Client.Logic.Controls;
 import Client.Models.BoardState;
-import com.google.gson.internal.LinkedTreeMap;
-import static MainServer.Utils.getCurrentExactTimestamp;
 import org.jspace.*;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashMap;
 
 public class Consumer implements Runnable {
     private RemoteSpace rs;
@@ -18,12 +14,14 @@ public class Consumer implements Runnable {
     private String packageType;
     double lastTimeStamp = 0;
 
+    PackageHandler packageHandler;
 
-    public Consumer(String URI, BoardState boardState, Controls controller, String packageType) throws IOException, InterruptedException {
+    public Consumer(String URI, BoardState boardState, Controls controller, String packageType, PackageHandler packageHandler) throws IOException, InterruptedException {
         this.rs = new RemoteSpace(URI);
         this.boardState = boardState;
         this.controller = controller;
         this.packageType = packageType;
+        this.packageHandler = packageHandler;
     }
 
     @Override
@@ -51,18 +49,16 @@ public class Consumer implements Runnable {
                     var data = rs.get(new FormalField(Object.class),
                                               new FormalField(Object.class),
                                               new FormalField(Object.class));
-                    System.out.println();
-//                    var changeListDto = (HashMap<String, ArrayList>)data[0];
-//                    var res = changeListDto.get("player1");
-//                    var res2 =(LinkedTreeMap<String, Double>) res.get(2);
-//
-//                    System.out.println();
-                    double newTime = (double)data[1];
-                    if(newTime > lastTimeStamp) {
-                        lastTimeStamp = newTime;
+
+                    double newTimestamp = (double)data[1];
+                    if(newTimestamp > lastTimeStamp) {
+
+
+                        lastTimeStamp = newTimestamp;
                         this.boardState.updateBoardFromDeltaIntegerArray((int[]) data[2]);
-                        if (this.controller != null)
+                        if (this.controller != null) {
                             this.controller.updateView();
+                        }
                     }
 
                     //TODO: Take into account all players

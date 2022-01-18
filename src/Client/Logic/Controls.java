@@ -40,7 +40,6 @@ public class Controls {
       this.current_tetromino = newRandomTetromino();
     this.viewOnly = viewOnly;
     try {
-//      this.server = new RemoteSpace("tcp://localhost:1337/69420?keep");
       this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/69420?keep",
               "player1",
               this.boardState);
