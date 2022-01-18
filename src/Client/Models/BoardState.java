@@ -241,19 +241,6 @@ public class BoardState {
     }
   }
 
-  public void updateBoardFromDelta(Map<Integer, Integer> delta) {
-    for(int k : delta.keySet()) {
-      this.board[k] = new Mino(k, Utils.intToColor(delta.get(k)), true);
-    }
-  }
-
-  public void updateBoardFromDeltaTreeMap(LinkedTreeMap<String, Double> delta) {
-    for(String k : delta.keySet()) {
-      int index = Integer.parseInt(k);
-      this.board[index] = new Mino(index, Utils.intToColor((int)Math.round(delta.get(k))), true);
-    }
-  }
-
   public void updateBoardFromDeltaIntegerArray(int[] delta) {
     for(int i = 0; i < delta.length; i += 2) {
       if(delta[i+1] == -1) {
