@@ -78,12 +78,12 @@ class ChatRoomListener implements Runnable {
                     chat.get(new ActualField(messageInput[0]),new ActualField(messageInput[3]));
                     System.out.println("Got read token from client");
                 }
-                System.out.println("Deleted chatMessage in room " + roomUUID);
                 chat.get(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
+                System.out.println("Deleted chatMessage in room " + roomUUID);
 
                 /*input = chat.query(new FormalField(String.class),
                         new ActualField(roomUUID),

@@ -39,6 +39,8 @@ public class LocalGame implements Runnable {
                       this.boardState);
 
               this.packageHandler = new ProducerPackageHandler(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);
+
+
             } catch(Exception e) {
               e.printStackTrace();
             }
