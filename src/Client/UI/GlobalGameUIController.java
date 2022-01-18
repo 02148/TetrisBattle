@@ -61,6 +61,7 @@ public class GlobalGameUIController implements Initializable {
             gameEngine.stop();
         }
         chatListener.stop = true;
+        client.leaveRoom();
         client.roomUUID = "globalChat";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
@@ -68,6 +69,7 @@ public class GlobalGameUIController implements Initializable {
         Scene scene = new Scene(loader.load());
 
         GlobalChatUIController globalChatUIController = loader.getController();
+        globalChatUIController.setClient(client);
         globalChatUIController.setUpChatListner();
 
         primaryStage.setScene(scene);

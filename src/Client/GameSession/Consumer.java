@@ -16,12 +16,11 @@ public class Consumer implements Runnable {
 
     PackageHandler packageHandler;
 
-    public Consumer(String URI, BoardState boardState, Controls controller, String packageType, PackageHandler packageHandler) throws IOException, InterruptedException {
+    public Consumer(String URI, BoardState boardState, Controls controller, String packageType) throws IOException, InterruptedException {
         this.rs = new RemoteSpace(URI);
         this.boardState = boardState;
         this.controller = controller;
         this.packageType = packageType;
-        this.packageHandler = packageHandler;
     }
 
     @Override

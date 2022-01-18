@@ -129,6 +129,14 @@ public class Client extends Application {
 
   }
 
+  public void leaveRoom() {
+    try {
+      userToServer.put(UUID, "leave", roomUUID);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
   public void TryStartGame() {
     try {
       Object[] gameResponse = new Object[0];
@@ -162,7 +170,6 @@ public class Client extends Application {
   public String getUserName(){
     return userName;
   }
-
 }
 
 class RecieveMessages implements Runnable {
