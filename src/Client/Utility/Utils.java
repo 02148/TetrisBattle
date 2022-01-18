@@ -6,7 +6,7 @@ import javafx.scene.paint.Color;
 import java.util.HashMap;
 
 public abstract class Utils {
-    public static Color[] tetroColors = new Color[]{Color.CYAN, Color.DARKSLATEBLUE, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.PINK, Color.FIREBRICK};
+    public static Color[] tetroColors = new Color[]{Color.CYAN, Color.DARKSLATEBLUE, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.DARKMAGENTA, Color.FIREBRICK};
 
     public static Tetromino newTetromino(int index) {
         return switch (index) {

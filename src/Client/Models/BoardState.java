@@ -169,7 +169,7 @@ public class BoardState {
             s.append("🟨");
           } else if(board[index].color.equals(Color.GREEN)) {
             s.append("🟩");
-          } else if(board[index].color.equals(Color.PINK)) {
+          } else if(board[index].color.equals(Color.DARKMAGENTA)) {
             s.append("🟫");
           } else if(board[index].color.equals(Color.FIREBRICK)) {
             s.append("🟥");
@@ -199,7 +199,7 @@ public class BoardState {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.GREEN)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
-      } else if(board[i].color.equals(Color.PINK)) {
+      } else if(board[i].color.equals(Color.DARKMAGENTA)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.FIREBRICK)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
@@ -230,7 +230,7 @@ public class BoardState {
       } else if(leftBit && !middleBit && rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.GREEN, true);
       } else if(leftBit && middleBit && !rightBit) {
-        board[indexInBoard] = new Mino(indexInBoard, Color.PINK, true);
+        board[indexInBoard] = new Mino(indexInBoard, Color.DARKMAGENTA, true);
       } else if(leftBit && middleBit && rightBit) {
         board[indexInBoard] = new Mino(indexInBoard, Color.FIREBRICK, true);
       }

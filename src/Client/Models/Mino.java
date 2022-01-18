@@ -34,7 +34,7 @@ public class Mino {
      c = "3";
     else if(this.color.equals(Color.GREEN))
      c = "4";
-    else if(this.color.equals(Color.PINK))
+    else if(this.color.equals(Color.DARKMAGENTA))
      c = "5";
     else if(this.color.equals(Color.RED))
      c = "6";
