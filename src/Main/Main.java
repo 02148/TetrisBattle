@@ -2,7 +2,7 @@ package Main;
 
 
 import Client.Client;
-import Client.UI.GlobalChatUIController;
+
 
 import Client.UI.SplashScreenController;
 import javafx.fxml.FXMLLoader;
@@ -14,7 +14,7 @@ import java.io.IOException;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
-import javafx.scene.paint.Color;
+
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
 

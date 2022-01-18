@@ -23,19 +23,19 @@ public class LocalGame implements Runnable {
     private final int size = 25;
     private final int boardSize = 200;
 
-    public LocalGame(int posX, int posY, String userUUID) {
+    public LocalGame(int posX, int posY, String gameUUID, String playerUUID) {
         nBoard = new Board(posX,posY,size);
         this.boardState = new BoardState(boardSize);
 
             try {
-              this.fullPkgProducer = new FullPkgProducer("tcp://10.209.231.86:1337/69420?keep",
-                      userUUID,
+              this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/" + gameUUID+ "?keep",
+                      playerUUID,
                       this.boardState);
 
               (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
-              this.deltaPkgProducer = new DeltaPkgProducer("tcp://10.209.231.86:1337/69420?keep",
-                      userUUID,
+              this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/" + gameUUID + "?keep",
+                      playerUUID,
                       this.boardState);
 
               this.packageHandler = new ProducerPackageHandler(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);

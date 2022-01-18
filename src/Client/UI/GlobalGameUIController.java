@@ -8,6 +8,8 @@ import Client.Logic.Controls;
 import Client.Logic.LocalGame;
 import Client.Logic.Opponent;
 import Client.Models.BoardState;
+import MainServer.GameRoom.GameRoom;
+import MainServer.GameRoom.GameRoomRepo;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -28,25 +30,51 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.ResourceBundle;
 
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
-    private GameEngine gameEngine;
+    private LocalGame localGame;
     @FXML Button startGameButton;
     @FXML Button leaveGameButton;
     @FXML AnchorPane boardHolder;
+
+    //Players
+    @FXML AnchorPane player1View;
+    @FXML AnchorPane player2View;
+    @FXML AnchorPane player3View;
+    @FXML AnchorPane player4View;
+    @FXML AnchorPane player5View;
+    @FXML AnchorPane player6View;
+    @FXML AnchorPane player7View;
+    @FXML AnchorPane player8View;
+
+
+
+
     @FXML TextArea lines;
     @FXML TextArea level;
 
 
     private Client client;
     private ChatListener chatListener;
+    private List<AnchorPane> playerViews = new ArrayList<>();
+
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        playerViews.add(player1View);
+        playerViews.add(player2View);
+        playerViews.add(player3View);
+        playerViews.add(player4View);
+        playerViews.add(player5View);
+        playerViews.add(player6View);
+        playerViews.add(player7View);
+        playerViews.add(player8View);
+
 
     }
     public void  setClient(Client client) throws InterruptedException {
@@ -62,11 +90,12 @@ public class GlobalGameUIController implements Initializable {
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
-        if(gameEngine != null){
-            gameEngine.stop();
+        if(localGame != null){
+            localGame.stop();
         }
         chatListener.stop = true;
         client.leaveRoom();
+
         client.roomUUID = "globalChat";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
@@ -75,7 +104,9 @@ public class GlobalGameUIController implements Initializable {
 
         GlobalChatUIController globalChatUIController = loader.getController();
         globalChatUIController.setClient(client);
+        globalChatUIController.setIsLoggedIn(true);
         globalChatUIController.setUpChatListner();
+
 
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
@@ -90,52 +121,74 @@ public class GlobalGameUIController implements Initializable {
         //TODO: Add functionality to update TextArea based on input from other players
     }
     //TODO: Add functions to show the games/Make it possible to play
+
     @FXML protected void handleStartGameAction(ActionEvent event){
-        startGameButton.setDisable(true);
-        startGameButton.setVisible(false);
+        List<String> playersInRoom = client.TryStartGame();
+
+        if(true){
+            startGameButton.setDisable(true);
+            startGameButton.setVisible(false);
 
 
-        // Making local game
-        LocalGame localGame = new LocalGame(63, 94, "player2");
-        boardHolder.getChildren().add(localGame.getViewModel());
-        localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-            @Override
-            public void handle(KeyEvent keyEvent) {
-                localGame.keyDownEvent(keyEvent);
+            // Making local game
+            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID);
+            boardHolder.getChildren().add(localGame.getViewModel());
+            localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent keyEvent) {
+                    localGame.keyDownEvent(keyEvent);
+                }
+            });
+            Platform.runLater(() -> localGame.toThread().start());
+
+
+
+            //Adding the other player boards
+            int numPlayers = playersInRoom.size();
+
+            System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
+
+            HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
+            for(int i = 0; i < playersInRoom.size(); i++ ){
+                if(playersInRoom.get(i).equals(client.UUID)) continue;
+
+                System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
+
+                Opponent newOpponent = new Opponent(playersInRoom.get(i));
+                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+                consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
             }
-        });
-        Platform.runLater(() -> localGame.toThread().start());
+            try {
+                Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+
+                (new Thread(consumerDelta)).start();
+                (new Thread(consumerFull)).start();
+            } catch (Exception e) {}
 
 
-        // Making a second board for testing purposes
-        ArrayList<String> ss = new ArrayList<>();
-        ss.add("player1");
-        ss.add("player2");
-        HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
-        for(String opponentName : ss) {
-            Opponent newOpponent = new Opponent(300, 95, opponentName);
-            boardHolder.getChildren().add(newOpponent.getBoardView());
-            consumerPackageHandlers.put(opponentName, newOpponent.getConsumerPackageHandler());
+
+            LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();
+
+            taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
+                    lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
+            taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
+                    level.setText("Level " + newProgress.toString()));
+
+            Platform.runLater(() -> new Thread(taskRunLines).start());
+
+        } else {
+            //cant start game
+
         }
+    }
 
-        try {
-            Consumer consumerFull = new Consumer("player2", ss, consumerPackageHandlers, "full"); // haps haps full
-            Consumer consumerDelta = new Consumer("player2", ss, consumerPackageHandlers, "delta"); // haps haps delta
-            (new Thread(consumerFull)).start();
-            (new Thread(consumerDelta)).start();
-        } catch(Exception e) { }
-
-
-        GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
-
-        taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
-                lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
-        taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
-                level.setText("Level " + newProgress.toString()));
-
-        Platform.runLater(() -> new Thread(taskRunLines).start());
-
-
+    private void addPlayerBoard(Board playerBoard, AnchorPane pane){
+        AnchorPane.setBottomAnchor(playerBoard, 5.0);
+        AnchorPane.setTopAnchor(playerBoard,8.0);
+        AnchorPane.setLeftAnchor(playerBoard, 50.0);
+        AnchorPane.setRightAnchor(playerBoard, 5.0);
+        pane.getChildren().add(playerBoard);
     }
     
 

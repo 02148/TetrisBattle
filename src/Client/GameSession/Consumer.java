@@ -15,7 +15,7 @@ public class Consumer implements Runnable {
 
     public Consumer(String userUUID, List<String> opponentUUIDs, HashMap<String, ConsumerPackageHandler> consumerPackageHandlers, String packageType) throws IOException, InterruptedException {
         this.userUUID = userUUID;
-        this.rs = new RemoteSpace("tcp://10.209.231.86:1337/" + userUUID + "?keep");
+        this.rs = new RemoteSpace("tcp://localhost:1337/" + userUUID + "?keep");
         this.packageType = packageType;
         this.consumerPackageHandlers = consumerPackageHandlers;
 
@@ -42,7 +42,7 @@ public class Consumer implements Runnable {
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class),
                                               new FormalField(Object.class), new FormalField(Object.class), new FormalField(Object.class));
                     for(int i = 0; i < 8; i++) {
-                        if(data[i] == null) break;
+                        if(data[i*3] == null) break;
 
                         String userUUID = (String) data[i*3];
                         Double newTimestampFull = (Double) data[i*3+1];

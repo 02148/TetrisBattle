@@ -9,15 +9,14 @@ public class Opponent {
     private Board nBoard;
     private BoardState boardState;
     private Controls controller;
-    private ConsumerPackageHandler consumerPackageHandler;
     private String opponentUUID;
-    private final int size = 10;
+    private ConsumerPackageHandler consumerPackageHandler;
+    private final int size = 12;
     private final int boardSize = 200;
 
-    public Opponent(int posX, int posY, String opponentUUID) {
+    public Opponent( String userUUID) {
         try {
-            this.opponentUUID = opponentUUID;
-            this.nBoard = new Board(posX,posY,size);
+            this.nBoard = new Board(size);
             this.boardState = new BoardState(boardSize);
             this.consumerPackageHandler = new ConsumerPackageHandler(boardSize, boardState, nBoard);
             this.controller = new Controls(nBoard, boardState, true);

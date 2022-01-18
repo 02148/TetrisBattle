@@ -18,6 +18,7 @@ import Client.ChatListener;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GlobalChatUIController implements Initializable {
@@ -47,6 +48,11 @@ public class GlobalChatUIController implements Initializable {
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
     }
+
+    public void setIsLoggedIn(boolean loggedIn){
+        isLoggedIn = loggedIn;
+    }
+
     @FXML protected void handleLoginAction(ActionEvent event){
         if(!isLoggedIn){
             client.userName = username.getText();
@@ -108,12 +114,16 @@ public class GlobalChatUIController implements Initializable {
                         }
                         GlobalGameUIController globalGameUIController = loader.getController();
                         globalGameUIController.setClient(client);
+
+
+
                         primaryStage.setScene(scene);
                         primaryStage.centerOnScreen();
                         primaryStage.show();
+                        client.sendChat(username.getText() + " joined the room");
 
                     } else {
-                        roomUUID.setPromptText("Please input correct room ID");
+                        roomUUID.setPromptText("Please input username");
                         username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     }
                     break;
@@ -135,9 +145,15 @@ public class GlobalChatUIController implements Initializable {
 
                             GlobalGameUIController globalGameUIController = loader.getController();
                             globalGameUIController.setClient(client);
+
+
+
                             primaryStage.setScene(scene);
                             primaryStage.centerOnScreen();
                             primaryStage.show();
+
+                            client.sendChat(username.getText() + " joined the room");
+
                         } else {
                             roomUUID.setPromptText("Please input correct room ID");
                             roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
@@ -170,6 +186,12 @@ public class GlobalChatUIController implements Initializable {
 
             }
         } else {
+            if(chatListener == null){
+                System.out.println("Setting up new Chat Listner");
+                setUpChatListner();
+                chatListener.stop = false;
+            }
+            System.out.println(client.userName);
             client.sendChat(chatTextField.getText());
             chatTextField.clear();
             }
