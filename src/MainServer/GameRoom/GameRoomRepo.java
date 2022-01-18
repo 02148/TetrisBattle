@@ -38,7 +38,7 @@ public class GameRoomRepo {
      *                 This user will become host of the room.
      * @return UUID of room, used for connecting to room.
      */
-    public String create(String userHostUUID) throws InterruptedException {
+    public String[] create(String userHostUUID) throws InterruptedException {
         GameRoom gr = new GameRoom(
                 userHostUUID,
                 Utils.createUUID(),
@@ -46,7 +46,7 @@ public class GameRoomRepo {
         );
         insertGameRoom(gr);
         conns.put(userHostUUID, gr.UUID);
-        return gr.UUID;
+        return new String[] { gr.UUID, String.valueOf(gr.number)};
     }
 
     public void changeHost(String uuid, String newHost) throws InterruptedException {

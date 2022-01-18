@@ -1,79 +1,71 @@
 package MainServer.GameSession.Modules;
 
-import MainServer.Utils;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
-import java.util.BitSet;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Transformer implements Runnable {
-    Space in, shared, conns;
-    String spaceKey;
-    int noConns, T = 10;
-    HashMap<String, Double> lastTimestamp; // maps each UUID to last received timestamp, to ensure chronological data receival
+    Space in, out, conns;
+    int T;
 
-    public Transformer(Space in, Space shared, Space conns, String spaceKey) {
+    public Transformer(Space in, Space out, Space conns) {
         this.in = in;
-        this.shared = shared;
+        this.out = out;
         this.conns = conns;
-        this.spaceKey = spaceKey;
-        this.lastTimestamp = new HashMap<>();
-        this.T = 20; //spaceKey.equals("full") ? 1000 : 20; // if full sync, send once a second, else 500 times a second
+        this.T = 100;
     }
 
     @Override
     public void run() {
+        var allBoards = new HashMap<String, Object[]>();
+        Object[] collectedData;
+        int counter;
         while (true) {
-            try {
-                Thread.sleep(T);
-            } catch (InterruptedException ignored) {}
+            collectedData = new Object[]{new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object(),
+                                         new Object(),new Object(),new Object()};
+            counter = 0;
 
             try {
+                if (!allBoards.isEmpty())
+                    allBoards.clear();
                 var curConns = conns.queryAll(new FormalField(String.class));
-                noConns = curConns.size();
-                if (noConns == 0) {
-                    System.out.println("Transformer@"+ Thread.currentThread().getId() + " finished");
-                    Thread.currentThread().join(1);
-                }
 
-                HashMap<String, Object[]> allBoards = new HashMap<>();
                 for (var c : curConns) {
+                    String userUUID = (String) c[0];
                     Object[] raw_data = in.getp(
-                            new ActualField(this.spaceKey),
+                            new ActualField(userUUID),
                             new FormalField(Double.class),
-                            new ActualField((String)c[0]),
-                            new FormalField(BitSet.class)
+                            new FormalField(Object.class)
                     );
-                    if (raw_data == null)
+                    if (raw_data == null || raw_data[0] == null)
                         continue;
 
-                    String UUID = (String) raw_data[2];
-                    double curTimestamp = (double) raw_data[1];
-                    if (lastTimestamp.containsKey(UUID)) {
-                        if (lastTimestamp.get(UUID) > curTimestamp) { // retrieved entry for user is older than last in pipeline
-                            System.out.println("CONS@" + this.spaceKey + " >> Old data retrieved, dropping");
-                            continue;
-                        }
-                    }
+                    System.out.println("TRANSFORMER@"+Thread.currentThread()+ " >> " + Arrays.toString(raw_data));
 
-                    lastTimestamp.put(UUID, curTimestamp);
-
-                    allBoards.put((String) UUID, raw_data);
+                    collectedData[counter*3]   = raw_data[0];
+                    collectedData[counter*3+1] = raw_data[1];
+                    collectedData[counter*3+2] = raw_data[2];
+                    allBoards.put(userUUID, raw_data);
+                    counter++;
                 }
-                shared.put(
-                        this.spaceKey,
-                        Utils.getCurrentExactTimestamp(),
-                        allBoards
-                );
 
-
-            } catch (Exception e) {
-                System.out.println("Cons exception");
+                if(!allBoards.isEmpty())
+                    out.put(collectedData);
+//                System.out.println("Transformer >> " + allBoards);
+                Thread.sleep(this.T);
+            } catch (InterruptedException e) {
+                System.out.println("TRANSFORMER@" + Thread.currentThread() + " >> Exception");
                 e.printStackTrace();
             }
-
         }
     }
 }

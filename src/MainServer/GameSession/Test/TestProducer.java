@@ -5,11 +5,9 @@ import org.jspace.*;
 
 import java.io.IOException;
 import java.util.BitSet;
-import java.util.Date;
 import java.util.Random;
 
 import static MainServer.Utils.getCurrentExactTimestamp;
-import static MainServer.Utils.getCurrentTimestamp;
 
 public class TestProducer implements Runnable {
     RemoteSpace rs;
@@ -52,28 +50,35 @@ public class TestProducer implements Runnable {
         }
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws Exception {
+        int PORT = 1337;
 
         SequentialSpace conns = new SequentialSpace();
-
-        for (int i = 0; i < noConns; i++)
-            conns.put(""+i);
-
         conns.put("player1");
         GameSession sess = new GameSession("69420", conns);
-        StackSpace s = new StackSpace();
 
-        for (int i = 0; i < noConns; i++) {
-            (new Thread(new TestProducer("tcp://localhost:6969/69420?keep",
-                    "" + i,
-                    "delta")))
-                    .start();
-            (new Thread(new TestProducer("tcp://localhost:6969/69420?keep",
-                    "" + i,
-                    "full")))
-                    .start();
+//        FullPkgProducer pDelta = new FullPkgProducer("tcp://localhost:" + PORT + "/69420?keep",
+//                "player1",
+//                "delta"
+//        );
+//
+//        FullPkgProducer pFull = new FullPkgProducer("tcp://localhost:" + PORT + "/69420?keep",
+//                "player1",
+//                "full"
+//        );
+
+//        var board = new BoardState(200);
+//        Consumer consumerDelta = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, null, "delta");
+//        Consumer consumerFull = new Consumer("tcp://localhost:" + PORT + "/player1?keep", board, null, "full");
+
+//        (new Thread(pDelta)).start();
+//        (new Thread(pFull)).start();
+//        (new Thread(consumerDelta)).start();
+//        (new Thread(consumerFull)).start();
+
+        while (true){
+            Thread.sleep(1000);
+//            System.out.println(board.toString()+"\n");
         }
-
-        while (true){}
     }
 }

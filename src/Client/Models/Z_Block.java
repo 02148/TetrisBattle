@@ -1,5 +1,6 @@
 package Client.Models;
 
+import Client.Utility.Utils;
 import javafx.scene.paint.Color;
 
 public class Z_Block extends Tetromino {
@@ -36,7 +37,7 @@ public class Z_Block extends Tetromino {
   public Z_Block() {
     this.posX = 3;
     this.posY = -2;
-    this.color = Color.RED;
+    this.color = Utils.tetrominoTypeToColor(this.getClass());
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }

@@ -1,5 +1,6 @@
 package Client.Models;
 
+import Client.Utility.Utils;
 import javafx.scene.paint.Color;
 
 public class O_Block extends Tetromino{
@@ -36,7 +37,7 @@ public class O_Block extends Tetromino{
   public O_Block() {
     this.posX = 3;
     this.posY = -2;
-    this.color = Color.GOLD;
+    this.color = Utils.tetrominoTypeToColor(this.getClass());
     this.rotations = rotations_;
     this.wallKickData = wallKickData_;
   }

@@ -14,6 +14,8 @@ import org.jspace.*;
 import java.awt.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
@@ -24,7 +26,6 @@ public class Client extends Application {
 
   public static RemoteSpace userToServer;
   public RemoteSpace serverToUser;
-  public RemoteSpace room;
   public RemoteSpace chatSpace;
 
   public boolean isGameActive = false;
@@ -74,18 +75,25 @@ public class Client extends Application {
   }
 
   public String hostRoom() {
-    Object[] roomResponse = new Object[3];
+    Object[] roomResponse = new Object[4];
     try {
 
       userToServer.put(UUID, "create","");
-      roomResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      roomResponse = serverToUser.get(new ActualField(UUID),
+              new FormalField(String.class), //Response
+              new FormalField(String.class), //RoomUUID
+              new FormalField(String.class)); //Room nr
       if (roomResponse[1].equals("ok")) {
 
         roomUUID = (String) roomResponse[2];
+
         chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
-        System.out.println("Room can be started by UI");
-        isGameActive = true;
+
         //Room can be started by UI
+        System.out.println("Room can be joined using " + roomResponse[3]);
+
+        isGameActive = true;
+
       } else {
         //Error message
         System.out.println(roomResponse[1]);
@@ -100,17 +108,22 @@ public class Client extends Application {
     return (String) roomResponse[1];
   }
 
-  public String TryJoinRoom(String roomName) {
+  public String TryJoinRoom(String newRoomName) {
     Object[] roomResponse = new Object[3];
     try {
-      mainServer.put(UUID, "join", roomName);
-      roomResponse = mainServer.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+      userToServer.put(UUID, "join", newRoomName);
+      roomResponse = serverToUser.get(new ActualField(UUID),
+              new FormalField(String.class),
+              new FormalField(String.class));
 
 
       if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
         chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
+
         //Room can be started by UI
+        System.out.println("Trying to join room");
+
 
         //New thread waiting for game to start
       } else {
@@ -129,17 +142,22 @@ public class Client extends Application {
 
   }
 
-  public void TryStartGame() {
+  public List<String> TryStartGame() {
+    Object[] gameResponse = new Object[0];
+    List<String> players = null;
     try {
-      Object[] gameResponse = new Object[0];
-      room.put(UUID, "start");
-      gameResponse = room.get(new ActualField(UUID), new FormalField(String.class), new FormalField(String.class));
+
+      userToServer.put(UUID, "start", roomUUID);
+      gameResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(List.class));
 
       if (gameResponse[1].equals("ok")) {
         isGameActive = true;
+        players = (List<String>) gameResponse[2];
+
         //Game can be started by UI
 
       } else {
+
         //Error message
         System.out.println(gameResponse[1]);
       }
@@ -147,6 +165,7 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+    return players;
   }
 
   public void sendChat(String message){

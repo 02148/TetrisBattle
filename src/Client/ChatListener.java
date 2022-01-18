@@ -33,7 +33,6 @@ public class ChatListener implements Runnable {
         while (!stop) {
             System.out.println("chatListener is running..");
             try {
-                //Thread.sleep(100); can't use since two chat send at the same time will be deleted by server while sleeping
                 Object[] chatInput = new Object[4];
                 String[] message = new String[3];
 

@@ -3,9 +3,11 @@ package MainServer;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 
+import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.UserRepo;
 import org.jspace.*;
 
+import java.util.List;
 
 
 public class MainServer {
@@ -32,6 +34,8 @@ public class MainServer {
         var crl = new ChatRoomListener("globalChat");
         crl.setChat(globalChat);
         new Thread(crl).start();
+
+        TestProducer.main(new String[]{}); // Delete me pls 🥵
     }
 }
 
@@ -112,8 +116,10 @@ class GlobalListener implements Runnable {
                     System.out.println("Login: Sent response to client");
 
                 } else if (userInput[1].equals("create")) {
-                    String UUID = gameRooms.create((String) userInput[0]);
-                    serverToUser.put(userInput[0],"ok", UUID);
+                    String[] roomInfo = gameRooms.create((String) userInput[0]);
+                    String UUID = roomInfo[0];
+                    String roomNr = roomInfo[1];
+                    serverToUser.put(userInput[0],"ok", UUID, roomNr);
                     System.out.println("Create Room: Server response sent");
 
                     //Create chatroom for game
@@ -124,14 +130,26 @@ class GlobalListener implements Runnable {
                     new Thread(crl).start();
 
                 } else if (userInput[1].equals("join")) {
-                    if (gameRooms.queryConnections((String) userInput[2]).contains(userInput[1])) {
+                    if (gameRooms.queryConnections(gameRooms.getUUID((String) userInput[2])).contains(userInput[1])) {
                         serverToUser.put(userInput[0], "Already connected", "");
                         System.out.println("Join Room: Server error response sent");
                     } else {
-                        gameRooms.addConnection((String) userInput[0], (String) userInput[2]);
+                        gameRooms.addConnection((String) userInput[0], gameRooms.getUUID((String) userInput[2]));
                         serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
                         System.out.println("Join Room: Server response sent");
                     }
+                } else if(userInput[1].equals("start")){
+                    List<String> currPLayers = gameRooms.queryConnections((String) userInput[2]);
+
+                    if(!gameRooms.isHost((String) userInput[2], (String) userInput[0])){
+                        //Person is not host so they cant start the game
+                        serverToUser.put(userInput[0], "not ok", currPLayers);
+                    }else{
+                        serverToUser.put(userInput[0], "ok", currPLayers);
+                    }
+
+
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

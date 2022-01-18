@@ -48,14 +48,14 @@
                                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                             </rowConstraints>
                      <children>
-                        <AnchorPane fx:id="player1" prefHeight="200.0" prefWidth="200.0" />
-                        <AnchorPane fx:id="player2" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
-                        <AnchorPane fx:id="player3" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" />
-                        <AnchorPane fx:id="player4" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />
-                        <AnchorPane fx:id="player5" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
-                        <AnchorPane fx:id="player6" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                        <AnchorPane fx:id="player7" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                        <AnchorPane fx:id="player8" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player1View" prefHeight="200.0" prefWidth="200.0" />
+                        <AnchorPane fx:id="player2View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" />
+                        <AnchorPane fx:id="player3View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" />
+                        <AnchorPane fx:id="player4View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" />
+                        <AnchorPane fx:id="player5View" prefHeight="200.0" prefWidth="200.0" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player6View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player7View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                        <AnchorPane fx:id="player8View" prefHeight="200.0" prefWidth="200.0" GridPane.columnIndex="3" GridPane.rowIndex="1" />
                      </children>
                         </GridPane>
                     </children>
