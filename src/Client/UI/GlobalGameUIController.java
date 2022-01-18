@@ -3,6 +3,7 @@ package Client.UI;
 import Client.Client;
 import Client.GameEngine;
 import Client.GameSession.Consumer;
+import Client.GameSession.ConsumerPackageHandler;
 import Client.Logic.Controls;
 import Client.Logic.LocalGame;
 import Client.Logic.Opponent;
@@ -25,6 +26,8 @@ import Client.ChatListener;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.ResourceBundle;
 
 public class GlobalGameUIController implements Initializable {
@@ -105,9 +108,22 @@ public class GlobalGameUIController implements Initializable {
 
 
         // Making a second board for testing purposes
-        Opponent opponent1 = new Opponent(300, 95, "player1");
-        boardHolder.getChildren().add(opponent1.getBoardView());
+        ArrayList<String> ss = new ArrayList<>();
+        ss.add("player1");
+        ss.add("player2");
+        HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
+        for(String opponentName : ss) {
+            Opponent newOpponent = new Opponent(300, 95, opponentName);
+            boardHolder.getChildren().add(newOpponent.getBoardView());
+            consumerPackageHandlers.put(opponentName, newOpponent.getConsumerPackageHandler());
+        }
 
+        try {
+            Consumer consumerFull = new Consumer("player2", ss, consumerPackageHandlers, "full"); // haps haps full
+            Consumer consumerDelta = new Consumer("player2", ss, consumerPackageHandlers, "delta"); // haps haps delta
+            (new Thread(consumerFull)).start();
+            (new Thread(consumerDelta)).start();
+        } catch(Exception e) { }
 
 
         GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();

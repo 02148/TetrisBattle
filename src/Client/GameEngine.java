@@ -1,6 +1,6 @@
 package Client;
 
-import Client.GameSession.PackageHandlerConsumer;
+import Client.GameSession.ConsumerPackageHandler;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
@@ -9,7 +9,7 @@ import javafx.scene.input.KeyEvent;
 
 public class GameEngine implements Runnable{
   private Controls controller;
-  private PackageHandlerConsumer packageHandlerConsumer;
+  private ConsumerPackageHandler consumerPackageHandler;
   private BoardState boardState;
   private static Board nBoard;
 

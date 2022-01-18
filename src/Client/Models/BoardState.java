@@ -1,14 +1,14 @@
 package Client.Models;
 
 
-import Client.GameSession.PackageHandlerProducer;
+import Client.GameSession.ProducerPackageHandler;
 import Client.Utility.Utils;
 import javafx.scene.paint.Color;
 
 import java.util.BitSet;
 
 public class BoardState {
-  private PackageHandlerProducer packageHandler;
+  private ProducerPackageHandler packageHandler;
   private Mino[] board;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
@@ -19,7 +19,7 @@ public class BoardState {
     return board;
   }
 
-  public void addPackageHandler(PackageHandlerProducer packageHandler) { this.packageHandler = packageHandler; }
+  public void addPackageHandler(ProducerPackageHandler packageHandler) { this.packageHandler = packageHandler; }
 
   public void setBoard(Mino[] board) {
     this.board = board;

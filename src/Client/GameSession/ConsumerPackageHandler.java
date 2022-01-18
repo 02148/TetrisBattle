@@ -7,7 +7,7 @@ import Client.Utility.Utils;
 
 import java.util.*;
 
-public class PackageHandlerConsumer {
+public class ConsumerPackageHandler {
     private Mino[] lastBoardSnapshot;
     private HashMap<Integer, Integer> delta = new HashMap<Integer, Integer>();
     private HashMap<Integer, Integer> deltaClone = new HashMap<Integer, Integer>();
@@ -15,7 +15,7 @@ public class PackageHandlerConsumer {
     private Board nBoard;
     private Queue<DeltaDataObject> deltaQueue;
 
-    public PackageHandlerConsumer(int size, BoardState boardState, Board nBoard) {
+    public ConsumerPackageHandler(int size, BoardState boardState, Board nBoard) {
         this.lastBoardSnapshot = new Mino[size];
         this.boardState = boardState;
         this.nBoard = nBoard;

@@ -1,6 +1,6 @@
 package Client.Logic;
 
-import Client.GameSession.PackageHandlerProducer;
+import Client.GameSession.ProducerPackageHandler;
 import Client.Models.*;
 import Client.UI.Board;
 import Client.Utility.Utils;
@@ -25,7 +25,7 @@ public class Controls {
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
-  private PackageHandlerProducer packageHandlerProducer;
+  private ProducerPackageHandler producerPackageHandler;
 
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
@@ -41,8 +41,8 @@ public class Controls {
 //      this.packageHandlerProducer.sendDeltaPackage();
   }
 
-  public void setPackageHandlerFull(PackageHandlerProducer packageHandlerProducer) {
-    this.packageHandlerProducer = packageHandlerProducer;
+  public void setPackageHandlerFull(ProducerPackageHandler producerPackageHandler) {
+    this.producerPackageHandler = producerPackageHandler;
   }
 
   // Update View and BoardState Methods
@@ -66,7 +66,7 @@ public class Controls {
     updateViewModel();
 
     if(!this.viewOnly)
-      this.packageHandlerProducer.sendDeltaPackage();
+      this.producerPackageHandler.sendDeltaPackage();
   }
 
   public void gameTick() {
@@ -79,7 +79,7 @@ public class Controls {
     updateViewModel();
 
     if(!this.viewOnly)
-      this.packageHandlerProducer.sendDeltaPackage();
+      this.producerPackageHandler.sendDeltaPackage();
   }
 
 

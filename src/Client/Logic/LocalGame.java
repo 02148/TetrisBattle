@@ -2,16 +2,15 @@ package Client.Logic;
 
 import Client.GameSession.DeltaPkgProducer;
 import Client.GameSession.FullPkgProducer;
-import Client.GameSession.PackageHandlerProducer;
+import Client.GameSession.ProducerPackageHandler;
 import Client.Models.BoardState;
 import Client.UI.Board;
 import javafx.concurrent.Task;
-import javafx.event.EventHandler;
 import javafx.scene.input.KeyEvent;
 
 public class LocalGame implements Runnable {
     private Controls controller;
-    private PackageHandlerProducer packageHandler;
+    private ProducerPackageHandler packageHandler;
     private BoardState boardState;
     private static Board nBoard;
 
@@ -30,16 +29,16 @@ public class LocalGame implements Runnable {
 
             try {
               this.fullPkgProducer = new FullPkgProducer("tcp://10.209.231.86:1337/69420?keep",
-                      "player1",
+                      userUUID,
                       this.boardState);
 
               (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
               this.deltaPkgProducer = new DeltaPkgProducer("tcp://10.209.231.86:1337/69420?keep",
-                      "player1",
+                      userUUID,
                       this.boardState);
 
-              this.packageHandler = new PackageHandlerProducer(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);
+              this.packageHandler = new ProducerPackageHandler(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);
             } catch(Exception e) {
               e.printStackTrace();
             }

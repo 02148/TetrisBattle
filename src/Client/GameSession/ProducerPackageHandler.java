@@ -7,7 +7,7 @@ import Client.Utility.Utils;
 
 import java.util.*;
 
-public class PackageHandlerProducer {
+public class ProducerPackageHandler {
     private Mino[] lastBoardSnapshot;
     private HashMap<Integer, Integer> delta = new HashMap<Integer, Integer>();
     private HashMap<Integer, Integer> deltaClone = new HashMap<Integer, Integer>();
@@ -16,7 +16,7 @@ public class PackageHandlerProducer {
     private BoardState boardState;
     private Board nBoard;
 
-    public PackageHandlerProducer(int size, BoardState boardState, Board nBoard, DeltaPkgProducer deltaPkgProducer, FullPkgProducer fullPkgProducer) {
+    public ProducerPackageHandler(int size, BoardState boardState, Board nBoard, DeltaPkgProducer deltaPkgProducer, FullPkgProducer fullPkgProducer) {
         this.lastBoardSnapshot = new Mino[size];
         this.deltaPackageProducer = deltaPkgProducer;
         this.fullPackageProducer = fullPkgProducer;

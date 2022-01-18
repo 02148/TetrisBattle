@@ -1,7 +1,7 @@
 package Client.Logic;
 
 import Client.GameSession.Consumer;
-import Client.GameSession.PackageHandlerConsumer;
+import Client.GameSession.ConsumerPackageHandler;
 import Client.Models.BoardState;
 import Client.UI.Board;
 
@@ -9,23 +9,18 @@ public class Opponent {
     private Board nBoard;
     private BoardState boardState;
     private Controls controller;
-    private PackageHandlerConsumer packageHandlerConsumer;
+    private ConsumerPackageHandler consumerPackageHandler;
+    private String opponentUUID;
     private final int size = 10;
     private final int boardSize = 200;
 
-    public Opponent(int posX, int posY, String userUUID) {
+    public Opponent(int posX, int posY, String opponentUUID) {
         try {
+            this.opponentUUID = opponentUUID;
             this.nBoard = new Board(posX,posY,size);
             this.boardState = new BoardState(boardSize);
-            this.packageHandlerConsumer = new PackageHandlerConsumer(boardSize, boardState, nBoard);
-
-            Consumer consumerFull = new Consumer(userUUID, packageHandlerConsumer, "full"); // haps haps full
-            Consumer consumerDelta = new Consumer(userUUID, packageHandlerConsumer, "delta"); // haps haps delta
-
+            this.consumerPackageHandler = new ConsumerPackageHandler(boardSize, boardState, nBoard);
             this.controller = new Controls(nBoard, boardState, true);
-
-            (new Thread(consumerFull)).start();
-            (new Thread(consumerDelta)).start();
         } catch (Exception e) {}
     }
 
@@ -33,5 +28,7 @@ public class Opponent {
         return this.nBoard;
     }
 
-
+    public ConsumerPackageHandler getConsumerPackageHandler() {
+        return consumerPackageHandler;
+    }
 }
