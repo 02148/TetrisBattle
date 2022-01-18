@@ -3,6 +3,7 @@ package MainServer;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 
+import MainServer.GameSession.GameSession;
 import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.UserRepo;
 import org.jspace.*;
@@ -23,8 +24,7 @@ public class MainServer {
         SpaceRepository chatChannels = new SpaceRepository();
         SequentialSpace globalChat = new SequentialSpace();
 
-        chatChannels.add("globalChat",globalChat);
-        chatChannels.addGate("tcp://10.209.231.86:4242/?conn");
+        chatChannels.addGate("tcp://localhost:4242/?conn");
 
 
         var gl = new GlobalListener();
@@ -63,13 +63,29 @@ class ChatRoomListener implements Runnable {
         this.roomUUID = roomUUID;
     }
 
-    Object[] input = new Object[4];
+    Object[] messageInput = new Object[4];
 
     public void run() {
         try {
             while (rooms.exists(roomUUID)) {
+                messageInput = chat.query(new FormalField(String.class),
+                        new ActualField(roomUUID),
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class));
 
-                input = chat.query(new FormalField(String.class),
+                for (int i = 0; i < rooms.queryConnections(roomUUID).size(); i++) {
+                    chat.get(new ActualField(messageInput[0]),new ActualField(messageInput[3]));
+                    System.out.println("Got read token from client");
+                }
+                System.out.println("Deleted chatMessage in room " + roomUUID);
+                chat.get(new FormalField(String.class),
+                        new ActualField(roomUUID),
+                        new FormalField(String.class),
+                        new FormalField(Double.class),
+                        new FormalField(String.class));
+
+                /*input = chat.query(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
@@ -82,7 +98,7 @@ class ChatRoomListener implements Runnable {
                         new ActualField(roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
-                        new FormalField(String.class));
+                        new FormalField(String.class));*/
             }
             chatChannels.remove(roomUUID);
         } catch (InterruptedException e) {
@@ -117,7 +133,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://10.209.231.86:6969/?conn");
+        mainChannels.addGate("tcp://localhost:6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];
@@ -129,6 +145,7 @@ class GlobalListener implements Runnable {
 
                 if (userInput[1].equals("login")) {
                     String UUID = users.create((String) userInput[0]);
+                    gameRooms.addConnection((String) userInput[0],"globalChat");
                     serverToUser.put(userInput[0], "ok", UUID);
                     System.out.println("Login: Sent response to client");
 
@@ -137,6 +154,7 @@ class GlobalListener implements Runnable {
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);
+
                     System.out.println("Create Room: Server response sent");
 
                     //Create chatroom for game
@@ -150,18 +168,31 @@ class GlobalListener implements Runnable {
                         serverToUser.put(userInput[0], "Already connected", "");
                         System.out.println("Join Room: Server error response sent");
                     } else {
+
+                        gameRooms.removeConnection((String) userInput[0],"globalChat");
                         gameRooms.addConnection((String) userInput[0], gameRooms.getUUID((String) userInput[2]));
+
                         serverToUser.put(userInput[0], "ok", gameRooms.getUUID((String) userInput[2]));
                         System.out.println("Join Room: Server response sent");
                     }
                 } else if(userInput[1].equals("start")){
                     List<String> currPLayers = gameRooms.queryConnections((String) userInput[2]);
-
-                    if(!gameRooms.isHost((String) userInput[2], (String) userInput[0])){
+                    String roomUUID = (String) userInput[2];
+                    if(!gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
                         serverToUser.put(userInput[0], "not ok", currPLayers);
                     }else{
                         serverToUser.put(userInput[0], "ok", currPLayers);
+
+                        //Initialize game session
+                        SequentialSpace conns = new SequentialSpace();
+
+                        for(String playerUUID : currPLayers){
+                            conns.put(playerUUID);
+                        }
+                        GameSession sess = new GameSession(roomUUID, conns);
+
+
                     }
                 } else if (userInput[1].equals("leave")) {
                     List connections = gameRooms.queryConnections((String) userInput[2]);
@@ -171,7 +202,7 @@ class GlobalListener implements Runnable {
                                 gameRooms.close((String) userInput[2]);
                                 System.out.println("Host deleted room");
                             } else {
-                                gameRooms.removeConnection((String) userInput[2], (String) userInput[0]);
+                                gameRooms.removeConnection((String) userInput[0], (String) userInput[2]);
                                 String newHost = gameRooms.queryConnections((String) userInput[2]).get(0);
                                 gameRooms.changeHost((String) userInput[2], newHost);
                                 System.out.println("Client left room and new user was assigned host role");
@@ -180,6 +211,7 @@ class GlobalListener implements Runnable {
                             gameRooms.removeConnection((String) userInput[2], (String) userInput[0]);
                             System.out.println("Client left room");
                         }
+                        gameRooms.addConnection((String) userInput[0],"globalChat");
                     } else {
                         System.out.println("The client cannot leave game room because it is not connected");
                     }

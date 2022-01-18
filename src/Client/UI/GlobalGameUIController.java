@@ -34,7 +34,7 @@ import java.util.ResourceBundle;
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
     @FXML private TextField gameChatTextField;
-    private GameEngine gameEngine;
+    private LocalGame localGame;
     @FXML Button startGameButton;
     @FXML Button leaveGameButton;
     @FXML AnchorPane boardHolder;
@@ -74,9 +74,6 @@ public class GlobalGameUIController implements Initializable {
         playerViews.add(player8View);
 
 
-
-
-
     }
     public void  setClient(Client client) throws InterruptedException {
         this.client = client;
@@ -91,8 +88,8 @@ public class GlobalGameUIController implements Initializable {
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
-        if(gameEngine != null){
-            gameEngine.stop();
+        if(localGame != null){
+            localGame.stop();
         }
         chatListener.stop = true;
         client.leaveRoom();
@@ -132,7 +129,7 @@ public class GlobalGameUIController implements Initializable {
 
 
             // Making local game
-            LocalGame localGame = new LocalGame(63, 94, client.UUID);
+            localGame = new LocalGame(63, 94, client.roomUUID);
             boardHolder.getChildren().add(localGame.getViewModel());
             localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                 @Override
@@ -157,13 +154,13 @@ public class GlobalGameUIController implements Initializable {
             for(int i = 1; i < playersInRoom.size(); i++ ){
                 System.out.println("Initializing board for player nr " + i + " with id " + playersInRoom.get(i));
 
-                Opponent newOpponent = new Opponent( playersInRoom.get(i));
-                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+                Opponent newOpponent = new Opponent(playersInRoom.get(i));
+                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i-1));
             }
 
 
 
-            GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
+            LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();
 
             taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));

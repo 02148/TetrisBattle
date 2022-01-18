@@ -13,7 +13,7 @@ public class Consumer implements Runnable {
 
     public Consumer(String userUUID, PackageHandlerConsumer packageHandlerConsumer, String packageType) throws IOException, InterruptedException {
         this.userUUID = userUUID;
-        this.rs = new RemoteSpace("tcp://10.209.231.86:1337/" + userUUID + "?keep");
+        this.rs = new RemoteSpace("tcp://localhost:1337/" + userUUID + "?keep");
         this.packageType = packageType;
         this.packageHandlerConsumer = packageHandlerConsumer;
     }

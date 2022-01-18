@@ -46,6 +46,9 @@ public class ChatListener implements Runnable {
                 if (chatInput != null && (Double) chatInput[3] > lastMessageTime) {
                     lastMessageTime = (Double) chatInput[3];
                     System.out.println("Got message from another client");
+                    //Send read token to server room listener
+                    chatSpace.put(chatInput[0],chatInput[3]);
+
                     message[0] = (String) chatInput[4]; //Message
                     message[1] = Double.toString((Double) chatInput[3]); //Timestamp
                     message[2] = (String) chatInput[2]; //Username

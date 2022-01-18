@@ -10,7 +10,7 @@ public class Opponent {
     private BoardState boardState;
     private Controls controller;
     private PackageHandlerConsumer packageHandlerConsumer;
-    private final int size = 10;
+    private final int size = 12;
     private final int boardSize = 200;
 
     public Opponent( String userUUID) {
