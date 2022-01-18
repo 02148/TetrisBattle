@@ -1,23 +1,15 @@
 package Client;
 
-import Client.GameSession.PackageHandler;
+import Client.GameSession.PackageHandlerConsumer;
 import Client.Logic.Controls;
 import Client.Models.*;
 import Client.UI.Board;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.paint.Color;
-
-import java.lang.instrument.Instrumentation;
-import java.util.Arrays;
-import java.util.BitSet;
-import java.util.Random;
 
 public class GameEngine implements Runnable{
   private Controls controller;
-  private PackageHandler packageHandler;
+  private PackageHandlerConsumer packageHandlerConsumer;
   private BoardState boardState;
   private static Board nBoard;
 
@@ -25,9 +17,9 @@ public class GameEngine implements Runnable{
   private boolean stop = false;
 
   public GameEngine(Board nBoard) {
-    this.packageHandler = new PackageHandler(200);
+//    this.packageHandler = new PackageHandler(200);
     this.boardState = new BoardState(200);
-    this.boardState.addPackageHandler(this.packageHandler);
+//    this.boardState.addPackageHandler(this.packageHandler);
     this.nBoard = nBoard;
     this.controller = new Controls(nBoard, boardState, false);
   }

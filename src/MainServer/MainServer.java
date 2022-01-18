@@ -147,9 +147,26 @@ class GlobalListener implements Runnable {
                     }else{
                         serverToUser.put(userInput[0], "ok", currPLayers);
                     }
-
-
-
+                } else if (userInput[1].equals("leave")) {
+                    List connections = gameRooms.queryConnections((String) userInput[2]);
+                    if (connections.contains(userInput[0])) {
+                        if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
+                            if (connections.size() == 1) {
+                                gameRooms.close((String) userInput[2]);
+                                System.out.println("Host deleted room");
+                            } else {
+                                gameRooms.removeConnection((String) userInput[2], (String) userInput[0]);
+                                String newHost = gameRooms.queryConnections((String) userInput[2]).get(0);
+                                gameRooms.changeHost((String) userInput[2], newHost);
+                                System.out.println("Client left room and new user was assigned host role");
+                            }
+                        } else {
+                            gameRooms.removeConnection((String) userInput[2], (String) userInput[0]);
+                            System.out.println("Client left room");
+                        }
+                    } else {
+                        System.out.println("The client cannot leave game room because it is not connected");
+                    }
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();

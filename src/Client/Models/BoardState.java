@@ -1,18 +1,14 @@
 package Client.Models;
 
 
-import Client.GameSession.PackageHandler;
+import Client.GameSession.PackageHandlerProducer;
 import Client.Utility.Utils;
-import com.google.gson.internal.LinkedTreeMap;
 import javafx.scene.paint.Color;
-import jdk.jshell.execution.Util;
 
 import java.util.BitSet;
-import java.util.HashMap;
-import java.util.Map;
 
 public class BoardState {
-  private PackageHandler packageHandler;
+  private PackageHandlerProducer packageHandler;
   private Mino[] board;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
@@ -23,7 +19,7 @@ public class BoardState {
     return board;
   }
 
-  public void addPackageHandler(PackageHandler packageHandler) { this.packageHandler = packageHandler; }
+  public void addPackageHandler(PackageHandlerProducer packageHandler) { this.packageHandler = packageHandler; }
 
   public void setBoard(Mino[] board) {
     this.board = board;
@@ -241,20 +237,7 @@ public class BoardState {
     }
   }
 
-  public void updateBoardFromDelta(Map<Integer, Integer> delta) {
-    for(int k : delta.keySet()) {
-      this.board[k] = new Mino(k, Utils.intToColor(delta.get(k)), true);
-    }
-  }
-
-  public void updateBoardFromDeltaTreeMap(LinkedTreeMap<String, Double> delta) {
-    for(String k : delta.keySet()) {
-      int index = Integer.parseInt(k);
-      this.board[index] = new Mino(index, Utils.intToColor((int)Math.round(delta.get(k))), true);
-    }
-  }
-
-  public void updateBoardFromDeltaIntegerArray(int[] delta) {
+  public void updateBoardFromDelta(int[] delta) {
     for(int i = 0; i < delta.length; i += 2) {
       if(delta[i+1] == -1) {
         this.board[delta[i]] = null;

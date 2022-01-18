@@ -4,6 +4,8 @@ import Client.Client;
 import Client.GameEngine;
 import Client.GameSession.Consumer;
 import Client.Logic.Controls;
+import Client.Logic.LocalGame;
+import Client.Logic.Opponent;
 import Client.Models.BoardState;
 import MainServer.GameRoom.GameRoom;
 import MainServer.GameRoom.GameRoomRepo;
@@ -25,6 +27,7 @@ import Client.ChatListener;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -55,11 +58,23 @@ public class GlobalGameUIController implements Initializable {
 
     private Client client;
     private ChatListener chatListener;
+    private List<AnchorPane> playerViews = new ArrayList<>();
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
+        playerViews.add(player1View);
+        playerViews.add(player2View);
+        playerViews.add(player3View);
+        playerViews.add(player4View);
+        playerViews.add(player5View);
+        playerViews.add(player6View);
+        playerViews.add(player7View);
+        playerViews.add(player8View);
+
+
+
 
 
     }
@@ -80,6 +95,7 @@ public class GlobalGameUIController implements Initializable {
             gameEngine.stop();
         }
         chatListener.stop = true;
+        client.leaveRoom();
 
         client.roomUUID = "globalChat";
 
@@ -90,6 +106,8 @@ public class GlobalGameUIController implements Initializable {
         GlobalChatUIController globalChatUIController = loader.getController();
         globalChatUIController.setClient(client);
         globalChatUIController.setIsLoggedIn(true);
+        globalChatUIController.setUpChatListner();
+
 
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
@@ -104,22 +122,31 @@ public class GlobalGameUIController implements Initializable {
         //TODO: Add functionality to update TextArea based on input from other players
     }
     //TODO: Add functions to show the games/Make it possible to play
-    @FXML protected void handleStartGameAction(ActionEvent event) throws InterruptedException {
+
+    @FXML protected void handleStartGameAction(ActionEvent event){
         List<String> playersInRoom = client.TryStartGame();
 
-        if(playersInRoom!= null){
+        if(true){
             startGameButton.setDisable(true);
             startGameButton.setVisible(false);
-            Board nBoard = new Board(63,94,25);
-            boardHolder.getChildren().add(nBoard);
-            gameEngine = new GameEngine(nBoard);
-            nBoard.getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+
+
+            // Making local game
+            LocalGame localGame = new LocalGame(63, 94, client.UUID);
+            boardHolder.getChildren().add(localGame.getViewModel());
+            localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                 @Override
                 public void handle(KeyEvent keyEvent) {
-                    gameEngine.keyDownEvent(keyEvent);
+                    localGame.keyDownEvent(keyEvent);
                 }
             });
-            Platform.runLater(() -> gameEngine.toThread().start());
+            Platform.runLater(() -> localGame.toThread().start());
+
+
+            // Making a second board for testing purposes
+            //Opponent opponent1 = new Opponent(300, 95, "player1");
+            //boardHolder.getChildren().add(opponent1.getBoardView());
+
 
 
             //Adding the other player boards
@@ -127,34 +154,23 @@ public class GlobalGameUIController implements Initializable {
 
             System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
 
-            // Making a second board for testing purposes
-            Board nBoard2 = new Board(300,94,10);
-            boardHolder.getChildren().add(nBoard2);
+            for(int i = 1; i < playersInRoom.size(); i++ ){
+                System.out.println("Initializing board for player nr " + i + " with id " + playersInRoom.get(i));
 
-            BoardState boardState2 = new BoardState(200);
-            Controls controls2 = new Controls(nBoard2, boardState2, true);
-            try {
-                Consumer consumerFull = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "full"); // haps haps full
-                Consumer consumerDelta = new Consumer("tcp://localhost:1337/player1?keep", boardState2, controls2, "delta"); // haps haps delta
-                (new Thread(consumerFull)).start();
-                (new Thread(consumerDelta)).start();
-            } catch (Exception e) {}
-
-
+                Opponent newOpponent = new Opponent( playersInRoom.get(i));
+                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+            }
 
 
 
             GameEngine.TaskRunLines taskRunLines = new GameEngine.TaskRunLines();
+
             taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
-            taskRunLines.messageProperty().addListener((obs,oldMessage,newMessage) ->
-                    level.setText("Level " + newMessage.toString()));
+            taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
+                    level.setText("Level " + newProgress.toString()));
 
             Platform.runLater(() -> new Thread(taskRunLines).start());
-
-
-            Board player1Board = new Board(12);
-            addPlayerBoard(player1Board, player1View);
 
         } else {
             //cant start game

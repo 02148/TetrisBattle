@@ -142,6 +142,16 @@ public class Client extends Application {
 
   }
 
+
+
+  public void leaveRoom() {
+    try {
+      userToServer.put(UUID, "leave", roomUUID);
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+  }
+
   public List<String> TryStartGame() {
     Object[] gameResponse = new Object[0];
     List<String> players = null;
@@ -150,9 +160,11 @@ public class Client extends Application {
       userToServer.put(UUID, "start", roomUUID);
       gameResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(List.class));
 
+      players = (List<String>) gameResponse[2];
+
       if (gameResponse[1].equals("ok")) {
         isGameActive = true;
-        players = (List<String>) gameResponse[2];
+
 
         //Game can be started by UI
 
@@ -177,7 +189,9 @@ public class Client extends Application {
       e.printStackTrace();
     }
   }
-
+  public String getUserName(){
+    return userName;
+  }
 
 }
 
