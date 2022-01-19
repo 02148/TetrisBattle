@@ -5,6 +5,7 @@ import org.jspace.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CollectorAndDuplicator implements Runnable {
   private Space in, conns;
@@ -53,7 +54,7 @@ public class CollectorAndDuplicator implements Runnable {
     for (var c : curConns) {
       String userUUID = (String) c[0];
 
-      if (out.containsKey(userUUID) && userUUID != packageUserUUID)
+      if (out.containsKey(userUUID) && !Objects.equals(userUUID, packageUserUUID))
         out.get(userUUID).put(raw_data_delta);
     }
   }
