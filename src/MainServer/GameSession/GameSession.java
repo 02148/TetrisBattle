@@ -19,9 +19,9 @@ public class GameSession {
     Duplicator duplicator;
     String UUID;
 
-    public GameSession(String uuid, Space conns) throws Exception {
+    public GameSession(SpaceRepository gameSessionRepo, String uuid, Space conns) throws Exception {
         this.UUID = uuid;
-        this.repo = new SpaceRepository();
+        this.repo = gameSessionRepo;
         this.conns = conns;
 
         this.p1 = new StackSpace();

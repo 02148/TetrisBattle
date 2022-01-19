@@ -3,9 +3,11 @@ package Client.Models;
 
 import Client.GameSession.ProducerPackageHandler;
 import Client.Utility.Utils;
+import common.Constants;
 import javafx.scene.paint.Color;
 
 import java.util.BitSet;
+import java.util.Random;
 
 public class BoardState {
   private ProducerPackageHandler packageHandler;
@@ -139,6 +141,24 @@ public class BoardState {
       if(this.packageHandler != null)
         this.packageHandler.updateDelta(this.board, index);
     }
+  }
+
+  public void addRows(int amount) {
+    if(amount <= 0) return;
+    int rndHolePlacement = (new Random()).nextInt(9);
+    for(int index = 0; index < 200; index++) {
+      if(index < 200-amount*10) {
+        this.board[index] = this.board[index+amount*10];
+      } else {
+        if(index%10 == rndHolePlacement) {
+          this.board[index] = null;
+        } else {
+          this.board[index] = new Mino(index, Constants.receivedLineColor, true);
+        }
+      }
+    }
+
+
   }
 
   public String toString() {

@@ -61,6 +61,14 @@ public class Controls {
       switchCurrentTetromino();
     } else if(keyCode == KeyCode.P) {
       print();
+    } else if(keyCode == KeyCode.DIGIT1) {
+      this.boardState.addRows(1);
+    } else if(keyCode == KeyCode.DIGIT2) {
+      this.boardState.addRows(2);
+    } else if(keyCode == KeyCode.DIGIT3) {
+      this.boardState.addRows(3);
+    } else if(keyCode == KeyCode.DIGIT4) {
+      this.boardState.addRows(4);
     }
 
     updateViewModel();
