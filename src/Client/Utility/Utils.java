@@ -1,12 +1,12 @@
 package Client.Utility;
 
 import Client.Models.*;
+import common.Constants;
 import javafx.scene.paint.Color;
 
 import java.util.HashMap;
 
 public abstract class Utils {
-    public static Color[] tetroColors = new Color[]{Color.CYAN, Color.DARKSLATEBLUE, Color.ORANGE, Color.YELLOW, Color.GREEN, Color.PINK, Color.FIREBRICK};
 
     public static Tetromino newTetromino(int index) {
         return switch (index) {
@@ -29,7 +29,7 @@ public abstract class Utils {
 
     public static int colorToInt(Color color) {
         for(int i = 0; i < 7; i++) {
-            if(color.equals(tetroColors[i])) {
+            if(color.equals(Constants.tetroColors[i])) {
                 return i;
             }
         }
@@ -37,7 +37,7 @@ public abstract class Utils {
     }
 
     public static Color intToColor(int i) {
-        return tetroColors[i];
+        return Constants.tetroColors[i];
     }
 
     public static int tetrominoToInt(Class tetroClass) {

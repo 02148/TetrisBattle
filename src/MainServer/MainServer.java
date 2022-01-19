@@ -6,6 +6,7 @@ import MainServer.GameRoom.GameRoomRepo;
 import MainServer.GameSession.GameSession;
 import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.UserRepo;
+import common.Constants;
 import org.jspace.*;
 
 import java.util.List;
@@ -24,7 +25,7 @@ public class MainServer {
         SpaceRepository chatChannels = new SpaceRepository();
         SequentialSpace globalChat = new SequentialSpace();
 
-        chatChannels.addGate("tcp://10.209.222.2:4242/?conn");
+        chatChannels.addGate("tcp://" + Constants.IP_address+ ":4242/?conn");
 
 
         var gl = new GlobalListener();
@@ -81,7 +82,7 @@ class ChatRoomListener implements Runnable {
                 chat.get(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
-                        new FormalField(Double.class),
+                        new ActualField(messageInput[3]),
                         new FormalField(String.class));
                 System.out.println("Deleted chatMessage in room " + roomUUID);
 
@@ -133,7 +134,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://10.209.222.2:6969/?conn");
+        mainChannels.addGate("tcp://" + Constants.IP_address+ ":6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];

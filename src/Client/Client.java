@@ -4,6 +4,7 @@ package Client;
 import Client.UI.GlobalChatUIController;
 import Main.Main;
 import MainServer.Utils;
+import common.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,10 +42,10 @@ public class Client extends Application {
   }
   public void main(String[] args) throws IOException {
     //SpaceRepository repo = new SpaceRepository();
-    //repo.addGate("tcp://10.209.222.2:6969/?mainServer");
-    mainServer = new RemoteSpace("tcp://10.209.222.2:6969/main?mainServer");
-    userToServer = new RemoteSpace("tcp://10.209.222.2:6969/userToServer?conn");
-    serverToUser = new RemoteSpace("tcp://10.209.222.2:6969/serverToUser?conn");
+    //repo.addGate("tcp://" + Constants.IP_address+ ":6969/?mainServer");
+    mainServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/main?mainServer");
+    userToServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/userToServer?conn");
+    serverToUser = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/serverToUser?conn");
 
     //launch(args);
   }
@@ -60,7 +61,7 @@ public class Client extends Application {
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
         System.out.println("Logged in response got from server");
-        chatSpace = new RemoteSpace("tcp://10.209.222.2:4242/globalChat?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
       } else {
         //Error message
       }
@@ -88,7 +89,7 @@ public class Client extends Application {
         roomUUID = (String) roomResponse[2];
         System.out.println("Room can be started by UI");
 
-        chatSpace = new RemoteSpace("tcp://10.209.222.2:4242/" + roomUUID + "?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
 
         //Room can be started by UI
         System.out.println("Room can be joined using " + roomResponse[3]);
@@ -120,7 +121,7 @@ public class Client extends Application {
 
       if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
-        chatSpace = new RemoteSpace("tcp://10.209.222.2:4242/" + roomUUID + "?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
         //Room can be started by UI
         System.out.println("Trying to join room");
 
@@ -180,14 +181,15 @@ public class Client extends Application {
     return players;
   }
 
-  public void sendChat(String message){
+  public void sendChat(String message) throws InterruptedException {
     Object[] chatResponse = new Object[4];
     try {
-      chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentTimestamp(), message);
+      chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentExactTimestamp(), message);
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+    Thread.sleep(10);
   }
   public String getUserName(){
     return userName;

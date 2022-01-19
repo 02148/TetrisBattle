@@ -12,14 +12,14 @@
 
 <SplitPane dividerPositions="0.2446087492298213" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1300.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1" fx:controller="Client.UI.GlobalGameUIController">
     <items>
-        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="799.0" prefWidth="414.0" style="-fx-background-color: white;">
+        <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="0.0" minWidth="0.0" prefHeight="799.0" prefWidth="414.0" style="-fx-background-color: linear-gradient(to bottom, white, #99D6E6);">
             <children>
-                <Button fx:id="startGameButton" layoutX="157.0" layoutY="646.0" mnemonicParsing="false" onAction="#handleStartGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #7ed957" text="Start Match" textFill="#7ed957">
+                <Button fx:id="startGameButton" layoutX="157.0" layoutY="646.0" mnemonicParsing="false" onAction="#handleStartGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #51a12f; -fx-background-color: #BAF4A1;" text="Start Match" textFill="#51a12f">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
                 </Button>
-                <Button fx:id="leaveGameButton" focusTraversable="false" layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #ff1616" text="Leave " textFill="#ff1616">
+                <Button fx:id="leaveGameButton" focusTraversable="false" layoutX="157.0" layoutY="709.0" mnemonicParsing="false" onAction="#handleLeaveGameAction" prefHeight="42.0" prefWidth="99.0" style="-fx-border-color: #c33232; -fx-background-color: #EBA5A5;" text="Leave " textFill="#c33232">
                     <font>
                         <Font name="System Bold" size="12.0" />
                     </font>
@@ -34,9 +34,9 @@
             </children></AnchorPane>
         <SplitPane dividerPositions="0.6480923694779116" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="802.0" prefWidth="881.0">
             <items>
-                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="707.0">
+                <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="479.0" prefWidth="707.0" style="-fx-background-color: linear-gradient(to bottom, white, #DDF7FF );">
                     <children>
-                        <GridPane gridLinesVisible="true" layoutX="6.0" prefHeight="518.0" prefWidth="882.0">
+                        <GridPane gridLinesVisible="true" layoutX="6.0" prefHeight="518.0" prefWidth="882.0" style="-fx-grid-lines-visible: false;">
                             <columnConstraints>
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
                                 <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
@@ -63,7 +63,7 @@
                 <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="221.0" prefWidth="974.0">
                     <children>
                         <TextArea fx:id="gameChatArea" editable="false" focusTraversable="false" prefHeight="235.0" prefWidth="882.0" text="Game Chat" wrapText="true" />
-                        <TextField fx:id="gameChatTextField" focusTraversable="false" layoutY="240.0" onAction="#handleGameChatInputAction" prefHeight="32.0" prefWidth="882.0" promptText="Type To Chat..." />
+                        <TextField fx:id="gameChatTextField" focusTraversable="false" layoutY="240.0" onAction="#handleGameChatInputAction" prefHeight="32.0" prefWidth="882.0" promptText="Type To Chat..." style="-fx-background-color: #C2E9F4;" />
                     </children>
                 </AnchorPane>
             </items>
