@@ -1,6 +1,7 @@
 package MainServer.GameSession;
 
 import MainServer.GameSession.Modules.*;
+import common.Constants;
 import org.jspace.*;
 
 import java.util.HashMap;
@@ -44,7 +45,7 @@ public class GameSession {
         }
 
         // tcp://sess:1337/[room:UUID]?keep
-        this.repo.addGate("tcp://localhost:1337/?keep");
+        this.repo.addGate("tcp://" + Constants.IP_address+ ":1337/?keep");
 
         this.dispatcher = new Dispatcher(this.p1, this.p2, this.p3, this.conns);
         this.transformer = new Transformer(this.p3, this.p4, this.conns);

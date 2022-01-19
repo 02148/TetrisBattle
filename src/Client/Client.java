@@ -4,6 +4,7 @@ package Client;
 import Client.UI.GlobalChatUIController;
 import Main.Main;
 import MainServer.Utils;
+import common.Constants;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -41,10 +42,10 @@ public class Client extends Application {
   }
   public void main(String[] args) throws IOException {
     //SpaceRepository repo = new SpaceRepository();
-    //repo.addGate("tcp://localhost:6969/?mainServer");
-    mainServer = new RemoteSpace("tcp://localhost:6969/main?mainServer");
-    userToServer = new RemoteSpace("tcp://localhost:6969/userToServer?conn");
-    serverToUser = new RemoteSpace("tcp://localhost:6969/serverToUser?conn");
+    //repo.addGate("tcp://" + Constants.IP_address+ ":6969/?mainServer");
+    mainServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/main?mainServer");
+    userToServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/userToServer?conn");
+    serverToUser = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/serverToUser?conn");
 
     //launch(args);
   }
@@ -60,7 +61,7 @@ public class Client extends Application {
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
         System.out.println("Logged in response got from server");
-        chatSpace = new RemoteSpace("tcp://localhost:4242/globalChat?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
       } else {
         //Error message
       }
@@ -88,7 +89,7 @@ public class Client extends Application {
         roomUUID = (String) roomResponse[2];
         System.out.println("Room can be started by UI");
 
-        chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
 
         //Room can be started by UI
         System.out.println("Room can be joined using " + roomResponse[3]);
@@ -120,7 +121,7 @@ public class Client extends Application {
 
       if (roomResponse[1].equals("ok")) {
         roomUUID = (String) roomResponse[2];
-        chatSpace = new RemoteSpace("tcp://localhost:4242/" + roomUUID + "?conn");
+        chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
         //Room can be started by UI
         System.out.println("Trying to join room");
 

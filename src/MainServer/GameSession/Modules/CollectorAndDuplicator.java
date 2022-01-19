@@ -48,10 +48,12 @@ public class CollectorAndDuplicator implements Runnable {
       throw new Exception("DUPLICATOR >> No new delta data");
     }
 
+    String packageUserUUID = (String) raw_data_delta[0];
+
     for (var c : curConns) {
       String userUUID = (String) c[0];
 
-      if (out.containsKey(userUUID))
+      if (out.containsKey(userUUID) && userUUID != packageUserUUID)
         out.get(userUUID).put(raw_data_delta);
     }
   }
