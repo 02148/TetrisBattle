@@ -1,5 +1,6 @@
 package Client.Logic;
 
+import Client.GameSession.AttackProducer;
 import Client.GameSession.ProducerPackageHandler;
 import Client.Models.*;
 import Client.UI.Board;
@@ -21,11 +22,13 @@ public class Controls {
   private Random rnd              = new Random();
   private int lastTetromino       = -1;
   private int savedTetromino      = -1;
+  private int selectedOpponent    = -1;
   private boolean allowedToSwitch = true;
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
 
   private ProducerPackageHandler producerPackageHandler;
+  private AttackProducer attackProducer;
 
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
@@ -45,6 +48,10 @@ public class Controls {
     this.producerPackageHandler = producerPackageHandler;
   }
 
+  public void setAttackProducer(AttackProducer attackProducer) {
+    this.attackProducer = attackProducer;
+  }
+
   // Update View and BoardState Methods
   public void keyDownEvent(KeyCode keyCode) {
     if(keyCode == KeyCode.UP) {
@@ -61,14 +68,8 @@ public class Controls {
       switchCurrentTetromino();
     } else if(keyCode == KeyCode.P) {
       print();
-    } else if(keyCode == KeyCode.DIGIT1) {
-      this.boardState.addRows(1);
-    } else if(keyCode == KeyCode.DIGIT2) {
-      this.boardState.addRows(2);
-    } else if(keyCode == KeyCode.DIGIT3) {
-      this.boardState.addRows(3);
-    } else if(keyCode == KeyCode.DIGIT4) {
-      this.boardState.addRows(4);
+    } else if(keyCode == KeyCode.DIGIT1 || keyCode == KeyCode.DIGIT2 || keyCode == KeyCode.DIGIT3 || keyCode == KeyCode.DIGIT4 || keyCode == KeyCode.DIGIT5 || keyCode == KeyCode.DIGIT6 || keyCode == KeyCode.DIGIT7 || keyCode == KeyCode.DIGIT8) {
+      toggleSelectedOpponent(keyCode);
     }
 
     updateViewModel();
@@ -118,6 +119,7 @@ public class Controls {
     if(numRowsRemoved > 0){
       nBoard.setNumRowsRemoved(numRowsRemoved);
       nBoard.setNumRowsRemovedLevel(numRowsRemoved);
+      this.attackProducer.queueAttack(numRowsRemoved);
     }
     current_tetromino = newRandomTetromino();
     if(!boardState.legalPosition(current_tetromino, 0, 0))
@@ -195,5 +197,13 @@ public class Controls {
         System.out.println();
       System.out.print(bitset.get(i) ? "1 " : "0 ");
     }
+  }
+
+  public void toggleSelectedOpponent(KeyCode digitKey) {
+    selectedOpponent = (selectedOpponent == digitKey.getCode()) ? -1 : (digitKey.getCode() - 49);
+  }
+
+  public int getSelectedOpponent() {
+    return this.selectedOpponent;
   }
 }

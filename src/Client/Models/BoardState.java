@@ -125,7 +125,6 @@ public class BoardState {
           removeRow(y);
           numRowsRemoved++;
         }
-
       }
     }
     return numRowsRemoved;

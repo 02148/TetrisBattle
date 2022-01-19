@@ -3,6 +3,7 @@ package MainServer;
 import MainServer.Chat.ChatRepo;
 import MainServer.GameRoom.GameRoomRepo;
 
+import MainServer.GameSession.Combat.CombatEngine;
 import MainServer.GameSession.GameSession;
 import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.UserRepo;
@@ -24,14 +25,17 @@ public class MainServer {
 
         SpaceRepository chatChannels = new SpaceRepository();
         SpaceRepository gameSessionRepo = new SpaceRepository();
+        SpaceRepository combatRepo = new SpaceRepository();
 
         chatChannels.addGate("tcp://" + Constants.IP_address + ":4242/?conn");
+
 
         var gl = new GlobalListener();
         gl.setUsers(users);
         gl.setGameRooms(gameRooms);
         gl.setChatChannels(chatChannels);
         gl.setGameSessionRepository(gameSessionRepo);
+        gl.setCombatEngineRepository(combatRepo);
         new Thread(gl).start();
 
         var crl = new ChatRoomListener("globalChat");
@@ -112,6 +116,7 @@ class GlobalListener implements Runnable {
     private GameRoomRepo gameRooms;
     private SpaceRepository chatChannels;
     private SpaceRepository gameSessionRepository;
+    private SpaceRepository combatEngineRepo;
 
     public void setChatChannels(SpaceRepository chatChannels) {
         this.chatChannels = chatChannels;
@@ -123,6 +128,10 @@ class GlobalListener implements Runnable {
 
     public void setGameSessionRepository(SpaceRepository gameSessionRepo) {
         this.gameSessionRepository = gameSessionRepo;
+    }
+
+    public void setCombatEngineRepository(SpaceRepository combatEngineRepo) {
+        this.combatEngineRepo = combatEngineRepo;
     }
 
     public void setUsers(UserRepo users) {
@@ -195,8 +204,10 @@ class GlobalListener implements Runnable {
                             conns.put(playerUUID);
                         }
 
-                        new GameSession(this.gameSessionRepository, roomUUID, conns);
+                        CombatEngine combatEngine = new CombatEngine(conns, combatEngineRepo, roomUUID);
+                        (new Thread(combatEngine)).start();
 
+                        GameSession gameSession   =  new GameSession(this.gameSessionRepository, roomUUID, conns);
                     }
                 } else if (userInput[1].equals("leave")) {
                     List connections = gameRooms.queryConnections((String) userInput[2]);
