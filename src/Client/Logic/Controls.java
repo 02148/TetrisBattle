@@ -23,6 +23,7 @@ public class Controls {
   private int lastTetromino       = -1;
   private int savedTetromino      = -1;
   private int selectedOpponent    = -1;
+  private int[] upcomingTetros    = new int[4];
   private boolean allowedToSwitch = true;
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
@@ -40,6 +41,12 @@ public class Controls {
     this.viewOnly = viewOnly;
 
     updateViewModel();
+
+    for(int i = 0; i < upcomingTetros.length; i++) {
+      upcomingTetros[i] = rnd.nextInt(7);
+    }
+
+    nBoard.updateUpcomingBlock(upcomingTetros);
 
 //    if(!this.viewOnly)
 //      this.packageHandlerProducer.sendDeltaPackage();
@@ -68,6 +75,7 @@ public class Controls {
       dropTetromino();
     } else if(keyCode == KeyCode.C && allowedToSwitch) {
       switchCurrentTetromino();
+      nBoard.createSavedBlock(Utils.newTetromino(savedTetromino));
     } else if(keyCode == KeyCode.P) {
       print();
     } else if(keyCode == KeyCode.DIGIT1 || keyCode == KeyCode.DIGIT2 || keyCode == KeyCode.DIGIT3 || keyCode == KeyCode.DIGIT4 || keyCode == KeyCode.DIGIT5 || keyCode == KeyCode.DIGIT6 || keyCode == KeyCode.DIGIT7 || keyCode == KeyCode.DIGIT8) {
@@ -184,8 +192,14 @@ public class Controls {
   }
 
   public Tetromino newRandomTetromino() {
-    lastTetromino = rnd.nextInt(7);
-    return Utils.newTetromino(lastTetromino);
+    Tetromino nextTetro = Utils.newTetromino(upcomingTetros[upcomingTetros.length-1]);
+    lastTetromino = upcomingTetros[upcomingTetros.length-1];
+    for(int i = upcomingTetros.length-1; i >= 1; i--) {
+      upcomingTetros[i] = upcomingTetros[i-1];
+    }
+    upcomingTetros[0]  = rnd.nextInt(7);
+    nBoard.updateUpcomingBlock(upcomingTetros);
+    return nextTetro;
   }
 
   // MISC METHODS
