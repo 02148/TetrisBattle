@@ -42,7 +42,7 @@ public class CombatEngine implements Runnable {
      * TODO Should take into account linesSentStats to ensure a uniform distribution.
      * @return index of player: integer
      */
-    public String getRandomPlayerUUID() {
+    public String getRandomPlayerUUID(String senderUUID) {
         int idx = -1;
         ArrayList<String> curPlayers = null;
         try {
@@ -50,6 +50,7 @@ public class CombatEngine implements Runnable {
                     .queryAll(new FormalField(String.class))
                     .stream()
                     .map(x -> (String)x[0])
+                    .filter(x -> !x.equals(senderUUID))
                     .collect(Collectors.toList());
 
             idx = (int) (Math.random() * curPlayers.size());
@@ -104,7 +105,7 @@ public class CombatEngine implements Runnable {
 
     public void sendAttack(AttackObject attackObj) {
         // target is chosen at random initially
-        String uuid = getRandomPlayerUUID();
+        String uuid = getRandomPlayerUUID(attackObj.senderUUID);
 
         // none is default, and means no specific target
         if (!attackObj.getReceiverUUID().equals("none"))

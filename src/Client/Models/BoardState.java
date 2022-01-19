@@ -225,7 +225,7 @@ public class BoardState {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.ORANGE)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
-      } else if(board[i].color.equals(Color.YELLOW)) {
+      } else if(board[i].color.equals(Color.YELLOW) || board[i].color.equals(Constants.receivedLineColor)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.GREEN)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
