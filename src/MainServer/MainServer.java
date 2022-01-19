@@ -18,7 +18,6 @@ import java.util.List;
 public class MainServer {
     public static UserRepo users;
     public static GameRoomRepo gameRooms;
-    public static ChatRepo chat;
 
 
     public static void main(String[] args) throws Exception {
@@ -210,6 +209,7 @@ class GlobalListener implements Runnable {
                             if (connections.size() == 1) {
                                 gameRooms.close((String) userInput[2]);
                                 System.out.println("Host deleted room");
+
                             } else {
                                 gameRooms.removeConnection((String) userInput[0], (String) userInput[2]);
                                 String newHost = gameRooms.queryConnections((String) userInput[2]).get(0);
@@ -225,7 +225,7 @@ class GlobalListener implements Runnable {
                         System.out.println("The client cannot leave game room because it is not connected");
                     }
                 } else if(userInput[1].equals("gameOver")){
-                    GameRoom currGameRoom = gameRooms.getGameRoom((String) userInput[2]);
+                    GameRoom currGameRoom = gameRooms. queryGameRoom((String) userInput[2]);
 
                     int numPLayersInCurrRoom = gameRooms.queryConnections((String) userInput[2]).size();
 
@@ -241,6 +241,15 @@ class GlobalListener implements Runnable {
                         HashMap<String,Integer> scores = currGameRoom.getScores();
 
                         serverToUser.put(userInput[0], "ok", userInput[2], scores);
+
+                        Thread.sleep(100);
+
+                        //Delete the game over response
+                        serverToUser.get(new ActualField((String) userInput[0]),
+                                new ActualField("ok"),
+                                new ActualField((String) userInput[2]),
+                                new FormalField(Object.class));
+
                         System.out.println("Sending game over response");
                     } else {
                         serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());

@@ -21,7 +21,7 @@ import java.util.HashMap;
 public class gameOverListner implements Runnable{
     Client client;
     public RemoteSpace serverToUser;
-    private boolean stop = false;
+    public boolean stop = false;
     private Stage primaryStage;
 
     public gameOverListner( Client client, Stage primaryStage){

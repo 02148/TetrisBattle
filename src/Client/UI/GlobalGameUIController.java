@@ -74,7 +74,7 @@ public class GlobalGameUIController implements Initializable {
 
 
     }
-    public void  setClient(Client client) throws InterruptedException {
+    public void setUpGlobalGameController(Client client) throws InterruptedException {
         this.client = client;
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);

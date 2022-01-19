@@ -62,8 +62,6 @@ public class ScoreBoardUIController {
         //Hide the popup
         sbPop.getScene().getWindow().hide();
 
-
-
     }
 
 

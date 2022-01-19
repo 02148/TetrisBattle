@@ -198,13 +198,13 @@ public class Client extends Application {
     return userName;
   }
 
-  public HashMap<String,Integer> gameOver() {
+  public void gameOver() {
     Object[] gameResponse = new Object[0];
-    HashMap<String,Integer> scores = null;
+
     try {
 
       userToServer.put(UUID, "gameOver", roomUUID, userName, currScore);
-      gameResponse = serverToUser.get(
+      gameResponse = serverToUser.query(
               new ActualField(UUID),
               new FormalField(String.class),
               new FormalField(String.class),
@@ -213,7 +213,6 @@ public class Client extends Application {
 
       if (gameResponse[1].equals("ok")) {
         isGameActive = false;
-        scores = (HashMap) gameResponse[3];
 
         //Game ended
 
@@ -226,8 +225,6 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return scores;
-
   }
 }
 
