@@ -1,5 +1,6 @@
 package Client.Logic;
 
+import Client.GameSession.AttackProducer;
 import Client.GameSession.DeltaPkgProducer;
 import Client.GameSession.FullPkgProducer;
 import Client.GameSession.ProducerPackageHandler;
@@ -9,6 +10,9 @@ import common.Constants;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyEvent;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class LocalGame implements Runnable {
     private Controls controller;
     private ProducerPackageHandler packageHandler;
@@ -17,6 +21,7 @@ public class LocalGame implements Runnable {
 
     private FullPkgProducer fullPkgProducer;
     private DeltaPkgProducer deltaPkgProducer;
+    private AttackProducer attackProducer;
 
     private static boolean gameOver = false;
     private boolean stop = false;
@@ -24,9 +29,10 @@ public class LocalGame implements Runnable {
     private final int size = 25;
     private final int boardSize = 200;
 
-    public LocalGame(int posX, int posY, String gameUUID, String playerUUID) {
+    public LocalGame(int posX, int posY, String gameUUID, String playerUUID, List<String> opponents) {
         nBoard = new Board(posX,posY,size);
         this.boardState = new BoardState(boardSize);
+        this.controller = new Controls(nBoard, boardState, false);
 
             try {
               this.fullPkgProducer = new FullPkgProducer("tcp://" + Constants.IP_address+ ":1337/" + gameUUID+ "?keep",
@@ -39,6 +45,8 @@ public class LocalGame implements Runnable {
                       playerUUID,
                       this.boardState);
 
+              this.attackProducer = new AttackProducer(gameUUID, playerUUID, this.controller, opponents);
+
               this.packageHandler = new ProducerPackageHandler(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);
 
 
@@ -47,9 +55,8 @@ public class LocalGame implements Runnable {
             }
 
 
-
-        this.controller = new Controls(nBoard, boardState, false);
         this.controller.setPackageHandlerFull(this.packageHandler);
+        this.controller.setAttackProducer(this.attackProducer);
         this.boardState.addPackageHandler(this.packageHandler);
     }
 

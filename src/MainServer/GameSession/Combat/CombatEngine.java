@@ -1,7 +1,10 @@
 package MainServer.GameSession.Combat;
 
+import common.Constants;
 import org.jspace.FormalField;
 import org.jspace.Space;
+import org.jspace.SpaceRepository;
+import org.jspace.StackSpace;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,19 +13,27 @@ import java.util.stream.Collectors;
 
 public class CombatEngine implements Runnable {
     Random rnd;
+    SpaceRepository combatRepository;
     Space conns, combatSpace;
     HashMap<String, Integer> linesSentStats;     // <senderUUID, noOfLines>
     HashMap<String, Integer> linesReceivedStats; // <receiverUUID, noOfLines>
     HashMap<String, Integer> tetrisStreaks;      // <senderUUID, no of back-2-back tetrises>
+    String gameUUID;
 
-
-    public CombatEngine(Space conns, Space combatSpace) {
+    public CombatEngine(Space conns, SpaceRepository combatRepo, String gameUUID) {
+        this.gameUUID = gameUUID;
+        this.combatRepository = combatRepo;
         this.rnd = new Random();
         this.linesSentStats = new HashMap<>();
         this.linesReceivedStats = new HashMap<>();
         this.tetrisStreaks = new HashMap<>();
         this.conns = conns;
-        this.combatSpace = combatSpace;
+
+        // Creates the space in which the users sends lines
+        this.combatSpace = new StackSpace();
+        this.combatRepository.add(this.gameUUID, this.combatSpace);
+
+        this.combatRepository.addGate("tcp://" + Constants.IP_address+ ":42069/?keep");
     }
 
     /**
@@ -81,7 +92,7 @@ public class CombatEngine implements Runnable {
     public AttackObject receiveAttack() {
         AttackObject attackObj = null;
         try {
-            attackObj = (AttackObject)this.combatSpace.get(new FormalField(AttackObject.class))[0];
+            attackObj = (AttackObject)this.combatSpace.get(new FormalField(Object.class))[0];
             this.linesSentStats.put(attackObj.getSenderUUID(), attackObj.getLinesSent());
         } catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -93,7 +104,7 @@ public class CombatEngine implements Runnable {
         String uuid = getRandomPlayerUUID();
 
         // none is default, and means no specific target
-        if (attackObj.getReceiverUUID().equals("none"))
+        if (!attackObj.getReceiverUUID().equals("none"))
             uuid = attackObj.getReceiverUUID();
 
         int linesToSend = computeAttackSize(uuid, attackObj.getLinesSent());
