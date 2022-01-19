@@ -1,9 +1,6 @@
 package Client.Logic;
 
-import Client.GameSession.AttackProducer;
-import Client.GameSession.DeltaPkgProducer;
-import Client.GameSession.FullPkgProducer;
-import Client.GameSession.ProducerPackageHandler;
+import Client.GameSession.*;
 import Client.Models.BoardState;
 import Client.UI.Board;
 import common.Constants;
@@ -22,6 +19,7 @@ public class LocalGame implements Runnable {
     private FullPkgProducer fullPkgProducer;
     private DeltaPkgProducer deltaPkgProducer;
     private AttackProducer attackProducer;
+    private AttackConsumer attackConsumer;
 
     private static boolean gameOver = false;
     private boolean stop = false;
@@ -46,6 +44,11 @@ public class LocalGame implements Runnable {
                       this.boardState);
 
               this.attackProducer = new AttackProducer(gameUUID, playerUUID, this.controller, opponents);
+              this.attackConsumer = new AttackConsumer(playerUUID, gameUUID, this.boardState);
+              (new Thread(this.attackProducer)).start();
+              (new Thread(this.attackConsumer)).start();
+
+
 
               this.packageHandler = new ProducerPackageHandler(boardSize, boardState, nBoard, deltaPkgProducer, fullPkgProducer);
 

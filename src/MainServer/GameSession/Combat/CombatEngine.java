@@ -47,7 +47,7 @@ public class CombatEngine implements Runnable {
         ArrayList<String> curPlayers = null;
         try {
             curPlayers = (ArrayList<String>) this.conns
-                    .getAll(new FormalField(String.class))
+                    .queryAll(new FormalField(String.class))
                     .stream()
                     .map(x -> (String)x[0])
                     .collect(Collectors.toList());

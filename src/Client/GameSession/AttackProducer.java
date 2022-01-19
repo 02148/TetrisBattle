@@ -30,9 +30,6 @@ public class AttackProducer implements Runnable{
         } catch(Exception e) {
             e.printStackTrace();
         }
-
-
-        (new Thread(this)).start();
     }
 
     public String getReceiverUUID() {
