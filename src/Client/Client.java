@@ -189,7 +189,7 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    Thread.sleep(10);
+    Thread.sleep(50);
   }
   public String getUserName(){
     return userName;

@@ -14,6 +14,7 @@ public class ChatListener implements Runnable {
     public RemoteSpace chatSpace;
     public RemoteSpace serverToUser;
     private Double lastMessageTime = 0.0;
+    private String lastSender = "";
     public boolean stop = true;
 
     public ChatListener(TextArea chat) {
@@ -43,8 +44,9 @@ public class ChatListener implements Runnable {
                         new FormalField(Double.class),
                         new FormalField(String.class));
 
-                if (chatInput != null && (Double) chatInput[3] > lastMessageTime) {
+                if (chatInput != null && (!(chatInput[0].equals(lastSender)) || (Double) chatInput[3] > lastMessageTime)) {
                     lastMessageTime = (Double) chatInput[3];
+                    lastSender = (String) chatInput[0];
                     System.out.println("Got message from another client");
                     //Send read token to server room listener
                     chatSpace.put(chatInput[0],chatInput[3]);
