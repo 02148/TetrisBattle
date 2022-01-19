@@ -8,15 +8,15 @@ import java.util.HashMap;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class Engine implements Runnable {
+public class CombatEngine implements Runnable {
     Random rnd;
     Space conns, combatSpace;
-    HashMap<String, Integer> linesSentStats; // <senderUUID, noOfLines>
+    HashMap<String, Integer> linesSentStats;     // <senderUUID, noOfLines>
     HashMap<String, Integer> linesReceivedStats; // <receiverUUID, noOfLines>
-    HashMap<String, Integer> tetrisStreaks; // <senderUUID, no of back-2-back tetrises>
+    HashMap<String, Integer> tetrisStreaks;      // <senderUUID, no of back-2-back tetrises>
 
 
-    public Engine(Space conns, Space combatSpace) {
+    public CombatEngine(Space conns, Space combatSpace) {
         this.rnd = new Random();
         this.linesSentStats = new HashMap<>();
         this.linesReceivedStats = new HashMap<>();
