@@ -44,7 +44,7 @@ public class ChatListener implements Runnable {
                         new FormalField(Double.class),
                         new FormalField(String.class));
 
-                if (chatInput != null && !(chatInput[0].equals(lastSender)) && (Double) chatInput[3] > lastMessageTime) {
+                if (chatInput != null && (!(chatInput[0].equals(lastSender)) || (Double) chatInput[3] > lastMessageTime)) {
                     lastMessageTime = (Double) chatInput[3];
                     lastSender = (String) chatInput[0];
                     System.out.println("Got message from another client");
