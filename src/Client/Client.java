@@ -180,14 +180,15 @@ public class Client extends Application {
     return players;
   }
 
-  public void sendChat(String message){
+  public void sendChat(String message) throws InterruptedException {
     Object[] chatResponse = new Object[4];
     try {
-      chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentTimestamp(), message);
+      chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentExactTimestamp(), message);
 
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
+    Thread.sleep(10);
   }
   public String getUserName(){
     return userName;

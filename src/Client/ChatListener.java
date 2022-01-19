@@ -63,7 +63,7 @@ public class ChatListener implements Runnable {
 
 
         }
-        System.out.println("GlobalChatListener is not running");
+        System.out.println("ChatListener is not running");
 
 
     }
