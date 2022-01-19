@@ -3,6 +3,7 @@ package Client.GameSession;
 import Client.Models.BoardState;
 import common.Constants;
 import org.jspace.ActualField;
+import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 public class AttackConsumer implements Runnable {
@@ -28,7 +29,7 @@ public class AttackConsumer implements Runnable {
             try {
                 var data = this.combatSpace.get(new ActualField("incoming"),
                                                         new ActualField(this.userUUID),
-                                                        new ActualField(Integer.class));
+                                                        new FormalField(Integer.class));
                 this.boardState.addToAttackQueue((int) data[2]);
             } catch (InterruptedException e) {
                 e.printStackTrace();
