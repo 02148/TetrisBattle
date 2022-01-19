@@ -25,7 +25,7 @@ public class MainServer {
         SpaceRepository chatChannels = new SpaceRepository();
         SequentialSpace globalChat = new SequentialSpace();
 
-        chatChannels.addGate("tcp://" + "10.209.222.2" + ":4242/?conn");
+        chatChannels.addGate("tcp://" + Constants.IP_address + ":4242/?conn");
 
 
         var gl = new GlobalListener();
