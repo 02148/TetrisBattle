@@ -29,6 +29,7 @@ public class Controls {
 
   private ProducerPackageHandler producerPackageHandler;
   private AttackProducer attackProducer;
+  private AttackProducer attackConsumer;
 
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
@@ -51,6 +52,7 @@ public class Controls {
   public void setAttackProducer(AttackProducer attackProducer) {
     this.attackProducer = attackProducer;
   }
+
 
   // Update View and BoardState Methods
   public void keyDownEvent(KeyCode keyCode) {
@@ -121,12 +123,18 @@ public class Controls {
       nBoard.setNumRowsRemovedLevel(numRowsRemoved);
       this.attackProducer.queueAttack(numRowsRemoved);
     }
+
+    if(this.boardState.getAttackQueue() > 0) {
+      this.boardState.addRows(this.boardState.getAttackQueue());
+      this.boardState.resetAttackQueue();
+    }
     current_tetromino = newRandomTetromino();
     if(!boardState.legalPosition(current_tetromino, 0, 0))
       isDead = true;
     boardState.insertTetromino(current_tetromino);
     allowedToSwitch = true;
   }
+
 
   public void rotateTetromino(Tetromino tetromino) {
     int[][] rightWallKickData = tetromino.getRightWallKickData();

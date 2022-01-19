@@ -12,6 +12,7 @@ import java.util.Random;
 public class BoardState {
   private ProducerPackageHandler packageHandler;
   private Mino[] board;
+  private int attackQueue = 0;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
     this.board = new Mino[size];
@@ -156,8 +157,18 @@ public class BoardState {
         }
       }
     }
+  }
 
+  public void addToAttackQueue(int amount) {
+    this.attackQueue += amount;
+  }
 
+  public int getAttackQueue() {
+    return this.attackQueue;
+  }
+
+  public void resetAttackQueue() {
+    this.attackQueue = 0;
   }
 
   public String toString() {
