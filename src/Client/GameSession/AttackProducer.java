@@ -59,7 +59,7 @@ public class AttackProducer implements Runnable{
     public void sendAttack() {
         try {
             AttackObject attackObj = (AttackObject) this.pendingAttacks.get(new FormalField(AttackObject.class))[0];
-            this.combatSpace.put(attackObj);
+            this.combatSpace.put("incoming", attackObj);
         } catch (Exception e) {
             e.printStackTrace();
         }
