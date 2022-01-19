@@ -29,7 +29,7 @@ public class GameRoomRepo {
         s.put(gr.userHostUUID, gr.UUID, gr.number, gr.timestamp);
     }
 
-    private GameRoom getGameRoom(String uuid) throws InterruptedException {
+    public GameRoom getGameRoom(String uuid) throws InterruptedException {
         var q = s.getp(new FormalField(String.class), new ActualField(uuid), new FormalField(Integer.class), new FormalField(Double.class));
         return new GameRoom(q);
     }

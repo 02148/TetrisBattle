@@ -97,6 +97,7 @@ public class LocalGame implements Runnable {
           updateMessage(Integer.toString(nBoard.getLevel()));
         }
       }
+      updateTitle("Game Over");
       return null;
     }
   }

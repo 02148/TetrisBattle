@@ -18,7 +18,7 @@ public class UserRepo {
         s.put(u.UUID, u.username, u.noOfWins, u.timestamp, u.isLoggedIn);
     }
 
-    private User getUser(String UUID) throws InterruptedException {
+    public User getUser(String UUID) throws InterruptedException {
         Object[] q = s.getp(new ActualField(UUID),
                 new FormalField(String.class),
                 new FormalField(Integer.class),

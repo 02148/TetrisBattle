@@ -15,6 +15,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
@@ -29,6 +30,7 @@ public class Client extends Application {
   public RemoteSpace chatSpace;
 
   public boolean isGameActive = false;
+  public int currScore = 0;
 
   private static RemoteSpace mainServer;
 
@@ -55,7 +57,7 @@ public class Client extends Application {
 
     try {
       //userName = "holder";
-      userToServer.put(userName, "login","");
+      userToServer.put(userName, "login","","",0);
       loginResponse = serverToUser.get(new ActualField(userName), new FormalField(String.class), new FormalField(String.class));
       if (loginResponse[1].equals("ok")) {
         UUID = (String) loginResponse[2];
@@ -78,7 +80,7 @@ public class Client extends Application {
     Object[] roomResponse = new Object[4];
     try {
 
-      userToServer.put(UUID, "create","");
+      userToServer.put(UUID, "create","","",0);
       roomResponse = serverToUser.get(new ActualField(UUID),
               new FormalField(String.class), //Response
               new FormalField(String.class), //RoomUUID
@@ -112,7 +114,7 @@ public class Client extends Application {
   public String TryJoinRoom(String newRoomName) {
     Object[] roomResponse = new Object[3];
     try {
-      userToServer.put(UUID, "join", newRoomName);
+      userToServer.put(UUID, "join", newRoomName,"",0);
       roomResponse = serverToUser.get(new ActualField(UUID),
               new FormalField(String.class),
               new FormalField(String.class));
@@ -146,7 +148,7 @@ public class Client extends Application {
 
   public void leaveRoom() {
     try {
-      userToServer.put(UUID, "leave", roomUUID);
+      userToServer.put(UUID, "leave", roomUUID,"", 0);
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -157,13 +159,14 @@ public class Client extends Application {
     List<String> players = null;
     try {
 
-      userToServer.put(UUID, "start", roomUUID);
+      userToServer.put(UUID, "start", roomUUID,"", 0);
       gameResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(List.class));
-
       players = (List<String>) gameResponse[2];
+
 
       if (gameResponse[1].equals("ok")) {
         isGameActive = true;
+
 
 
         //Game can be started by UI
@@ -193,6 +196,37 @@ public class Client extends Application {
     return userName;
   }
 
+  public HashMap<String,Integer> gameOver() {
+    Object[] gameResponse = new Object[0];
+    HashMap<String,Integer> scores = null;
+    try {
+
+      userToServer.put(UUID, "gameOver", roomUUID, userName, currScore);
+      gameResponse = serverToUser.get(
+              new ActualField(UUID),
+              new FormalField(String.class),
+              new FormalField(String.class),
+              new FormalField(Object.class));
+
+
+      if (gameResponse[1].equals("ok")) {
+        isGameActive = false;
+        scores = (HashMap) gameResponse[3];
+
+        //Game ended
+
+      } else {
+
+        //Game can not be ended
+        System.out.println(gameResponse[1]);
+      }
+
+    } catch (InterruptedException e) {
+      e.printStackTrace();
+    }
+    return scores;
+
+  }
 }
 
 

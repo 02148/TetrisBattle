@@ -4,12 +4,15 @@ import MainServer.UserMgmt.User;
 import MainServer.Utils;
 
 import java.util.Date;
+import java.util.HashMap;
 
 
 public class GameRoom {
     public String userHostUUID, UUID;
     public int number;
     public double timestamp;
+    private int numDead = 0;
+    private HashMap<String, Integer> scores = new HashMap<>();
 
     public GameRoom(Object[] q) {
         this.userHostUUID = (String)q[0];
@@ -23,6 +26,22 @@ public class GameRoom {
         this.UUID = UUID;
         this.number = number;
         this.timestamp = Utils.getCurrentTimestamp();
+    }
+
+    public void incNumDead() {
+        this.numDead++;
+    }
+
+    public int getNumDead() {
+        return numDead;
+    }
+
+    public void addScore(String UUID, int score){
+        scores.put(UUID,score);
+    }
+
+    public HashMap getScores(){
+        return scores;
     }
 
     public String toString() {

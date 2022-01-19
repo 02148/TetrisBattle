@@ -1,13 +1,16 @@
 package MainServer;
 
 import MainServer.Chat.ChatRepo;
+import MainServer.GameRoom.GameRoom;
 import MainServer.GameRoom.GameRoomRepo;
 
 import MainServer.GameSession.GameSession;
 import MainServer.GameSession.Test.TestProducer;
+import MainServer.UserMgmt.User;
 import MainServer.UserMgmt.UserRepo;
 import org.jspace.*;
 
+import java.util.HashMap;
 import java.util.List;
 
 
@@ -140,7 +143,9 @@ class GlobalListener implements Runnable {
             try {
                 userInput = userToServer.get(new FormalField(String.class),
                         new FormalField(String.class),
-                        new FormalField(String.class)
+                        new FormalField(String.class),
+                        new FormalField(String.class),
+                        new FormalField(Integer.class)
                 );
 
                 if (userInput[1].equals("login")) {
@@ -215,6 +220,28 @@ class GlobalListener implements Runnable {
                     } else {
                         System.out.println("The client cannot leave game room because it is not connected");
                     }
+                } else if(userInput[1].equals("gameOver")){
+                    GameRoom currGameRoom = gameRooms.getGameRoom((String) userInput[2]);
+
+                    int numPLayersInCurrRoom = gameRooms.queryConnections((String) userInput[2]).size();
+
+                    //One more person is dead
+                    currGameRoom.incNumDead();
+
+                    //Add their score
+                    currGameRoom.addScore((String) userInput[3], (Integer) userInput[4]);
+
+                    //Check if only one person is alive
+                    if(currGameRoom.getNumDead() == numPLayersInCurrRoom){ //REMEMBER TO SAY -1
+                        //Game can be ended
+                        HashMap<String,Integer> scores = currGameRoom.getScores();
+
+                        serverToUser.put(userInput[0], "ok", userInput[2], scores);
+                        System.out.println("Sending game over response");
+                    } else {
+                        serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());
+                    }
+
                 }
             } catch (InterruptedException e) {
                 e.printStackTrace();
