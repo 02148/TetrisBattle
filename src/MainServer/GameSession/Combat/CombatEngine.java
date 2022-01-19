@@ -1,5 +1,6 @@
 package MainServer.GameSession.Combat;
 
+import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
@@ -81,7 +82,7 @@ public class CombatEngine implements Runnable {
     public AttackObject receiveAttack() {
         AttackObject attackObj = null;
         try {
-            attackObj = (AttackObject)this.combatSpace.get(new FormalField(AttackObject.class))[0];
+            attackObj = (AttackObject)this.combatSpace.get(new ActualField("incoming"), new FormalField(AttackObject.class))[0];
             this.linesSentStats.put(attackObj.getSenderUUID(), attackObj.getLinesSent());
         } catch (InterruptedException e) { e.printStackTrace(); }
 
@@ -103,7 +104,7 @@ public class CombatEngine implements Runnable {
             return;
 
         try {
-            this.combatSpace.put(uuid, linesToSend);
+            this.combatSpace.put("outgoing", uuid, linesToSend);
             this.linesReceivedStats.put(uuid, linesToSend);
         } catch (InterruptedException e) {
             e.printStackTrace();
