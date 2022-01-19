@@ -3,15 +3,17 @@ package MainServer.GameSession.Combat;
 import org.jspace.FormalField;
 import org.jspace.Space;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Engine implements Runnable {
     Random rnd;
     Space conns, combatSpace;
-    HashMap<Integer, Integer> linesSentStats; // <senderIdx, noOfLines>
-    HashMap<Integer, Integer> linesReceivedStats; // <receiverIdx, noOfLines>
-    HashMap<Integer, Integer> tetrisStreaks; // <senderIdx, no of back-2-back tetrises>
+    HashMap<String, Integer> linesSentStats; // <senderUUID, noOfLines>
+    HashMap<String, Integer> linesReceivedStats; // <receiverUUID, noOfLines>
+    HashMap<String, Integer> tetrisStreaks; // <senderUUID, no of back-2-back tetrises>
 
 
     public Engine(Space conns, Space combatSpace) {
@@ -28,17 +30,23 @@ public class Engine implements Runnable {
      * TODO Should take into account linesSentStats to ensure a uniform distribution.
      * @return index of player: integer
      */
-    public int getRandomPlayerIndex() {
+    public String getRandomPlayerUUID() {
         int idx = -1;
+        ArrayList<String> curPlayers = null;
         try {
-            var noOfPlayers = (long) this.conns
+            curPlayers = (ArrayList<String>) this.conns
                     .getAll(new FormalField(String.class))
-                    .size();
+                    .stream()
+                    .map(x -> (String)x[0])
+                    .collect(Collectors.toList());
 
-            idx = (int) (rnd.nextInt() * noOfPlayers);
+            idx = (int) (rnd.nextInt() * curPlayers.size());
         } catch (Exception e) { e.printStackTrace();}
 
-        return idx;
+        if (curPlayers == null)
+            return null;
+
+        return curPlayers.get(idx);
     }
 
     /**
@@ -50,22 +58,22 @@ public class Engine implements Runnable {
      * Tetris, no streak -> 4.
      * Tetris, streak of 1 -> 5.
      * Tetris, streak of >2 -> 8.
-     * @param senderIdx Index of sender
+     * @param senderUUID Index of sender
      * @param noOfLinesIn Number of lines from sender
      * @return Number of lines to receiver
      */
-    public int computeAttackSize(int senderIdx, int noOfLinesIn) {
+    public int computeAttackSize(String senderUUID, int noOfLinesIn) {
         boolean isTetris = noOfLinesIn == 4;
 
         int noOfLinesOut = noOfLinesIn - 1;
 
         if (isTetris) {
-            int curStreak = this.tetrisStreaks.get(senderIdx) + 1;
+            int curStreak = this.tetrisStreaks.get(senderUUID) + 1;
             noOfLinesOut = curStreak == 1 ? 4 : (curStreak == 2 ? 5 : 8);
-            this.tetrisStreaks.put(senderIdx, curStreak);
+            this.tetrisStreaks.put(senderUUID, curStreak);
         }
         else
-            this.tetrisStreaks.put(senderIdx,0);
+            this.tetrisStreaks.put(senderUUID,0);
 
         return noOfLinesOut;
     }
@@ -74,28 +82,29 @@ public class Engine implements Runnable {
         AttackObject attackObj = null;
         try {
             attackObj = (AttackObject)this.combatSpace.get(new FormalField(AttackObject.class))[0];
-            this.linesSentStats.put(attackObj.getSenderIdx(), attackObj.getLinesSent());
+            this.linesSentStats.put(attackObj.getSenderUUID(), attackObj.getLinesSent());
         } catch (InterruptedException e) { e.printStackTrace(); }
 
         return attackObj;
     }
 
     public void sendAttack(AttackObject attackObj) {
-        int idx = getRandomPlayerIndex();
+        // target is chosen at random initially
+        String uuid = getRandomPlayerUUID();
 
-        // default of -1 means that no target player is selected -> server chooses random target
-        if (attackObj.getReceiverIdx() != -1)
-            idx = attackObj.getReceiverIdx();
+        // none is default, and means no specific target
+        if (attackObj.getReceiverUUID().equals("none"))
+            uuid = attackObj.getReceiverUUID();
 
-        int linesToSend = computeAttackSize(idx, attackObj.getLinesSent());
+        int linesToSend = computeAttackSize(uuid, attackObj.getLinesSent());
 
         // if 0 are computed (if 1 line is sent), simply stop execution before sending
         if (linesToSend == 0)
             return;
 
         try {
-            this.combatSpace.put(idx, linesToSend);
-            this.linesReceivedStats.put(idx, linesToSend);
+            this.combatSpace.put(uuid, linesToSend);
+            this.linesReceivedStats.put(uuid, linesToSend);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
