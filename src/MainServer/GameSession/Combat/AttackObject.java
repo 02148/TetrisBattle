@@ -3,23 +3,24 @@ package MainServer.GameSession.Combat;
 import java.io.Serializable;
 
 public class AttackObject implements Serializable {
-    int linesSent, senderIdx, receiverIdx;
+    int linesSent;
+    String senderUUID, receiverUUID;
 
     public int getLinesSent() {
         return linesSent;
     }
 
-    public int getSenderIdx() {
-        return senderIdx;
+    public String getSenderUUID() {
+        return senderUUID;
     }
 
-    public int getReceiverIdx() {
-        return receiverIdx;
+    public String getReceiverUUID() {
+        return receiverUUID;
     }
 
-    public AttackObject(int linesSent, int senderIdx, int receiverIdx) {
+    public AttackObject(int linesSent, String senderUUID, String receiverUUID) {
         this.linesSent = linesSent;
-        this.senderIdx = senderIdx;
-        this.receiverIdx = receiverIdx;
+        this.senderUUID = senderUUID;
+        this.receiverUUID = receiverUUID;
     }
 }

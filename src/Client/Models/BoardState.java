@@ -12,6 +12,7 @@ import java.util.Random;
 public class BoardState {
   private ProducerPackageHandler packageHandler;
   private Mino[] board;
+  private int attackQueue = 0;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
     this.board = new Mino[size];
@@ -125,7 +126,6 @@ public class BoardState {
           removeRow(y);
           numRowsRemoved++;
         }
-
       }
     }
     return numRowsRemoved;
@@ -157,8 +157,18 @@ public class BoardState {
         }
       }
     }
+  }
 
+  public void addToAttackQueue(int amount) {
+    this.attackQueue += amount;
+  }
 
+  public int getAttackQueue() {
+    return this.attackQueue;
+  }
+
+  public void resetAttackQueue() {
+    this.attackQueue = 0;
   }
 
   public String toString() {
@@ -215,7 +225,7 @@ public class BoardState {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.ORANGE)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
-      } else if(board[i].color.equals(Color.YELLOW)) {
+      } else if(board[i].color.equals(Color.YELLOW) || board[i].color.equals(Constants.receivedLineColor)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.GREEN)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);
