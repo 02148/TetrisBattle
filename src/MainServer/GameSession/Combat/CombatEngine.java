@@ -52,7 +52,7 @@ public class CombatEngine implements Runnable {
                     .map(x -> (String)x[0])
                     .collect(Collectors.toList());
 
-            idx = (int) (rnd.nextInt() * curPlayers.size());
+            idx = (int) (Math.random() * curPlayers.size());
         } catch (Exception e) { e.printStackTrace();}
 
         if (curPlayers == null)
@@ -80,6 +80,8 @@ public class CombatEngine implements Runnable {
         int noOfLinesOut = noOfLinesIn - 1;
 
         if (isTetris) {
+            if (!this.tetrisStreaks.containsKey(senderUUID))
+                this.tetrisStreaks.put(senderUUID,0);
             int curStreak = this.tetrisStreaks.get(senderUUID) + 1;
             noOfLinesOut = curStreak == 1 ? 4 : (curStreak == 2 ? 5 : 8);
             this.tetrisStreaks.put(senderUUID, curStreak);
@@ -93,7 +95,7 @@ public class CombatEngine implements Runnable {
     public AttackObject receiveAttack() {
         AttackObject attackObj = null;
         try {
-            attackObj = (AttackObject)this.combatSpace.get(new ActualField("outgoing"), new FormalField(AttackObject.class))[0];
+            attackObj = (AttackObject)this.combatSpace.get(new ActualField("outgoing"), new FormalField(Object.class))[1];
             this.linesSentStats.put(attackObj.getSenderUUID(), attackObj.getLinesSent());
         } catch (InterruptedException e) { e.printStackTrace(); }
 
