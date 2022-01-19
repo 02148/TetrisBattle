@@ -5,6 +5,7 @@ import Client.GameSession.FullPkgProducer;
 import Client.GameSession.ProducerPackageHandler;
 import Client.Models.BoardState;
 import Client.UI.Board;
+import common.Constants;
 import javafx.concurrent.Task;
 import javafx.scene.input.KeyEvent;
 
@@ -28,13 +29,13 @@ public class LocalGame implements Runnable {
         this.boardState = new BoardState(boardSize);
 
             try {
-              this.fullPkgProducer = new FullPkgProducer("tcp://localhost:1337/" + gameUUID+ "?keep",
+              this.fullPkgProducer = new FullPkgProducer("tcp://" + Constants.IP_address+ ":1337/" + gameUUID+ "?keep",
                       playerUUID,
                       this.boardState);
 
               (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
-              this.deltaPkgProducer = new DeltaPkgProducer("tcp://localhost:1337/" + gameUUID + "?keep",
+              this.deltaPkgProducer = new DeltaPkgProducer("tcp://" + Constants.IP_address+ ":1337/" + gameUUID + "?keep",
                       playerUUID,
                       this.boardState);
 

@@ -8,6 +8,7 @@ import MainServer.GameSession.GameSession;
 import MainServer.GameSession.Test.TestProducer;
 import MainServer.UserMgmt.User;
 import MainServer.UserMgmt.UserRepo;
+import common.Constants;
 import org.jspace.*;
 
 import java.util.HashMap;
@@ -25,23 +26,21 @@ public class MainServer {
         gameRooms = new GameRoomRepo();
 
         SpaceRepository chatChannels = new SpaceRepository();
-        SequentialSpace globalChat = new SequentialSpace();
+        SpaceRepository gameSessionRepo = new SpaceRepository();
 
-        chatChannels.addGate("tcp://localhost:4242/?conn");
-
+        chatChannels.addGate("tcp://" + Constants.IP_address + ":4242/?conn");
 
         var gl = new GlobalListener();
         gl.setUsers(users);
         gl.setGameRooms(gameRooms);
         gl.setChatChannels(chatChannels);
+        gl.setGameSessionRepository(gameSessionRepo);
         new Thread(gl).start();
 
         var crl = new ChatRoomListener("globalChat");
         crl.setRooms(gameRooms);
         crl.setChat(chatChannels);
         new Thread(crl).start();
-
-        TestProducer.main(new String[]{}); // Delete me pls 🥵
     }
 }
 
@@ -115,6 +114,7 @@ class GlobalListener implements Runnable {
     private UserRepo users;
     private GameRoomRepo gameRooms;
     private SpaceRepository chatChannels;
+    private SpaceRepository gameSessionRepository;
 
     public void setChatChannels(SpaceRepository chatChannels) {
         this.chatChannels = chatChannels;
@@ -122,6 +122,10 @@ class GlobalListener implements Runnable {
 
     public void setGameRooms(GameRoomRepo gameRooms) {
         this.gameRooms = gameRooms;
+    }
+
+    public void setGameSessionRepository(SpaceRepository gameSessionRepo) {
+        this.gameSessionRepository = gameSessionRepo;
     }
 
     public void setUsers(UserRepo users) {
@@ -136,7 +140,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://localhost:6969/?conn");
+        mainChannels.addGate("tcp://" + Constants.IP_address+ ":6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];
@@ -195,8 +199,8 @@ class GlobalListener implements Runnable {
                         for(String playerUUID : currPLayers){
                             conns.put(playerUUID);
                         }
-                        GameSession sess = new GameSession(roomUUID, conns);
 
+                        new GameSession(this.gameSessionRepository, roomUUID, conns);
 
                     }
                 } else if (userInput[1].equals("leave")) {
