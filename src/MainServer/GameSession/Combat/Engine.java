@@ -11,11 +11,14 @@ public class Engine implements Runnable {
     Space conns, combatSpace;
     HashMap<Integer, Integer> linesSentStats; // <senderIdx, noOfLines>
     HashMap<Integer, Integer> linesReceivedStats; // <receiverIdx, noOfLines>
+    HashMap<Integer, Integer> tetrisStreaks; // <senderIdx, no of back-2-back tetrises>
 
 
     public Engine(Space conns, Space combatSpace) {
         this.rnd = new Random();
         this.linesSentStats = new HashMap<>();
+        this.linesReceivedStats = new HashMap<>();
+        this.tetrisStreaks = new HashMap<>();
         this.conns = conns;
         this.combatSpace = combatSpace;
     }
@@ -38,6 +41,33 @@ public class Engine implements Runnable {
         return idx;
     }
 
+    /**
+     * Computes number of lines to send to receiver depending on the number of lines from sender.
+     * Maps lines received to lines sent with following logic:
+     * 1 -> 0.
+     * 2 -> 1.
+     * 3 -> 2.
+     * Tetris, no streak -> 4.
+     * Tetris, streak of 1 -> 5.
+     * Tetris, streak of >2 -> 8.
+     * @param senderIdx Index of sender
+     * @param noOfLinesIn Number of lines from sender
+     * @return Number of lines to receiver
+     */
+    public int computeAttackSize(int senderIdx, int noOfLinesIn) {
+        boolean isTetris = noOfLinesIn == 4;
+
+        int noOfLinesOut = noOfLinesIn - 1;
+
+        if (isTetris) {
+            int curStreak = this.tetrisStreaks.get(senderIdx) + 1;
+            noOfLinesOut = curStreak == 1 ? 4 : (curStreak == 2 ? 5 : 8);
+            this.tetrisStreaks.put(senderIdx, curStreak);
+        }
+
+        return noOfLinesOut;
+    }
+
     public AttackObject receiveAttack() {
         AttackObject attackObj = null;
         try {
@@ -55,9 +85,15 @@ public class Engine implements Runnable {
         if (attackObj.getReceiverIdx() != -1)
             idx = attackObj.getReceiverIdx();
 
+        int linesToSend = computeAttackSize(idx, attackObj.getLinesSent());
+
+        // if 0 are computed (if 1 line is sent), simply stop execution before sending
+        if (linesToSend == 0)
+            return;
+
         try {
-            this.combatSpace.put(idx, attackObj.getLinesSent());
-            this.linesReceivedStats.put(idx, attackObj.getLinesSent());
+            this.combatSpace.put(idx, linesToSend);
+            this.linesReceivedStats.put(idx, linesToSend);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -65,6 +101,9 @@ public class Engine implements Runnable {
 
     @Override
     public void run() {
-
+        while (true) {
+            var incoming = receiveAttack();
+            sendAttack(incoming);
+        }
     }
 }
