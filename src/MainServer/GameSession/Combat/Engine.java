@@ -64,6 +64,8 @@ public class Engine implements Runnable {
             noOfLinesOut = curStreak == 1 ? 4 : (curStreak == 2 ? 5 : 8);
             this.tetrisStreaks.put(senderIdx, curStreak);
         }
+        else
+            this.tetrisStreaks.put(senderIdx,0);
 
         return noOfLinesOut;
     }
@@ -71,7 +73,7 @@ public class Engine implements Runnable {
     public AttackObject receiveAttack() {
         AttackObject attackObj = null;
         try {
-            attackObj = (AttackObject)this.combatSpace.get(new FormalField(Object.class))[0];
+            attackObj = (AttackObject)this.combatSpace.get(new FormalField(AttackObject.class))[0];
             this.linesSentStats.put(attackObj.getSenderIdx(), attackObj.getLinesSent());
         } catch (InterruptedException e) { e.printStackTrace(); }
 
