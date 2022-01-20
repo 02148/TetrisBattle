@@ -5,7 +5,7 @@ import Client.GameSession.Consumer;
 import Client.GameSession.ConsumerPackageHandler;
 import Client.Logic.LocalGame;
 import Client.Logic.Opponent;
-import Client.gameOverListner;
+import Client.GameOverListener;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -56,7 +56,7 @@ public class GlobalGameUIController implements Initializable {
 
     private Client client;
     private ChatListener chatListener;
-    private gameOverListner gameOverListner;
+    private GameOverListener gameOverListner;
     private List<AnchorPane> playerViews = new ArrayList<>();
 
 
@@ -126,7 +126,7 @@ public class GlobalGameUIController implements Initializable {
 
         //Setup listener to display scoreboard
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        gameOverListner = new gameOverListner(client, primaryStage);
+        gameOverListner = new GameOverListener(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
 
 

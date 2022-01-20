@@ -19,6 +19,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+//TODO: delete consumers, and local game when scoreboard is shown
+
+
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
   public static String userName;
