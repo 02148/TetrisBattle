@@ -246,6 +246,9 @@ public class GlobalGameUIController implements Initializable {
                     level.setText("Level " + newProgress.toString()));
             LocalGame.uiUpdater.titleProperty().addListener((obs,oldProgress,newProgress) ->
                     {
+
+                        if(!localGame.gameOver) // Fix toxic service
+                            return;
                         //Get the list
                         String[] line = lines.getText().split(" ");
                         System.out.println("SCORE" + line[1]);

@@ -35,7 +35,7 @@ public class GameRoomRepo {
 
     public GameRoom getGameRoom(String uuid) throws InterruptedException {
         s.get(new ActualField(uuid), new ActualField("lock"));
-        var q = s.getp(new FormalField(String.class),
+        var q = s.get(new FormalField(String.class),
                 new ActualField(uuid),
                 new FormalField(String.class),
                 new FormalField(Double.class),
