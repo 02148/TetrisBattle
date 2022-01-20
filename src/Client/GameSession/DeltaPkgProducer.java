@@ -54,10 +54,5 @@ public class DeltaPkgProducer {
 
     public void stop() {
         this.stop = true;
-        try {
-            this.serverSpace.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

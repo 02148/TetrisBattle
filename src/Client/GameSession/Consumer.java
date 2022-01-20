@@ -94,10 +94,5 @@ public class Consumer implements Runnable {
 
     public void stop() {
         this.stop = true;
-        try {
-            this.rs.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

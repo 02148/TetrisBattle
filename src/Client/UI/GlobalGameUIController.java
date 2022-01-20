@@ -120,7 +120,12 @@ public class GlobalGameUIController implements Initializable {
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
         chatListener.stop = true;
-        client.roomUUID = "globalChat";
+
+        if(localGame != null){
+            localGame.stop();
+        }
+
+        client.leaveRoom(consumerDelta, consumerFull);
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -136,11 +141,7 @@ public class GlobalGameUIController implements Initializable {
         primaryStage.centerOnScreen();
         primaryStage.show();
 
-        if(localGame != null){
-            localGame.stop();
-        }
 
-        client.leaveRoom(consumerDelta, consumerFull);
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
             client.sendChat(gameChatTextField.getText());

@@ -22,7 +22,7 @@ public class Board extends Pane {
     private int numRowsRemovedLevel = 0;
     private int level = 1;
 
-    public Board(int posX, int posY, int size) {
+    public Board(int posX, int posY, int size, boolean isOpponent) {
         super();
         this.posX = posX;
         this.posY = posY;
@@ -43,10 +43,11 @@ public class Board extends Pane {
 
         this.getChildren().add(grid);
         initateSavedTetrominoFunctionality();
-        //createBorder();
+        if(isOpponent)
+            createBorder();
     }
 
-    public Board(int size) {
+    public Board(int size, boolean isOpponent) {
         super();
         this.size = size;
         grid = new GridPane();
@@ -62,7 +63,9 @@ public class Board extends Pane {
 
         this.getChildren().add(grid);
         initateSavedTetrominoFunctionality();
-        //createBorder();
+
+        if(isOpponent)
+            createBorder();
     }
 
     public void initateSavedTetrominoFunctionality() {

@@ -188,6 +188,7 @@ class GlobalListener implements Runnable {
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);
+                    gameRooms.removeConnection((String) userInput[0], "globalChat");
 
                     System.out.println("Create Room: Server response sent");
 
@@ -198,8 +199,8 @@ class GlobalListener implements Runnable {
                     new Thread(crl).start();
 
                 } else if (userInput[1].equals("join")) {
-                    if (gameRooms.queryConnections(gameRooms.getUUID((String) userInput[2])).contains(userInput[1])) {
-                        serverToUser.put(userInput[0], "Already connected", "");
+                    if (gameRooms.getUUID((String) userInput[2]).equals("The given room name was not found") || gameRooms.queryConnections(gameRooms.getUUID((String) userInput[2])).contains(userInput[1])) {
+                        serverToUser.put(userInput[0], "Unable to join room", "");
                         System.out.println("Join Room: Server error response sent");
                     } else {
 
@@ -247,8 +248,6 @@ class GlobalListener implements Runnable {
                     if (connections.contains(userInput[0])) {
                         if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
                             if (connections.size() == 1) {
-
-
                                 gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
                                 gameSessions.get((String) userInput[2]).deleteGameSession();
                                 gameRooms.close((String) userInput[2]);

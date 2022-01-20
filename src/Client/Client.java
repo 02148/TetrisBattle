@@ -158,7 +158,13 @@ public class Client extends Application {
         delta.stop();
         full.stop();
       }
+      roomUUID = "globalChat";
+      chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
     } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }
@@ -235,6 +241,7 @@ public class Client extends Application {
           delta.stop();
           full.stop();
         }
+        roomUUID = "globalChat";
 
 
       } else {
