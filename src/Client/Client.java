@@ -91,6 +91,7 @@ public class Client extends Application {
               new FormalField(String.class), //RoomUUID
               new FormalField(String.class)); //Room nr
       if (roomResponse[1].equals("ok")) {
+        sendChat(userName + " left the room");
 
         roomUUID = (String) roomResponse[2];
         System.out.println("Room can be started by UI");
@@ -125,6 +126,7 @@ public class Client extends Application {
 
 
       if (roomResponse[1].equals("ok")) {
+
         roomUUID = (String) roomResponse[2];
         chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
         //Room can be started by UI
@@ -157,8 +159,11 @@ public class Client extends Application {
         delta.stop();
         full.stop();
       }
+
       roomUUID = "globalChat";
       chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
+      System.out.println("GLOBAL CHAT ENTERED");
+
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (UnknownHostException e) {
@@ -207,7 +212,9 @@ public class Client extends Application {
   public void sendChat(String message) throws InterruptedException {
     Object[] chatResponse = new Object[4];
     try {
+
       chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentExactTimestamp(), message);
+      System.out.println("CLIENT: " + userName + "SENDING CHAT TO  " + roomUUID + " : " + chatSpace.getUri());
 
     } catch (InterruptedException e) {
       e.printStackTrace();

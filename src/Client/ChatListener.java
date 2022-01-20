@@ -4,6 +4,7 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
+import java.awt.*;
 import java.io.IOException;
 
 import javafx.scene.control.TextArea;
@@ -24,25 +25,35 @@ public class ChatListener implements Runnable {
 
     public void setClient(Client client) {
         this.client = client;
-        chatSpace = client.chatSpace;
+    }
+
+    public  void setChatSpace(RemoteSpace chatSpace){
+        this.chatSpace = chatSpace;
     }
 
 
     @Override
     public void run() {
+        System.out.println("chatListener is running..");
+        System.out.println("LISTENING TO " + client.roomUUID + " : " + client.chatSpace.getUri());
 
         while (!stop) {
-            System.out.println("chatListener is running..");
+            //System.out.println("chatListener is running..");
             try {
                 Object[] chatInput = new Object[4];
                 String[] message = new String[3];
 
 
-                chatInput = chatSpace.query(new FormalField(String.class),
+                chatInput = chatSpace.queryp(
+                        new FormalField(String.class),
                         new ActualField(client.roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
+
+                if(chatInput != null){
+                    System.out.println("GOT SOMETHING");
+                }
 
                 if (chatInput != null && (!(chatInput[0].equals(lastSender)) || (Double) chatInput[3] > lastMessageTime)) {
                     lastMessageTime = (Double) chatInput[3];

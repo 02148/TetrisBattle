@@ -79,11 +79,13 @@ class ChatRoomListener implements Runnable {
     public void run() {
         try {
             while (rooms.exists(roomUUID)) {
+                System.out.println("SERVER TRYING TO GET MESSAGE FROM " + roomUUID);
                 messageInput = chat.query(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
+                System.out.println("SERVER GOT MESSAGE FROM " + roomUUID);
 
                 for (int i = 0; i < rooms.queryConnections(roomUUID).size(); i++) {
                     chat.get(new ActualField(messageInput[0]),new ActualField(messageInput[3]));
@@ -304,16 +306,17 @@ class GlobalListener implements Runnable {
 
                         //DELETE GAME SESSION
 
-                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
-                        gameSessions.get((String) userInput[2]).deleteGameSession();
+                        if(gameCombatEngines.containsKey((String) userInput[2])) {
+                            gameCombatEngines.get((String) userInput[2  ]).deleteCombatEngine();
+                            gameSessions.get((String) userInput[2]).deleteGameSession();
+                        }
                         gameRooms.close((String) userInput[2]);
-
-
 
 
                     } else {
                         gameRooms.insertGameRoom(currGameRoom);
                         serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());
+
                     }
 
 

@@ -92,8 +92,9 @@ public class GameRoomRepo {
     public void removeConnection(String userHostUUID, String uuid) throws InterruptedException {
         conns.getp(new ActualField(userHostUUID), new ActualField(uuid));
         var curConns = queryConnections(uuid);
-        if (curConns.isEmpty()) // no more connections, close room
+        if (curConns.isEmpty() && !uuid.equals("globalChat")) // no more connections, close room
             close(uuid);
+
         else if (isHost(uuid, userHostUUID)) // host has left, reassign role
             changeHost(uuid, curConns.get(0));
     }

@@ -110,7 +110,7 @@ public class GlobalGameUIController implements Initializable {
         this.client = client;
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
-        chatListener.stop = false;
+        chatListener.setChatSpace(client.chatSpace);
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
 
@@ -119,7 +119,7 @@ public class GlobalGameUIController implements Initializable {
 
 
     @FXML
-    protected void handleLeaveGameAction(ActionEvent event) throws IOException {
+    protected void handleLeaveGameAction(ActionEvent event) throws IOException, InterruptedException {
         chatListener.stop = true;
 
         if(localGame != null){
@@ -138,17 +138,16 @@ public class GlobalGameUIController implements Initializable {
         globalChatUIController.setUpChatListner();
 
 
+
+
         primaryStage.setScene(scene);
         primaryStage.centerOnScreen();
         primaryStage.show();
-
-
+        client.sendChat(client.getUserName() + " entered the room");
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
             client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
-
-
     }
 
 
@@ -233,8 +232,8 @@ public class GlobalGameUIController implements Initializable {
                         client.currScore = Integer.parseInt(line[1]);
 
                         localGame.stop();
+                        chatListener.stop = true;
                         client.gameOver(consumerDelta, consumerFull);
-
                     });
 
             Platform.runLater(() ->{
