@@ -20,6 +20,7 @@ public class CombatEngine implements Runnable {
     HashMap<String, Integer> linesReceivedStats; // <receiverUUID, noOfLines>
     HashMap<String, Integer> tetrisStreaks;      // <senderUUID, no of back-2-back tetrises>
     String gameUUID;
+    boolean stop = false;
 
     public CombatEngine(Space conns, SpaceRepository combatRepo, String gameUUID) {
         this.gameUUID = gameUUID;
@@ -127,9 +128,15 @@ public class CombatEngine implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!stop) {
             var incoming = receiveAttack();
             sendAttack(incoming);
         }
+    }
+
+
+    public void deleteCombatEngine() {
+        this.combatRepository.remove(this.gameUUID);
+        this.stop = true;
     }
 }
