@@ -33,7 +33,7 @@ public class MainServer {
         SpaceRepository gameSessionRepo = new SpaceRepository();
         SpaceRepository combatRepo = new SpaceRepository();
 
-        chatChannels.addGate("tcp://" + Constants.IP_address + ":4242/?conn");
+        chatChannels.addGate("tcp://" + "10.209.222.2" + ":4242/?conn");
 
 
         var gl = new GlobalListener();
@@ -79,13 +79,12 @@ class ChatRoomListener implements Runnable {
     public void run() {
         try {
             while (rooms.exists(roomUUID)) {
-                System.out.println("SERVER TRYING TO GET MESSAGE FROM " + roomUUID);
+
                 messageInput = chat.query(new FormalField(String.class),
                         new ActualField(roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
-                System.out.println("SERVER GOT MESSAGE FROM " + roomUUID);
 
                 for (int i = 0; i < rooms.queryConnections(roomUUID).size(); i++) {
                     chat.get(new ActualField(messageInput[0]),new ActualField(messageInput[3]));
@@ -167,7 +166,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://" + Constants.IP_address+ ":6969/?conn");
+        mainChannels.addGate("tcp://" + "10.209.222.2"+ ":6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];
@@ -186,7 +185,7 @@ class GlobalListener implements Runnable {
                     System.out.println("Login: Sent response to client");
 
                 } else if (userInput[1].equals("create")) {
-                    String[] roomInfo = gameRooms.create((String) userInput[0]);
+                    String[] roomInfo = gameRooms.create((String) userInput[0], (String) userInput[2]);
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);

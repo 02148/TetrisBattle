@@ -58,19 +58,19 @@ public class TestProducer implements Runnable {
         conns.put("player2");
         // GameSession sess = new GameSession("69420", conns);
 
-//        FullPkgProducer pDelta = new FullPkgProducer("tcp://" + Constants.IP_address+ ":" + PORT + "/69420?keep",
+//        FullPkgProducer pDelta = new FullPkgProducer("tcp://" + "10.209.222.2"+ ":" + PORT + "/69420?keep",
 //                "player1",
 //                "delta"
 //        );
 //
-//        FullPkgProducer pFull = new FullPkgProducer("tcp://" + Constants.IP_address+ ":" + PORT + "/69420?keep",
+//        FullPkgProducer pFull = new FullPkgProducer("tcp://" + "10.209.222.2"+ ":" + PORT + "/69420?keep",
 //                "player1",
 //                "full"
 //        );
 
 //        var board = new BoardState(200);
-//        Consumer consumerDelta = new Consumer("tcp://" + Constants.IP_address+ ":" + PORT + "/player1?keep", board, null, "delta");
-//        Consumer consumerFull = new Consumer("tcp://" + Constants.IP_address+ ":" + PORT + "/player1?keep", board, null, "full");
+//        Consumer consumerDelta = new Consumer("tcp://" + "10.209.222.2"+ ":" + PORT + "/player1?keep", board, null, "delta");
+//        Consumer consumerFull = new Consumer("tcp://" + "10.209.222.2"+ ":" + PORT + "/player1?keep", board, null, "full");
 
 //        (new Thread(pDelta)).start();
 //        (new Thread(pFull)).start();

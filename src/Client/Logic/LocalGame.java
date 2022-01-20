@@ -23,8 +23,9 @@ public class LocalGame implements Runnable {
     private AttackProducer attackProducer;
     private AttackConsumer attackConsumer;
 
-    private static boolean gameOver;
-    private static boolean stop;
+    public static boolean gameOver = false;
+    public boolean stop = false;
+
 
     private final int size = 25;
     private final int boardSize = 200;
@@ -38,13 +39,13 @@ public class LocalGame implements Runnable {
         stop = false;
 
         try {
-            this.fullPkgProducer = new FullPkgProducer("tcp://" + Constants.IP_address + ":1337/" + gameUUID + "?keep",
+            this.fullPkgProducer = new FullPkgProducer("tcp://" + "10.209.222.2" + ":1337/" + gameUUID + "?keep",
                     playerUUID,
                     this.boardState);
 
             (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
-            this.deltaPkgProducer = new DeltaPkgProducer("tcp://" + Constants.IP_address + ":1337/" + gameUUID + "?keep",
+            this.deltaPkgProducer = new DeltaPkgProducer("tcp://" + "10.209.222.2" + ":1337/" + gameUUID + "?keep",
                     playerUUID,
                     this.boardState);
 
@@ -114,23 +115,18 @@ public class LocalGame implements Runnable {
         @Override
         protected Task createTask() {
             this.onCancelledProperty();
-
-
             return new Task<ObservableList<String>>() {
                 @Override
                 protected ObservableList<String> call() throws Exception {
-                    while (!gameOver  && !stop) {
-                        updateProgress(nBoard.getNumRowsRemoved(), 50);
-                        System.out.println(nBoard.getNumRowsRemoved());
+                    while (!gameOver) {
+                        updateProgress(nBoard.getNumRowsRemoved(), 10000);
                         if (nBoard.getNumRowsRemovedLevel() > 9) {
-                            System.out.println(nBoard.getLevel());
                             nBoard.setLevel(1);
                             nBoard.resetNumRowsRemovedLevel();
                             updateMessage(Integer.toString(nBoard.getLevel()));
                         }
                     }
                     updateTitle("Game Over");
-
                     return null;
                 }
             };

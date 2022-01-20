@@ -55,7 +55,6 @@ public class GameOverListener implements Runnable{
     }
 
     private void setUpPopUp(Stage primaryStage, HashMap<String,Integer> scores){
-
         FXMLLoader loader = new FXMLLoader(getClass().getResource("UI/ScoreBoard.fxml"));
         try {
             VBox popUpUI = loader.<VBox>load();

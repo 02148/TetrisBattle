@@ -174,7 +174,7 @@ public class GlobalGameUIController implements Initializable {
 
         List<String> playersInRoom = playersInRoomInfo.get("UUID");
         List<String> playersInRoomNames = playersInRoomInfo.get("Names");
-        //playersInRoom.remove(client.UUID);
+        playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
         Stage primaryStage = (Stage)(this.startGameButton.getScene().getWindow());
@@ -244,6 +244,9 @@ public class GlobalGameUIController implements Initializable {
                     level.setText("Level " + newProgress.toString()));
             LocalGame.uiUpdater.titleProperty().addListener((obs,oldProgress,newProgress) ->
                     {
+
+                        if(!localGame.gameOver) // Fix toxic service
+                            return;
                         //Get the list
                         String[] line = lines.getText().split(" ");
                         System.out.println("SCORE" + line[1]);

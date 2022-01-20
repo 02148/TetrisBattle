@@ -101,7 +101,7 @@ public class GlobalChatUIController implements Initializable {
             switch (answer){
                 case "Host":
                     //User can host this
-                    response = client.hostRoom();
+                    response = client.hostRoom(roomUUID.getText());
                     if(response.equals("ok")){
                         if(chatListener != null){
                             chatListener.stop = true;
