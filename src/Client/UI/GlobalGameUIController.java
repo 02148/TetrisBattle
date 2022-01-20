@@ -139,7 +139,8 @@ public class GlobalGameUIController implements Initializable {
         if(localGame != null){
             localGame.stop();
         }
-        client.leaveRoom();
+
+        client.leaveRoom(consumerDelta, consumerFull);
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
             client.sendChat(gameChatTextField.getText());

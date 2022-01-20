@@ -91,7 +91,7 @@ public class LocalGame implements Runnable {
 
   public void stop() {
     this.stop = true;
-    gameOver = true;
+    //gameOver = true;
     this.attackProducer.stop();
     this.attackConsumer.stop();
     this.fullPkgProducer.stop();

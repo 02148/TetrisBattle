@@ -249,8 +249,8 @@ class GlobalListener implements Runnable {
                             if (connections.size() == 1) {
 
 
-                                gameSessions.get((String) userInput[2]).deleteGameSession();
                                 gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                                gameSessions.get((String) userInput[2]).deleteGameSession();
                                 gameRooms.close((String) userInput[2]);
 
                                 System.out.println("Host deleted room");
@@ -293,8 +293,9 @@ class GlobalListener implements Runnable {
                         System.out.println("Sending game over response");
 
                         //DELETE GAME SESSION
-                        gameSessions.get((String) userInput[2]).deleteGameSession();
+
                         gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                        gameSessions.get((String) userInput[2]).deleteGameSession();
                         gameRooms.close((String) userInput[2]);
 
 

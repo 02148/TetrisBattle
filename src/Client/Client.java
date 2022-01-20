@@ -151,9 +151,13 @@ public class Client extends Application {
 
 
 
-  public void leaveRoom() {
+  public void leaveRoom(Consumer delta, Consumer full) {
     try {
       userToServer.put(UUID, "leave", roomUUID,"", 0);
+      if(delta != null && full != null){
+        delta.stop();
+        full.stop();
+      }
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
@@ -225,10 +229,13 @@ public class Client extends Application {
 
 
       if (gameResponse[1].equals("ok")) {
-        isGameActive = false;
-        delta.
-
         //Game ended
+        isGameActive = false;
+        if(delta != null && full != null){
+          delta.stop();
+          full.stop();
+        }
+
 
       } else {
 

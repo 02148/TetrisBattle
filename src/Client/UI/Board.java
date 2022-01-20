@@ -43,7 +43,7 @@ public class Board extends Pane {
 
         this.getChildren().add(grid);
         initateSavedTetrominoFunctionality();
-        createBorder();
+        //createBorder();
     }
 
     public Board(int size) {
@@ -62,7 +62,7 @@ public class Board extends Pane {
 
         this.getChildren().add(grid);
         initateSavedTetrominoFunctionality();
-        createBorder();
+        //createBorder();
     }
 
     public void initateSavedTetrominoFunctionality() {
@@ -95,6 +95,7 @@ public class Board extends Pane {
         this.border.getGraphicsContext2D().fillRect(size*10+(10-lineWidth),0,lineWidth,size*20+10);
         this.border.getGraphicsContext2D().fillRect(0,size*20+(10-lineWidth),size*10+10,lineWidth);
     }
+
 
     public void removeBorder() {
         int lineWidth = 2;

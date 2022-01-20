@@ -71,13 +71,10 @@ public class GlobalChatUIController implements Initializable {
     }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
-        if(chatListener != null){
-            chatListener.stop = true;
-        }
-       
         Platform.exit();
         System.exit(0);
     }
+
     @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
         String response = "";
 
