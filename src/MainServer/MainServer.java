@@ -225,35 +225,28 @@ class GlobalListener implements Runnable {
                         System.out.println("The client cannot leave game room because it is not connected");
                     }
                 } else if(userInput[1].equals("gameOver")){
-                    GameRoom currGameRoom = gameRooms. queryGameRoom((String) userInput[2]);
+                    GameRoom currGameRoom = gameRooms.getGameRoom((String) userInput[2]);
 
                     int numPLayersInCurrRoom = gameRooms.queryConnections((String) userInput[2]).size();
 
                     //One more person is dead
-                    currGameRoom.incNumDead();
+                    currGameRoom.numDead++;
 
                     //Add their score
                     currGameRoom.addScore((String) userInput[3], (Integer) userInput[4]);
 
                     //Check if only one person is alive
-                    if(currGameRoom.getNumDead() == numPLayersInCurrRoom){ //REMEMBER TO SAY -1
+                    if(currGameRoom.numDead == numPLayersInCurrRoom){ //REMEMBER TO SAY -1
                         //Game can be ended
                         HashMap<String,Integer> scores = currGameRoom.getScores();
 
                         serverToUser.put(userInput[0], "ok", userInput[2], scores);
 
-                        Thread.sleep(100);
-
-                        //Delete the game over response
-                        serverToUser.get(new ActualField((String) userInput[0]),
-                                new ActualField("ok"),
-                                new ActualField((String) userInput[2]),
-                                new FormalField(Object.class));
-
                         System.out.println("Sending game over response");
                     } else {
                         serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());
                     }
+                    gameRooms.insertGameRoom(currGameRoom);
 
                 }
             } catch (InterruptedException e) {

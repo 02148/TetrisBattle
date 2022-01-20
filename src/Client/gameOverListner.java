@@ -38,17 +38,17 @@ public class gameOverListner implements Runnable{
             try {
                 Object[] serverResponse = serverToUser.query(
                         new FormalField(String.class),
-                        new FormalField(String.class),
+                        new ActualField("ok"),
                         new ActualField(client.roomUUID),
                         new FormalField(Object.class)
                 );
+                System.out.println("Listner : Got game over response ");
+                HashMap<String, Integer> scores = (HashMap<String, Integer>) serverResponse[3];
+                setUpPopUp(primaryStage, scores);
+                stop = true;
 
-                if(serverResponse[1].equals("ok")){
-                    System.out.println("Got game over response ");
-                    HashMap<String, Integer> scores = (HashMap<String, Integer>) serverResponse[3];
-                    setUpPopUp(primaryStage, scores);
-                    stop = true;
-                }
+
+
 
             } catch (InterruptedException e) {
                 e.printStackTrace();

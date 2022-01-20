@@ -11,33 +11,28 @@ public class GameRoom {
     public String userHostUUID, UUID;
     public int number;
     public double timestamp;
-    private int numDead = 0;
-    private HashMap<String, Integer> scores = new HashMap<>();
+    public int numDead;
+    public HashMap<String, Integer> scores;
 
     public GameRoom(Object[] q) {
         this.userHostUUID = (String)q[0];
         this.UUID = (String)q[1];
         this.number = (int)q[2];
         this.timestamp = (double)q[3];
+        this.numDead = (int)q[4];
+        this.scores = (HashMap<String, Integer>) q[5];
     }
 
-    public GameRoom(String userHostUUID, String UUID, int number) {
+    public GameRoom(String userHostUUID, String UUID, int number, int numDead, HashMap<String,Integer> scores) {
         this.userHostUUID = userHostUUID;
         this.UUID = UUID;
         this.number = number;
         this.timestamp = Utils.getCurrentTimestamp();
+        this.numDead = numDead;
+        this.scores = scores;
     }
 
-    public void incNumDead() {
-        this.numDead++;
-    }
-
-    public int getNumDead() {
-        return numDead;
-    }
-
-    public void addScore(String UUID, int score){
-        scores.put(UUID,score);
+    public void addScore(String UUID, int score){scores.put(UUID,score);
     }
 
     public HashMap getScores(){

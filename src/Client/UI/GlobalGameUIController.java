@@ -116,14 +116,14 @@ public class GlobalGameUIController implements Initializable {
             client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
 
-        //TODO: Add functionality to update TextArea based on input from other players
+
     }
-    //TODO: Add functions to show the games/Make it possible to play
+
 
     @FXML protected void handleStartGameAction(ActionEvent event){
         List<String> playersInRoom = client.TryStartGame();
 
-        //display the scoreboard
+        //Setup listener to display scoreboard
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         gameOverListner = new gameOverListner(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
@@ -144,7 +144,6 @@ public class GlobalGameUIController implements Initializable {
                 }
             });
             Platform.runLater(() -> localGame.toThread().start());
-
 
 
             //Adding the other player boards

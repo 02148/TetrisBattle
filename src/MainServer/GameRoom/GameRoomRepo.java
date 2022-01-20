@@ -7,6 +7,7 @@ import org.jspace.SequentialSpace;
 import org.jspace.Space;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -20,22 +21,37 @@ public class GameRoomRepo {
         GameRoom gr = new GameRoom(
                 "globalHost",
                 "globalChat",
-                0
+                0,
+                0,
+                new HashMap<>()
         );
         insertGameRoom(gr);
     }
 
-    private void insertGameRoom(GameRoom gr) throws InterruptedException {
-        s.put(gr.userHostUUID, gr.UUID, gr.number, gr.timestamp);
+    public void insertGameRoom(GameRoom gr) throws InterruptedException {
+        s.put(gr.userHostUUID, gr.UUID, gr.number, gr.timestamp, gr.numDead, gr.scores);
+        s.put(gr.UUID, "lock");
     }
 
-    private GameRoom getGameRoom(String uuid) throws InterruptedException {
-        var q = s.getp(new FormalField(String.class), new ActualField(uuid), new FormalField(Integer.class), new FormalField(Double.class));
+    public GameRoom getGameRoom(String uuid) throws InterruptedException {
+        s.get(new ActualField(uuid), new ActualField("lock"));
+        var q = s.getp(new FormalField(String.class),
+                new ActualField(uuid),
+                new FormalField(Integer.class),
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class));
         return new GameRoom(q);
     }
 
     public static GameRoom queryGameRoom(String uuid) throws InterruptedException {
-        var q = s.queryp(new FormalField(String.class), new ActualField(uuid), new FormalField(Integer.class), new FormalField(Double.class));
+        var q = s.queryp(new FormalField(String.class),
+                new ActualField(uuid),
+                new FormalField(Integer.class),
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class));
+
         return new GameRoom(q);
     }
 
@@ -48,7 +64,9 @@ public class GameRoomRepo {
         GameRoom gr = new GameRoom(
                 userHostUUID,
                 Utils.createUUID(),
-                getNewNumber()
+                getNewNumber(),
+                0,
+                new HashMap<>()
         );
         insertGameRoom(gr);
         conns.put(userHostUUID, gr.UUID);
@@ -94,7 +112,9 @@ public class GameRoomRepo {
         Object[] q = s.queryp(new FormalField(String.class),
                 new ActualField(UUID),
                 new FormalField(Integer.class),
-                new FormalField(Double.class));
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class));
         return q!= null;
     }
 
@@ -102,7 +122,9 @@ public class GameRoomRepo {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
-                new FormalField(Double.class)
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class)
         );
 
         for (var q : allRooms) {
@@ -119,7 +141,9 @@ public class GameRoomRepo {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
-                new FormalField(Double.class)
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class)
         );
 
         ArrayList<Integer> numbers = new ArrayList();
@@ -139,7 +163,9 @@ public class GameRoomRepo {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
                 new FormalField(Integer.class),
-                new FormalField(Double.class)
+                new FormalField(Double.class),
+                new FormalField(Integer.class),
+                new FormalField(Object.class)
         );
 
         for (var q : allRooms) {

@@ -209,6 +209,7 @@ public class Client extends Application {
               new FormalField(String.class),
               new FormalField(String.class),
               new FormalField(Object.class));
+      System.out.println("Client: Got game over response ");
 
 
       if (gameResponse[1].equals("ok")) {
