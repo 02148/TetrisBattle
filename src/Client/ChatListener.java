@@ -48,7 +48,7 @@ public class ChatListener implements Runnable {
                 String[] message = new String[3];
 
 
-                chatInput = chatSpace.queryp(
+                chatInput = chatSpace.query(
                         new FormalField(String.class),
                         new ActualField(client.roomUUID),
                         new FormalField(String.class),
