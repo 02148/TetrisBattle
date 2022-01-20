@@ -43,7 +43,7 @@ public class ScoreBoardUIController {
     }
 
     @FXML protected void handleGoToMenuButton(ActionEvent event) throws IOException {
-        client.leaveRoom(null, null);
+        client.leaveRoom();
 
         client.roomUUID = "globalChat";
 

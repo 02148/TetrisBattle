@@ -22,13 +22,11 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import Client.ChatListener;
+import javafx.concurrent.Service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
@@ -72,8 +70,7 @@ public class GlobalGameUIController implements Initializable {
     private List<AnchorPane> playerViews = new ArrayList<>();
 
     private List<Text> playerNames = new ArrayList<>();
-    Consumer consumerDelta;
-    Consumer consumerFull;
+    private boolean gameStarted;
 
 
 
@@ -109,45 +106,66 @@ public class GlobalGameUIController implements Initializable {
         this.client = client;
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
+        chatListener.setChatSpace(client.chatSpace);
         chatListener.stop = false;
+        chatListener.setGlobalGameUIController(this);
+
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
+        this.gameStarted = false;
 
     }
 
 
 
     @FXML
-    protected void handleLeaveGameAction(ActionEvent event) throws IOException {
+    protected void handleLeaveGameAction(ActionEvent event) throws IOException, InterruptedException {
         chatListener.stop = true;
 
         if(localGame != null){
             localGame.stop();
         }
 
-        client.leaveRoom(consumerDelta, consumerFull);
+        client.leaveRoom();
 
         GameScreenController.hideScreen_gameUI();
         GameScreenController.setScreen_chatUI(client);
 
-
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
+            if(Objects.equals(gameChatTextField.getText(), "HOST HAS STARTED GAME"))
+                return;
             client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
-
-
     }
 
 
     @FXML protected void handleStartGameAction(ActionEvent event){
+        startGame(false);
+    }
+
+    public void startGame(boolean fromChat) {
         HashMap<String,List<String>> playersInRoomInfo = client.TryStartGame();
+        if(playersInRoomInfo.containsKey("UNABLE TO START ROOM")) {
+            return;
+        }
+        if(gameStarted)
+            return;
+        this.gameStarted = true;
+        if(!fromChat) {
+            try {
+                client.sendChat("HOST HAS STARTED GAME");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         List<String> playersInRoom = playersInRoomInfo.get("UUID");
         List<String> playersInRoomNames = playersInRoomInfo.get("Names");
         playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
-        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage primaryStage = (Stage)(this.startGameButton.getScene().getWindow());
         gameOverListner = new GameOverListener(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
 
@@ -188,11 +206,11 @@ public class GlobalGameUIController implements Initializable {
             }
             if(!playersInRoom.isEmpty()) {
                 try {
-                    consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
-                    consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+                    client.deltaConsumer = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                    client.fullConsumer = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
 
-                    (new Thread(consumerDelta)).start();
-                    (new Thread(consumerFull)).start();
+                    (new Thread(client.deltaConsumer)).start();
+                    (new Thread(client.fullConsumer)).start();
                 } catch (Exception e) {}
             }
 
@@ -209,24 +227,27 @@ public class GlobalGameUIController implements Initializable {
             Platform.runLater(() -> localGame.toThread().start());
 
 
-            LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();
-
-            taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
-            taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.messageProperty().addListener((obs,oldProgress,newProgress) ->
                     level.setText("Level " + newProgress.toString()));
-            taskRunLines.titleProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.titleProperty().addListener((obs,oldProgress,newProgress) ->
                     {
+                        //Get the list
                         String[] line = lines.getText().split(" ");
                         System.out.println("SCORE" + line[1]);
                         client.currScore = Integer.parseInt(line[1]);
+
                         //Get the list
-                        client.gameOver(consumerDelta, consumerFull);
+                        client.gameOver(client.deltaConsumer, client.fullConsumer);
                         localGame.stop();
+                        chatListener.stop = true;
                     });
 
-            Platform.runLater(() -> new Thread(taskRunLines).start());
-
+            Platform.runLater(() ->{
+                LocalGame.uiUpdater.reset();
+                LocalGame.uiUpdater.start();
+            } );
         } else {
             //cant start game
 

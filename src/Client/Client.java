@@ -28,6 +28,8 @@ public class Client extends Application {
   public static String userName;
   public static String UUID;
 
+  public Consumer deltaConsumer, fullConsumer;
+
   public String roomUUID = "globalChat";
 
   public static RemoteSpace userToServer;
@@ -36,6 +38,7 @@ public class Client extends Application {
 
   public boolean isGameActive = false;
   public boolean isLoggedIn = false;
+
   public int currScore = 0;
 
   private static RemoteSpace mainServer;
@@ -84,16 +87,17 @@ public class Client extends Application {
     return (String) loginResponse[1];
   }
 
-  public String hostRoom() {
+  public String hostRoom(String newRoomName) {
     Object[] roomResponse = new Object[4];
     try {
 
-      userToServer.put(UUID, "create","","",0);
+      userToServer.put(UUID, "create",newRoomName,"",0);
       roomResponse = serverToUser.get(new ActualField(UUID),
               new FormalField(String.class), //Response
               new FormalField(String.class), //RoomUUID
               new FormalField(String.class)); //Room nr
       if (roomResponse[1].equals("ok")) {
+        sendChat(userName + " left the room");
 
         roomUUID = (String) roomResponse[2];
         System.out.println("Room can be started by UI");
@@ -103,7 +107,6 @@ public class Client extends Application {
         //Room can be started by UI
         System.out.println("Room can be joined using " + roomResponse[3]);
 
-        isGameActive = true;
 
       } else {
         //Error message
@@ -129,6 +132,7 @@ public class Client extends Application {
 
 
       if (roomResponse[1].equals("ok")) {
+
         roomUUID = (String) roomResponse[2];
         chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/" + roomUUID + "?conn");
         //Room can be started by UI
@@ -154,15 +158,19 @@ public class Client extends Application {
 
 
 
-  public void leaveRoom(Consumer delta, Consumer full) {
+  public void leaveRoom() {
     try {
       userToServer.put(UUID, "leave", roomUUID,"", 0);
-      if(delta != null && full != null){
-        delta.stop();
-        full.stop();
-      }
+
+
+      if(deltaConsumer != null)
+        deltaConsumer.stop();
+      if(fullConsumer != null)
+        fullConsumer.stop();
       roomUUID = "globalChat";
       chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
+      System.out.println("GLOBAL CHAT ENTERED");
+
     } catch (InterruptedException e) {
       e.printStackTrace();
     } catch (UnknownHostException e) {
@@ -191,7 +199,6 @@ public class Client extends Application {
 
 
       if (gameResponse[1].equals("ok")) {
-        isGameActive = true;
 
 
 
@@ -201,6 +208,8 @@ public class Client extends Application {
 
         //Error message
         System.out.println(gameResponse[1]);
+        playerInfo.put("UNABLE TO START ROOM", null);
+        return playerInfo;
       }
 
     } catch (InterruptedException e) {
@@ -212,7 +221,9 @@ public class Client extends Application {
   public void sendChat(String message) throws InterruptedException {
     Object[] chatResponse = new Object[4];
     try {
+
       chatSpace.put(UUID, roomUUID, userName, Utils.getCurrentExactTimestamp(), message);
+      System.out.println("CLIENT: " + userName + "SENDING CHAT TO  " + roomUUID + " : " + chatSpace.getUri());
 
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -239,13 +250,13 @@ public class Client extends Application {
 
       if (gameResponse[1].equals("ok")) {
         //Game ended
-        isGameActive = false;
-        if(delta != null && full != null){
-          delta.stop();
-          full.stop();
-        }
-        roomUUID = "globalChat";
 
+        if(delta != null)
+
+          delta.stop();
+        if(full != null)
+          full.stop();
+        roomUUID = "globalChat";
 
       } else {
 

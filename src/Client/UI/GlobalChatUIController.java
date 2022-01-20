@@ -21,11 +21,16 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 public class GlobalChatUIController implements Initializable {
-    @FXML private TextArea chatArea;
-    @FXML private TextField chatTextField;
-    @FXML private TextField username;
-    @FXML private TextField roomUUID;
-    @FXML private ToggleGroup group;
+    @FXML
+    private TextArea chatArea;
+    @FXML
+    private TextField chatTextField;
+    @FXML
+    private TextField username;
+    @FXML
+    private TextField roomUUID;
+    @FXML
+    private ToggleGroup group;
 
     private Client client;
     private boolean isLoggedIn = false;
@@ -36,99 +41,90 @@ public class GlobalChatUIController implements Initializable {
     public void initialize(URL url, ResourceBundle resourceBundle) {
     }
 
-    public void setClient(Client client){
+    public void setClient(Client client) {
         this.client = client;
         if (client.chatSpace != null) {
             System.out.println(client.chatSpace.getUri());
         }
     }
 
-    public void setUpChatListner(){
+    public void setUpChatListner() {
         chatListener = new ChatListener(chatArea);
         chatListener.setClient(client);
+        chatListener.setChatSpace(client.chatSpace);
         Thread chatUpdater = new Thread(chatListener);
-        Platform.runLater(()-> chatUpdater.start());
+        Platform.runLater(() -> chatUpdater.start());
     }
 
-    public void setIsLoggedIn(boolean loggedIn){
+    public void setIsLoggedIn(boolean loggedIn) {
         isLoggedIn = loggedIn;
-        if(loggedIn) {
+        if (loggedIn) {
             username.setText(Client.userName);
             username.setDisable(true);
         }
     }
 
-    @FXML protected void handleLoginAction(ActionEvent event){
-        if(!client.isLoggedIn){
-            if(!username.getText().trim().isEmpty() ){
+    @FXML
+    protected void handleLoginAction(ActionEvent event) {
+        if (!client.isLoggedIn) {
+            if (!username.getText().trim().isEmpty()) {
                 client.userName = username.getText();
                 String response = client.login();
-                if(response.equals("ok")){
+                if (response.equals("ok")) {
                     isLoggedIn = true;
                     username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
                     username.setDisable(true);
-                    if(chatListener == null){
+                    if (chatListener == null) {
                         setUpChatListner();
-                        chatListener.stop = false;
                     }
                 }
             } else {
                 username.setPromptText("Please input username");
                 username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
-        }else{
-            chatListener.stop = false;
         }
     }
 
-    @FXML protected void handleExitButtonAction(ActionEvent event) {
+    @FXML
+    protected void handleExitButtonAction(ActionEvent event) {
         Platform.exit();
         System.exit(0);
     }
 
-    @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
+    @FXML
+    protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
         String response = "";
 
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalGame.fxml"));
-        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(loader.load(),1300,800);
+        Stage primaryStage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        Scene scene = new Scene(loader.load(), 1300, 800);
 
         //Check if username and roomUUID was provided
-        if(!isLoggedIn && username.getText().trim().isEmpty() ){
+        if (!isLoggedIn) {
             username.setPromptText("Please input username");
             username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
         } else {
-            if(!username.getText().trim().isEmpty()){
-                client.userName = username.getText();
-                username.setDisable(true);
-                client.login();
-                isLoggedIn = true;
-            }
-
             //Check if room exists if not create one
             //Check if user want to join or host
             ToggleButton chosenButton = (ToggleButton) group.getSelectedToggle();
             String answer = chosenButton.getText();
-            switch (answer){
+            switch (answer) {
                 case "Host":
                     //User can host this
-                    response = client.hostRoom();
-                    if(response.equals("ok")){
-                        if(chatListener != null){
+                    response = client.hostRoom(roomUUID.getText());
+                    if (response.equals("ok")) {
+                        if (chatListener != null) {
                             chatListener.stop = true;
                         }
 
                         GameScreenController.setScreen_gameUI(event, client);
 
-                    } else {
-                        roomUUID.setPromptText("Please input username");
-                        username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     }
                     break;
 
                 case "Join":
-                    if (roomUUID.getText().trim().isEmpty()){
+                    if (roomUUID.getText().trim().isEmpty()) {
                         roomUUID.setPromptText("Please input room ID");
                         roomUUID.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
                     } else {
@@ -137,8 +133,8 @@ public class GlobalChatUIController implements Initializable {
                         response = client.TryJoinRoom(roomUUID.getText());
 
                         //Handle response here
-                        if(response.equals("ok")){
-                            if(chatListener != null){
+                        if (response.equals("ok")) {
+                            if (chatListener != null) {
                                 chatListener.stop = true;
                             }
                             GameScreenController.hideScreen_chatUI();
@@ -155,14 +151,15 @@ public class GlobalChatUIController implements Initializable {
     }
 
 
-    @FXML protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
-        if(!client.isLoggedIn){
-            if(!username.getText().trim().isEmpty() ){
+    @FXML
+    protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
+        if (!client.isLoggedIn) {
+            if (!username.getText().trim().isEmpty()) {
                 client.userName = username.getText();
                 client.login();
                 username.setDisable(true);
-                
-                if(chatListener == null){
+
+                if (chatListener == null) {
                     System.out.println("Setting up new Chat Listner");
                     setUpChatListner();
                     chatListener.stop = false;
@@ -173,18 +170,12 @@ public class GlobalChatUIController implements Initializable {
                 username.setPromptText("Please input username");
                 username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
-            
-        } else{
-            chatListener.stop = false;
-        }
-        
-
-        System.out.println(client.userName);
-        client.sendChat(chatTextField.getText());
-        chatTextField.clear();
-            
+        } else {
+            client.sendChat(chatTextField.getText());
+            chatTextField.clear();
         }
     }
+}
 
 
 

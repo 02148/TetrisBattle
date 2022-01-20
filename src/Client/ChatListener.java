@@ -1,9 +1,13 @@
 package Client;
 
+import Client.UI.GlobalGameUIController;
+import javafx.application.Application;
+import javafx.application.Platform;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
+import java.awt.*;
 import java.io.IOException;
 import java.util.UUID;
 
@@ -17,6 +21,7 @@ public class ChatListener implements Runnable {
     private Double lastMessageTime = 0.0;
     private String lastSender = "";
     public boolean stop = false;
+    private GlobalGameUIController globalGameUIController;
 
     public ChatListener(TextArea chat) {
         this.chatArea = chat;
@@ -25,12 +30,17 @@ public class ChatListener implements Runnable {
 
     public void setClient(Client client) {
         this.client = client;
-        chatSpace = client.chatSpace;
+    }
+
+    public  void setChatSpace(RemoteSpace chatSpace){
+        this.chatSpace = chatSpace;
     }
 
 
     @Override
     public void run() {
+        System.out.println("chatListener is running..");
+        System.out.println("LISTENING TO " + client.roomUUID + " : " + client.chatSpace.getUri());
 
         while (!stop) {
             System.out.println("chatListener is running on " + client.roomUUID);
@@ -39,11 +49,16 @@ public class ChatListener implements Runnable {
                 String[] message = new String[3];
 
 
-                chatInput = chatSpace.query(new FormalField(String.class),
+                chatInput = chatSpace.queryp(
+                        new FormalField(String.class),
                         new ActualField(client.roomUUID),
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
+
+                if(chatInput != null){
+                    System.out.println("GOT SOMETHING");
+                }
 
                 if (chatInput != null && (!(chatInput[0].equals(lastSender)) || (Double) chatInput[3] > lastMessageTime)) {
                     lastMessageTime = (Double) chatInput[3];
@@ -58,6 +73,10 @@ public class ChatListener implements Runnable {
                     message[2] = (String) chatInput[2]; //Username
                     String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3])));
                     chatArea.appendText("\n" +  date + " " + message[2] + ": " + message[0]);
+
+                    if(message[0].equals("HOST HAS STARTED GAME") && globalGameUIController != null)
+                        Platform.runLater(() -> globalGameUIController.startGame(true));
+
                 }
 
 
@@ -70,5 +89,9 @@ public class ChatListener implements Runnable {
         System.out.println("ChatListener is not running");
 
 
+    }
+
+    public void setGlobalGameUIController(GlobalGameUIController globalGameUIController) {
+        this.globalGameUIController = globalGameUIController;
     }
 }

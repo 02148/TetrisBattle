@@ -54,7 +54,6 @@ public class MainServer {
     }
 }
 
-
 class GlobalListener implements Runnable {
     private UserRepo users;
     private GameRoomRepo gameRooms;
@@ -120,7 +119,7 @@ class GlobalListener implements Runnable {
                     System.out.println("Login: Sent response to client");
 
                 } else if (userInput[1].equals("create")) {
-                    String[] roomInfo = gameRooms.create((String) userInput[0]);
+                    String[] roomInfo = gameRooms.create((String) userInput[0], (String) userInput[2]);
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);
@@ -159,10 +158,10 @@ class GlobalListener implements Runnable {
                     }
 
 
-                    if(!gameRooms.isHost(roomUUID, (String) userInput[0])){
+                    if( !gameSessions.containsKey((String) userInput[2]) && !gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
                         serverToUser.put(userInput[0], "not ok", currPLayers, currPlayerNames);
-                    }else{
+                    } else{
                         serverToUser.put(userInput[0], "ok", currPLayers, currPlayerNames);
 
                         //Initialize game session
@@ -185,8 +184,10 @@ class GlobalListener implements Runnable {
                     if (connections.contains(userInput[0])) {
                         if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
                             if (connections.size() == 1) {
-                                gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
-                                gameSessions.get((String) userInput[2]).deleteGameSession();
+                                if(gameCombatEngines.containsKey((String) userInput[2])) {
+                                    gameCombatEngines.get((String) userInput[2  ]).deleteCombatEngine();
+                                    gameSessions.get((String) userInput[2]).deleteGameSession();
+                                }
                                 gameRooms.close((String) userInput[2]);
 
                                 System.out.println("Host deleted room");
@@ -227,14 +228,6 @@ class GlobalListener implements Runnable {
 
                         serverToUser.put(userInput[0], "ok", userInput[2], scores);
 
-                        System.out.println("Sending game over response");
-
-                        //DELETE GAME SESSION
-
-                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
-                        gameSessions.get((String) userInput[2]).deleteGameSession();
-                        gameRooms.close((String) userInput[2]);
-
                         Thread.sleep(1000);
 
                         Object[] serverResponse = serverToUser.get(
@@ -244,10 +237,21 @@ class GlobalListener implements Runnable {
                                 new FormalField(Object.class)
                         );
 
+                        System.out.println("Sending game over response");
+
+                        //DELETE GAME SESSION
+
+                        if(gameCombatEngines.containsKey((String) userInput[2])) {
+                            gameCombatEngines.get((String) userInput[2  ]).deleteCombatEngine();
+                            gameSessions.get((String) userInput[2]).deleteGameSession();
+                        }
+                        gameRooms.close((String) userInput[2]);
+
 
                     } else {
                         gameRooms.insertGameRoom(currGameRoom);
                         serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());
+
                     }
 
 
