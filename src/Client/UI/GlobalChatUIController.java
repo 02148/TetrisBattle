@@ -34,7 +34,6 @@ public class GlobalChatUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     public void setClient(Client client){
@@ -50,6 +49,10 @@ public class GlobalChatUIController implements Initializable {
 
     public void setIsLoggedIn(boolean loggedIn){
         isLoggedIn = loggedIn;
+        if(loggedIn) {
+            username.setText(Client.userName);
+            username.setDisable(true);
+        }
     }
 
     @FXML protected void handleLoginAction(ActionEvent event){
