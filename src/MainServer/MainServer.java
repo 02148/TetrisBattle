@@ -297,6 +297,15 @@ class GlobalListener implements Runnable {
                         gameSessions.get((String) userInput[2]).deleteGameSession();
                         gameRooms.close((String) userInput[2]);
 
+                        Thread.sleep(1000);
+
+                        Object[] serverResponse = serverToUser.get(
+                                new ActualField((String) userInput[0]),
+                                new ActualField("ok"),
+                                new ActualField( (String) userInput[2]),
+                                new FormalField(Object.class)
+                        );
+
 
                     } else {
                         gameRooms.insertGameRoom(currGameRoom);

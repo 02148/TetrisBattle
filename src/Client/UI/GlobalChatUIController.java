@@ -56,27 +56,25 @@ public class GlobalChatUIController implements Initializable {
     }
 
     @FXML protected void handleLoginAction(ActionEvent event){
-
-        if(!isLoggedIn && username.getText().trim().isEmpty() ){
-            username.setPromptText("Please input username");
-            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-        } else {
-            if (!username.getText().trim().isEmpty()) {
+        if(!isLoggedIn){
+            if(!username.getText().trim().isEmpty() ){
                 client.userName = username.getText();
                 String response = client.login();
                 if(response.equals("ok")){
                     isLoggedIn = true;
                     username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
                     username.setDisable(true);
-
                     if(chatListener == null){
                         setUpChatListner();
                         chatListener.stop = false;
                     }
-
-
                 }
+            } else {
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
+        }else{
+            chatListener.stop = false;
         }
     }
 
@@ -171,27 +169,33 @@ public class GlobalChatUIController implements Initializable {
 
 
     @FXML protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
-        if(!isLoggedIn && username.getText().trim().isEmpty() ){
-            username.setPromptText("Please input username");
-            username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-        } else {
-            if(!username.getText().trim().isEmpty()){
+        if(!isLoggedIn){
+            if(!username.getText().trim().isEmpty() ){
                 client.userName = username.getText();
-                username.setDisable(true);
                 client.login();
-            }
-            if(chatListener == null){
-                System.out.println("Setting up new Chat Listner");
-                setUpChatListner();
-                chatListener.stop = false;
+                username.setDisable(true);
+                
+                if(chatListener == null){
+                    System.out.println("Setting up new Chat Listner");
+                    setUpChatListner();
+                    chatListener.stop = false;
+                } else {
+                    chatListener.stop = false;
+                }
             } else {
-                chatListener.stop = false;
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
+            
+        } else{
+            chatListener.stop = false;
+        }
+        
 
-            System.out.println(client.userName);
-            client.sendChat(chatTextField.getText());
-            chatTextField.clear();
-            }
+        System.out.println(client.userName);
+        client.sendChat(chatTextField.getText());
+        chatTextField.clear();
+            
         }
     }
 
