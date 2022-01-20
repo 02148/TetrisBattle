@@ -114,7 +114,6 @@ public class LocalGame implements Runnable {
     static final public Service uiUpdater = new Service<ObservableList<String>>() {
         @Override
         protected Task createTask() {
-            this.onCancelledProperty();
             return new Task<ObservableList<String>>() {
                 @Override
                 protected ObservableList<String> call() throws Exception {
