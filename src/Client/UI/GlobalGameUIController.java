@@ -135,24 +135,13 @@ public class GlobalGameUIController implements Initializable {
             startGameButton.setVisible(false);
 
 
-            // Making local game
-            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID, playersInRoom);
-            boardHolder.getChildren().add(localGame.getViewModel());
-            localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
-                @Override
-                public void handle(KeyEvent keyEvent) {
-                    localGame.keyDownEvent(keyEvent);
-                }
-            });
-            Platform.runLater(() -> localGame.toThread().start());
-
-
             //Adding the other player boards
             int numPlayers = playersInRoom.size();
 
             System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
 
             HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
+            ArrayList<Board> opponentBoards = new ArrayList<>();
 
             for(int i = 0; i < playersInRoom.size(); i++ ){
                 if(playersInRoom.get(i).equals(client.UUID)) continue;
@@ -160,6 +149,8 @@ public class GlobalGameUIController implements Initializable {
                 System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
 
                 Opponent newOpponent = new Opponent(playersInRoom.get(i));
+                opponentBoards.add(newOpponent.getBoardView());
+
                 addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
                 consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
             }
@@ -172,6 +163,18 @@ public class GlobalGameUIController implements Initializable {
                     (new Thread(consumerFull)).start();
                 } catch (Exception e) {}
             }
+
+
+            // Making local game
+            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID, playersInRoom, opponentBoards);
+            boardHolder.getChildren().add(localGame.getViewModel());
+            localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
+                @Override
+                public void handle(KeyEvent keyEvent) {
+                    localGame.keyDownEvent(keyEvent);
+                }
+            });
+            Platform.runLater(() -> localGame.toThread().start());
 
 
             LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();

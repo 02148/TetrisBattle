@@ -8,6 +8,7 @@ import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -27,6 +28,7 @@ public class Controls {
   private boolean allowedToSwitch = true;
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
+  private ArrayList<Board> opponentBoards;
 
   private ProducerPackageHandler producerPackageHandler;
   private AttackProducer attackProducer;
@@ -59,6 +61,8 @@ public class Controls {
   public void setAttackProducer(AttackProducer attackProducer) {
     this.attackProducer = attackProducer;
   }
+
+  public void setOpponentBoards(ArrayList<Board> opponentBoards) { this.opponentBoards = opponentBoards; }
 
 
   // Update View and BoardState Methods
@@ -222,7 +226,21 @@ public class Controls {
   }
 
   public void toggleSelectedOpponent(KeyCode digitKey) {
-    selectedOpponent = (selectedOpponent == digitKey.getCode()) ? -1 : (digitKey.getCode() - 49);
+    if(selectedOpponent != -1)
+      addOrRemoveOpponentBorder(false, selectedOpponent);
+    selectedOpponent = (selectedOpponent == digitKey.getCode()- 49) ? -1 : (digitKey.getCode() - 49);
+    if(selectedOpponent != -1)
+      addOrRemoveOpponentBorder(true, selectedOpponent);
+  }
+
+  public void addOrRemoveOpponentBorder(boolean doAdd, int opponentId) {
+    if(opponentBoards.size() > opponentId) {
+      if(doAdd) {
+        opponentBoards.get(opponentId).addBorder();
+      } else {
+        opponentBoards.get(opponentId).removeBorder();
+      }
+    }
   }
 
   public int getSelectedOpponent() {

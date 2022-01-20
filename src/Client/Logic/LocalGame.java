@@ -27,10 +27,11 @@ public class LocalGame implements Runnable {
     private final int size = 25;
     private final int boardSize = 200;
 
-    public LocalGame(int posX, int posY, String gameUUID, String playerUUID, List<String> opponents) {
+    public LocalGame(int posX, int posY, String gameUUID, String playerUUID, List<String> opponents, ArrayList<Board> opponentBoards) {
         nBoard = new Board(posX,posY,size);
         this.boardState = new BoardState(boardSize);
         this.controller = new Controls(nBoard, boardState, false);
+        this.controller.setOpponentBoards(opponentBoards);
 
             try {
               this.fullPkgProducer = new FullPkgProducer("tcp://" + Constants.IP_address+ ":1337/" + gameUUID+ "?keep",
@@ -93,8 +94,10 @@ public class LocalGame implements Runnable {
   }
 
   public void keyDownEvent(KeyEvent keyEvent) {
-    if(!gameOver && !stop)
+    if(!gameOver && !stop) {
       controller.keyDownEvent(keyEvent.getCode());
+
+    }
   }
 
   public static class TaskRunLines extends Task<Void> {
