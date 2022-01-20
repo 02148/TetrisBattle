@@ -16,7 +16,7 @@ public class ChatListener implements Runnable {
     public RemoteSpace serverToUser;
     private Double lastMessageTime = 0.0;
     private String lastSender = "";
-    public boolean stop = true;
+    public boolean stop = false;
 
     public ChatListener(TextArea chat) {
         this.chatArea = chat;

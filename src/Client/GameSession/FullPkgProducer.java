@@ -18,6 +18,7 @@ public class FullPkgProducer implements Runnable {
     String clientUUID;
     int T; // Clock Period
     BoardState boardState;
+    boolean stop = false;
 
     public FullPkgProducer(String URI,
                            String clientUUID,
@@ -40,13 +41,22 @@ public class FullPkgProducer implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.stop) {
             try {
                 sendBoard();
                 Thread.sleep(this.T);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void stop() {
+        this.stop = true;
+        try {
+            this.serverSpace.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

@@ -173,7 +173,7 @@ public class GameRoomRepo {
                 return (String) q[1];
             }
         }
-        throw new Exception("Room with this name does not exist");
+        return "The given room name was not found";
     }
 
 }

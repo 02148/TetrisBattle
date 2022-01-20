@@ -60,6 +60,7 @@ public class GlobalChatUIController implements Initializable {
 
             if(response.equals("ok")){
                 username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+                username.setDisable(true);
 
                 setUpChatListner();
                 chatListener.stop = false;
@@ -93,6 +94,7 @@ public class GlobalChatUIController implements Initializable {
         } else {
             if(!isLoggedIn){
                 client.userName = username.getText();
+                username.setDisable(true);
                 client.login();
                 isLoggedIn = true;
             }
@@ -156,6 +158,10 @@ public class GlobalChatUIController implements Initializable {
                 client.userName = username.getText();
                 String response = client.login();
                 if(response.equals("ok")){
+
+                    username.setDisable(true);
+                    client.isLoggedIn = true;
+
                     client.sendChat(chatTextField.getText());
                     chatTextField.clear();
 
