@@ -181,8 +181,8 @@ class GlobalListener implements Runnable {
                     new Thread(crl).start();
 
                 } else if (userInput[1].equals("join")) {
-                    if (gameRooms.queryConnections(gameRooms.getUUID((String) userInput[2])).contains(userInput[1])) {
-                        serverToUser.put(userInput[0], "Already connected", "");
+                    if (gameRooms.getUUID((String) userInput[2]).equals("The given room name was not found") || gameRooms.queryConnections(gameRooms.getUUID((String) userInput[2])).contains(userInput[1])) {
+                        serverToUser.put(userInput[0], "Unable to join room", "");
                         System.out.println("Join Room: Server error response sent");
                     } else {
 
