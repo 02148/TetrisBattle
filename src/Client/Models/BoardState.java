@@ -3,13 +3,16 @@ package Client.Models;
 
 import Client.GameSession.ProducerPackageHandler;
 import Client.Utility.Utils;
+import common.Constants;
 import javafx.scene.paint.Color;
 
 import java.util.BitSet;
+import java.util.Random;
 
 public class BoardState {
   private ProducerPackageHandler packageHandler;
   private Mino[] board;
+  private int attackQueue = 0;
 
   public BoardState(int size) { // Size is equal to the amount of cells in the tetris grid
     this.board = new Mino[size];
@@ -123,7 +126,6 @@ public class BoardState {
           removeRow(y);
           numRowsRemoved++;
         }
-
       }
     }
     return numRowsRemoved;
@@ -139,6 +141,34 @@ public class BoardState {
       if(this.packageHandler != null)
         this.packageHandler.updateDelta(this.board, index);
     }
+  }
+
+  public void addRows(int amount) {
+    if(amount <= 0) return;
+    int rndHolePlacement = (new Random()).nextInt(9);
+    for(int index = 0; index < 200; index++) {
+      if(index < 200-amount*10) {
+        this.board[index] = this.board[index+amount*10];
+      } else {
+        if(index%10 == rndHolePlacement) {
+          this.board[index] = null;
+        } else {
+          this.board[index] = new Mino(index, Constants.receivedLineColor, true);
+        }
+      }
+    }
+  }
+
+  public void addToAttackQueue(int amount) {
+    this.attackQueue += amount;
+  }
+
+  public int getAttackQueue() {
+    return this.attackQueue;
+  }
+
+  public void resetAttackQueue() {
+    this.attackQueue = 0;
   }
 
   public String toString() {
@@ -195,7 +225,7 @@ public class BoardState {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.ORANGE)) {
         bitArray.set(i*3, false); bitArray.set(i*3+1, true); bitArray.set(i*3+2, true);
-      } else if(board[i].color.equals(Color.YELLOW)) {
+      } else if(board[i].color.equals(Color.YELLOW) || board[i].color.equals(Constants.receivedLineColor)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, false);
       } else if(board[i].color.equals(Color.GREEN)) {
         bitArray.set(i*3, true); bitArray.set(i*3+1, false); bitArray.set(i*3+2, true);

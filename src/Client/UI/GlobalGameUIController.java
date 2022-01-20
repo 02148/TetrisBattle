@@ -1,15 +1,11 @@
 package Client.UI;
 
 import Client.Client;
-import Client.GameEngine;
 import Client.GameSession.Consumer;
 import Client.GameSession.ConsumerPackageHandler;
-import Client.Logic.Controls;
 import Client.Logic.LocalGame;
 import Client.Logic.Opponent;
-import Client.Models.BoardState;
-import MainServer.GameRoom.GameRoom;
-import MainServer.GameRoom.GameRoomRepo;
+import Client.gameOverListner;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -60,6 +56,7 @@ public class GlobalGameUIController implements Initializable {
 
     private Client client;
     private ChatListener chatListener;
+    private gameOverListner gameOverListner;
     private List<AnchorPane> playerViews = new ArrayList<>();
 
 
@@ -77,13 +74,14 @@ public class GlobalGameUIController implements Initializable {
 
 
     }
-    public void  setClient(Client client) throws InterruptedException {
+    public void setUpGlobalGameController(Client client) throws InterruptedException {
         this.client = client;
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
         chatListener.stop = false;
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
+
     }
 
 
@@ -118,20 +116,56 @@ public class GlobalGameUIController implements Initializable {
             client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
 
-        //TODO: Add functionality to update TextArea based on input from other players
+
     }
-    //TODO: Add functions to show the games/Make it possible to play
+
 
     @FXML protected void handleStartGameAction(ActionEvent event){
         List<String> playersInRoom = client.TryStartGame();
+        playersInRoom.remove(client.UUID);
 
-        if(true){
+        //Setup listener to display scoreboard
+        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        gameOverListner = new gameOverListner(client, primaryStage);
+        Platform.runLater(() -> new Thread(gameOverListner).start());
+
+
+        if(playersInRoom != null){
             startGameButton.setDisable(true);
             startGameButton.setVisible(false);
 
+            //Adding the other player boards
+            int numPlayers = playersInRoom.size();
+
+            System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
+
+            HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
+            ArrayList<Board> opponentBoards = new ArrayList<>();
+
+            for(int i = 0; i < playersInRoom.size(); i++ ){
+                if(playersInRoom.get(i).equals(client.UUID)) continue;
+
+                System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
+
+                Opponent newOpponent = new Opponent(playersInRoom.get(i));
+                opponentBoards.add(newOpponent.getBoardView());
+
+                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+                consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
+            }
+            if(!playersInRoom.isEmpty()) {
+                try {
+                    Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                    Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+
+                    (new Thread(consumerDelta)).start();
+                    (new Thread(consumerFull)).start();
+                } catch (Exception e) {}
+            }
+
 
             // Making local game
-            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID);
+            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID, playersInRoom, opponentBoards);
             boardHolder.getChildren().add(localGame.getViewModel());
             localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                 @Override
@@ -142,38 +176,21 @@ public class GlobalGameUIController implements Initializable {
             Platform.runLater(() -> localGame.toThread().start());
 
 
-
-            //Adding the other player boards
-            int numPlayers = playersInRoom.size();
-
-            System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
-
-            HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
-            for(int i = 0; i < playersInRoom.size(); i++ ){
-                if(playersInRoom.get(i).equals(client.UUID)) continue;
-
-                System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
-
-                Opponent newOpponent = new Opponent(playersInRoom.get(i));
-                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
-                consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
-            }
-            try {
-                Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
-                Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
-
-                (new Thread(consumerDelta)).start();
-                (new Thread(consumerFull)).start();
-            } catch (Exception e) {}
-
-
-
             LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();
 
             taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
             taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
                     level.setText("Level " + newProgress.toString()));
+            taskRunLines.titleProperty().addListener((obs,oldProgress,newProgress) ->
+                    {
+                        String[] line = lines.getText().split(" ");
+                        System.out.println("SCORE" + line[1]);
+                        client.currScore = Integer.parseInt(line[1]);
+                        //Get the list
+                        client.gameOver();
+                        localGame.stop();
+                    });
 
             Platform.runLater(() -> new Thread(taskRunLines).start());
 
@@ -190,6 +207,8 @@ public class GlobalGameUIController implements Initializable {
         AnchorPane.setRightAnchor(playerBoard, 5.0);
         pane.getChildren().add(playerBoard);
     }
+
+
     
 
 

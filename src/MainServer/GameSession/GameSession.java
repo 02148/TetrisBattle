@@ -5,12 +5,14 @@ import common.Constants;
 import org.jspace.*;
 
 import java.util.HashMap;
+import java.util.List;
 
 public class GameSession {
     SpaceRepository repo;
     StackSpace p1, p2, p3, p4, p5;
     HashMap<String, Space> p6s;
     Space conns;
+    List<Object[]> savedConns;
 
     Dispatcher dispatcher;
     Transformer transformer;
@@ -19,9 +21,9 @@ public class GameSession {
     Duplicator duplicator;
     String UUID;
 
-    public GameSession(String uuid, Space conns) throws Exception {
+    public GameSession(SpaceRepository gameSessionRepo, String uuid, Space conns) throws Exception {
         this.UUID = uuid;
-        this.repo = new SpaceRepository();
+        this.repo = gameSessionRepo;
         this.conns = conns;
 
         this.p1 = new StackSpace();
@@ -35,9 +37,9 @@ public class GameSession {
         this.repo.add(uuid, this.p1);
 
         // add spaces for consumers on client side (outgoing)
-        var curConns = conns.queryAll(new FormalField(String.class));
-        System.out.println(curConns);
-        for (var c : curConns) {
+        this.savedConns = conns.queryAll(new FormalField(String.class));
+        System.out.println(this.savedConns);
+        for (var c : this.savedConns) {
             String curUserUUID = (String)c[0];
             StackSpace clientOutSpace = new StackSpace();
             this.p6s.put(curUserUUID, clientOutSpace);
@@ -59,5 +61,17 @@ public class GameSession {
         (new Thread(this.transformer)).start();
         (new Thread(this.DisAndDup1)).start();
         (new Thread(this.DisAndDup2)).start();
+    }
+
+    public void deleteGameSession() {
+        this.repo.remove(this.UUID);
+        for (var c : this.savedConns) {
+            String curUserUUID = (String)c[0];
+            this.repo.remove(curUserUUID);
+        }
+        this.dispatcher.stopThread();
+        this.transformer.stopThread();
+        this.DisAndDup1.stopThread();
+        this.DisAndDup2.stopThread();
     }
 }

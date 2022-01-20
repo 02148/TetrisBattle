@@ -4,6 +4,7 @@ import Client.GameSession.Consumer;
 import Client.GameSession.ConsumerPackageHandler;
 import Client.Models.BoardState;
 import Client.UI.Board;
+import javafx.scene.input.KeyEvent;
 
 public class Opponent {
     private Board nBoard;
@@ -29,5 +30,9 @@ public class Opponent {
 
     public ConsumerPackageHandler getConsumerPackageHandler() {
         return consumerPackageHandler;
+    }
+
+    public void keyDownEvent(KeyEvent keyEvent) {
+        System.out.println(keyEvent.getCode());
     }
 }

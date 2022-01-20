@@ -1,5 +1,6 @@
 package Client.Logic;
 
+import Client.GameSession.AttackProducer;
 import Client.GameSession.ProducerPackageHandler;
 import Client.Models.*;
 import Client.UI.Board;
@@ -7,6 +8,7 @@ import Client.Utility.Utils;
 import javafx.scene.input.KeyCode;
 import javafx.scene.paint.Color;
 
+import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Random;
 
@@ -21,11 +23,16 @@ public class Controls {
   private Random rnd              = new Random();
   private int lastTetromino       = -1;
   private int savedTetromino      = -1;
+  private int selectedOpponent    = -1;
+  private int[] upcomingTetros    = new int[4];
   private boolean allowedToSwitch = true;
   private boolean isDead          = false;
   private BitSet savedBoardState  = null;
+  private ArrayList<Board> opponentBoards;
 
   private ProducerPackageHandler producerPackageHandler;
+  private AttackProducer attackProducer;
+  private AttackProducer attackConsumer;
 
 
   public Controls(Board nBoard, BoardState boardState, boolean viewOnly) {
@@ -37,6 +44,12 @@ public class Controls {
 
     updateViewModel();
 
+    for(int i = 0; i < upcomingTetros.length; i++) {
+      upcomingTetros[i] = rnd.nextInt(7);
+    }
+
+    nBoard.updateUpcomingBlock(upcomingTetros);
+
 //    if(!this.viewOnly)
 //      this.packageHandlerProducer.sendDeltaPackage();
   }
@@ -44,6 +57,13 @@ public class Controls {
   public void setPackageHandlerFull(ProducerPackageHandler producerPackageHandler) {
     this.producerPackageHandler = producerPackageHandler;
   }
+
+  public void setAttackProducer(AttackProducer attackProducer) {
+    this.attackProducer = attackProducer;
+  }
+
+  public void setOpponentBoards(ArrayList<Board> opponentBoards) { this.opponentBoards = opponentBoards; }
+
 
   // Update View and BoardState Methods
   public void keyDownEvent(KeyCode keyCode) {
@@ -59,8 +79,11 @@ public class Controls {
       dropTetromino();
     } else if(keyCode == KeyCode.C && allowedToSwitch) {
       switchCurrentTetromino();
+      nBoard.createSavedBlock(Utils.newTetromino(savedTetromino));
     } else if(keyCode == KeyCode.P) {
       print();
+    } else if(keyCode == KeyCode.DIGIT1 || keyCode == KeyCode.DIGIT2 || keyCode == KeyCode.DIGIT3 || keyCode == KeyCode.DIGIT4 || keyCode == KeyCode.DIGIT5 || keyCode == KeyCode.DIGIT6 || keyCode == KeyCode.DIGIT7 || keyCode == KeyCode.DIGIT8) {
+      toggleSelectedOpponent(keyCode);
     }
 
     updateViewModel();
@@ -110,6 +133,12 @@ public class Controls {
     if(numRowsRemoved > 0){
       nBoard.setNumRowsRemoved(numRowsRemoved);
       nBoard.setNumRowsRemovedLevel(numRowsRemoved);
+      this.attackProducer.queueAttack(numRowsRemoved);
+    }
+
+    if(this.boardState.getAttackQueue() > 0) {
+      this.boardState.addRows(this.boardState.getAttackQueue());
+      this.boardState.resetAttackQueue();
     }
     current_tetromino = newRandomTetromino();
     if(!boardState.legalPosition(current_tetromino, 0, 0))
@@ -117,6 +146,7 @@ public class Controls {
     boardState.insertTetromino(current_tetromino);
     allowedToSwitch = true;
   }
+
 
   public void rotateTetromino(Tetromino tetromino) {
     int[][] rightWallKickData = tetromino.getRightWallKickData();
@@ -166,8 +196,14 @@ public class Controls {
   }
 
   public Tetromino newRandomTetromino() {
-    lastTetromino = rnd.nextInt(7);
-    return Utils.newTetromino(lastTetromino);
+    Tetromino nextTetro = Utils.newTetromino(upcomingTetros[upcomingTetros.length-1]);
+    lastTetromino = upcomingTetros[upcomingTetros.length-1];
+    for(int i = upcomingTetros.length-1; i >= 1; i--) {
+      upcomingTetros[i] = upcomingTetros[i-1];
+    }
+    upcomingTetros[0]  = rnd.nextInt(7);
+    nBoard.updateUpcomingBlock(upcomingTetros);
+    return nextTetro;
   }
 
   // MISC METHODS
@@ -187,5 +223,27 @@ public class Controls {
         System.out.println();
       System.out.print(bitset.get(i) ? "1 " : "0 ");
     }
+  }
+
+  public void toggleSelectedOpponent(KeyCode digitKey) {
+    if(selectedOpponent != -1)
+      addOrRemoveOpponentBorder(false, selectedOpponent);
+    selectedOpponent = (selectedOpponent == digitKey.getCode()- 49) ? -1 : (digitKey.getCode() - 49);
+    if(selectedOpponent != -1)
+      addOrRemoveOpponentBorder(true, selectedOpponent);
+  }
+
+  public void addOrRemoveOpponentBorder(boolean doAdd, int opponentId) {
+    if(opponentBoards.size() > opponentId) {
+      if(doAdd) {
+        opponentBoards.get(opponentId).addBorder();
+      } else {
+        opponentBoards.get(opponentId).removeBorder();
+      }
+    }
+  }
+
+  public int getSelectedOpponent() {
+    return this.selectedOpponent;
   }
 }

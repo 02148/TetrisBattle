@@ -18,7 +18,6 @@ import Client.ChatListener;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class GlobalChatUIController implements Initializable {
@@ -113,7 +112,7 @@ public class GlobalChatUIController implements Initializable {
                             chatListener.stop = true;
                         }
                         GlobalGameUIController globalGameUIController = loader.getController();
-                        globalGameUIController.setClient(client);
+                        globalGameUIController.setUpGlobalGameController(client);
 
 
 
@@ -144,7 +143,7 @@ public class GlobalChatUIController implements Initializable {
                             }
 
                             GlobalGameUIController globalGameUIController = loader.getController();
-                            globalGameUIController.setClient(client);
+                            globalGameUIController.setUpGlobalGameController(client);
 
 
 
