@@ -5,6 +5,7 @@ import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
 import java.io.IOException;
+import java.util.UUID;
 
 import javafx.scene.control.TextArea;
 
@@ -32,7 +33,7 @@ public class ChatListener implements Runnable {
     public void run() {
 
         while (!stop) {
-            System.out.println("chatListener is running..");
+            System.out.println("chatListener is running on " + client.roomUUID);
             try {
                 Object[] chatInput = new Object[4];
                 String[] message = new String[3];
@@ -50,6 +51,7 @@ public class ChatListener implements Runnable {
                     System.out.println("Got message from another client");
                     //Send read token to server room listener
                     chatSpace.put(chatInput[0],chatInput[3]);
+                    System.out.println("Send read token to chat space" );
 
                     message[0] = (String) chatInput[4]; //Message
                     message[1] = Double.toString((Double) chatInput[3]); //Timestamp

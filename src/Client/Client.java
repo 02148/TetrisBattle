@@ -31,6 +31,7 @@ public class Client extends Application {
   public RemoteSpace chatSpace;
 
   public boolean isGameActive = false;
+  public boolean isLoggedIn = false;
   public int currScore = 0;
 
   private static RemoteSpace mainServer;
@@ -64,6 +65,7 @@ public class Client extends Application {
         UUID = (String) loginResponse[2];
         System.out.println("Logged in response got from server");
         chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
+        isLoggedIn = true;
       } else {
         //Error message
       }
@@ -150,7 +152,12 @@ public class Client extends Application {
   public void leaveRoom() {
     try {
       userToServer.put(UUID, "leave", roomUUID,"", 0);
+      chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
     } catch (InterruptedException e) {
+      e.printStackTrace();
+    } catch (UnknownHostException e) {
+      e.printStackTrace();
+    } catch (IOException e) {
       e.printStackTrace();
     }
   }

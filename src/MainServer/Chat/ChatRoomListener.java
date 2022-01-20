@@ -37,7 +37,7 @@ public class ChatRoomListener implements Runnable {
                         new FormalField(String.class),
                         new FormalField(Double.class),
                         new FormalField(String.class));
-
+                System.out.println("got new message: " + messageInput[4]);
                 for (int i = 0; i < rooms.queryConnections(roomUUID).size(); i++) {
                     chat.get(new ActualField(messageInput[0]), new ActualField(messageInput[3]));
                     System.out.println("Got read token from client");
@@ -50,6 +50,7 @@ public class ChatRoomListener implements Runnable {
                 System.out.println("Deleted chatMessage in room " + roomUUID);
             }
             chatChannels.remove(roomUUID);
+            System.out.println(roomUUID + " chatChannel was deleted");
         } catch (InterruptedException e) {
             e.printStackTrace();
         }

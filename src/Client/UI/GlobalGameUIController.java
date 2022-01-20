@@ -96,19 +96,8 @@ public class GlobalGameUIController implements Initializable {
 
         client.roomUUID = "globalChat";
 
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
-        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        Scene scene = new Scene(loader.load());
-
-        GlobalChatUIController globalChatUIController = loader.getController();
-        globalChatUIController.setClient(client);
-        globalChatUIController.setIsLoggedIn(true);
-        globalChatUIController.setUpChatListner();
-
-
-        primaryStage.setScene(scene);
-        primaryStage.centerOnScreen();
-        primaryStage.show();
+        GameScreenController.hideScreen_gameUI();
+        GameScreenController.setScreen_chatUI(client);
 
 
     }

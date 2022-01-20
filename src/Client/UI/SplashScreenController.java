@@ -57,7 +57,7 @@ public class SplashScreenController implements Initializable {
                     public void run() {
                         splashScreen.getScene().getWindow().hide();
                         GameScreenController.setClient(client);
-                        GameScreenController.setScreen_chatUI();
+                        GameScreenController.setScreen_chatUI(client);
                     }
                 });
             }

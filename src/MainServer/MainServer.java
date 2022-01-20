@@ -110,6 +110,7 @@ class GlobalListener implements Runnable {
 
                     System.out.println("Create Room: Server response sent");
 
+                    gameRooms.removeConnection((String) userInput[0],"globalChat");
                     //Create chatroom for game
                     var crl = new ChatRoomListener(UUID);
                     crl.setChat(chatChannels);
@@ -168,6 +169,7 @@ class GlobalListener implements Runnable {
                             System.out.println("Client left room");
                         }
                         gameRooms.addConnection((String) userInput[0],"globalChat");
+
                     } else {
                         System.out.println("The client cannot leave game room because it is not connected");
                     }
