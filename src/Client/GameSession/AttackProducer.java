@@ -66,10 +66,5 @@ public class AttackProducer implements Runnable{
 
     public void stop() {
         this.stop = true;
-        try {
-            this.combatSpace.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

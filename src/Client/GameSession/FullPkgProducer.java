@@ -53,10 +53,5 @@ public class FullPkgProducer implements Runnable {
 
     public void stop() {
         this.stop = true;
-        try {
-            this.serverSpace.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }
