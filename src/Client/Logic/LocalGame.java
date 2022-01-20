@@ -91,6 +91,11 @@ public class LocalGame implements Runnable {
 
   public void stop() {
     this.stop = true;
+    gameOver = true;
+    this.attackProducer.stop();
+    this.attackConsumer.stop();
+    this.fullPkgProducer.stop();
+    this.deltaPkgProducer.stop();
   }
 
   public void keyDownEvent(KeyEvent keyEvent) {

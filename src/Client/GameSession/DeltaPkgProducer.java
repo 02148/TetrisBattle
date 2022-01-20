@@ -16,6 +16,7 @@ public class DeltaPkgProducer {
     String clientUUID;
     BoardState boardState;
     Space localSpace;
+    boolean stop = false;
 
     public DeltaPkgProducer(String URI,
                             String clientUUID,
@@ -26,7 +27,7 @@ public class DeltaPkgProducer {
         this.localSpace = new QueueSpace();
 
         Thread communicator = new Thread(() -> {
-            while(true) {
+            while(!this.stop) {
                 try {
                     int[] data = (int[]) localSpace.get(new FormalField(Object.class))[0]; // blocking async operation
 
@@ -51,5 +52,12 @@ public class DeltaPkgProducer {
         }
     }
 
-
+    public void stop() {
+        this.stop = true;
+        try {
+            this.serverSpace.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

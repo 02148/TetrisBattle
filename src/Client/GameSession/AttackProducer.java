@@ -9,6 +9,7 @@ import org.jspace.FormalField;
 import org.jspace.QueueSpace;
 import org.jspace.RemoteSpace;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +19,7 @@ public class AttackProducer implements Runnable{
     private QueueSpace pendingAttacks;
     private RemoteSpace combatSpace;
     private List<String> connections;
+    private boolean stop = false;
 
     public AttackProducer(String gameUUID, String userUUID, Controls controller, List<String> conns) {
         try {
@@ -48,7 +50,7 @@ public class AttackProducer implements Runnable{
 
     @Override
     public void run() {
-        while(true) {
+        while(!this.stop) {
             sendAttack();
         }
     }
@@ -58,6 +60,15 @@ public class AttackProducer implements Runnable{
             AttackObject attackObj = (AttackObject) this.pendingAttacks.get(new FormalField(AttackObject.class))[0];
             this.combatSpace.put("outgoing", attackObj);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void stop() {
+        this.stop = true;
+        try {
+            this.combatSpace.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

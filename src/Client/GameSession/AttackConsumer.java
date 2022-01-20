@@ -6,10 +6,13 @@ import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
 
+import java.io.IOException;
+
 public class AttackConsumer implements Runnable {
     private BoardState boardState;
     private String userUUID, gameUUID;
     private RemoteSpace combatSpace;
+    private boolean stop = false;
 
     public AttackConsumer(String userUUID, String gameUUID, BoardState boardState) {
          try {
@@ -25,7 +28,7 @@ public class AttackConsumer implements Runnable {
 
     @Override
     public void run() {
-        while(true) {
+        while(!this.stop) {
             try {
                 var data = this.combatSpace.get(new ActualField("incoming"),
                                                         new ActualField(this.userUUID),
@@ -34,6 +37,15 @@ public class AttackConsumer implements Runnable {
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }
+    }
+
+    public void stop() {
+        this.stop = true;
+        try {
+            this.combatSpace.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
