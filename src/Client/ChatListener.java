@@ -51,7 +51,7 @@ public class ChatListener implements Runnable {
                     System.out.println("Got message from another client");
                     //Send read token to server room listener
                     chatSpace.put(chatInput[0],chatInput[3]);
-                    System.out.println("Send read token to chat space" );
+                    System.out.println("Send read token to chat space " + chatSpace.getUri());
 
                     message[0] = (String) chatInput[4]; //Message
                     message[1] = Double.toString((Double) chatInput[3]); //Timestamp
