@@ -39,13 +39,13 @@ public class LocalGame implements Runnable {
         stop = false;
 
         try {
-            this.fullPkgProducer = new FullPkgProducer("tcp://" + "10.209.222.2" + ":1337/" + gameUUID + "?keep",
+            this.fullPkgProducer = new FullPkgProducer("tcp://" + "localhost" + ":1337/" + gameUUID + "?keep",
                     playerUUID,
                     this.boardState);
 
             (new Thread(this.fullPkgProducer)).start(); // TODO anonymous thread 🤨
 
-            this.deltaPkgProducer = new DeltaPkgProducer("tcp://" + "10.209.222.2" + ":1337/" + gameUUID + "?keep",
+            this.deltaPkgProducer = new DeltaPkgProducer("tcp://" + "localhost" + ":1337/" + gameUUID + "?keep",
                     playerUUID,
                     this.boardState);
 
@@ -118,7 +118,7 @@ public class LocalGame implements Runnable {
                 @Override
                 protected ObservableList<String> call() throws Exception {
                     while (!gameOver) {
-                        updateProgress(nBoard.getNumRowsRemoved(), 10000);
+                        updateProgress(nBoard.getNumRowsRemoved(), 1000);
                         if (nBoard.getNumRowsRemovedLevel() > 9) {
                             nBoard.setLevel(1);
                             nBoard.resetNumRowsRemovedLevel();

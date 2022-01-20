@@ -33,7 +33,7 @@ public class MainServer {
         SpaceRepository gameSessionRepo = new SpaceRepository();
         SpaceRepository combatRepo = new SpaceRepository();
 
-        chatChannels.addGate("tcp://" + "10.209.222.2" + ":4242/?conn");
+        chatChannels.addGate("tcp://" + "localhost" + ":4242/?conn");
 
 
         var gl = new GlobalListener();
@@ -166,7 +166,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://" + "10.209.222.2"+ ":6969/?conn");
+        mainChannels.addGate("tcp://" + "localhost"+ ":6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];
@@ -226,6 +226,7 @@ class GlobalListener implements Runnable {
                     if( !gameSessions.containsKey((String) userInput[2]) && !gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
                         serverToUser.put(userInput[0], "not ok", currPLayers, currPlayerNames);
+                        
                     } else{
                         serverToUser.put(userInput[0], "ok", currPLayers, currPlayerNames);
 

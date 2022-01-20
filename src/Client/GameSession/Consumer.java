@@ -18,7 +18,7 @@ public class Consumer implements Runnable {
 
     public Consumer(String userUUID, List<String> opponentUUIDs, HashMap<String, ConsumerPackageHandler> consumerPackageHandlers, String packageType) throws IOException, InterruptedException {
         this.userUUID = userUUID;
-        this.rs = new RemoteSpace("tcp://" + "10.209.222.2"+ ":1337/" + userUUID + "?keep");
+        this.rs = new RemoteSpace("tcp://" + "localhost"+ ":1337/" + userUUID + "?keep");
         this.packageType = packageType;
         this.consumerPackageHandlers = consumerPackageHandlers;
 

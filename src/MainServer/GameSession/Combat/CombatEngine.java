@@ -35,7 +35,7 @@ public class CombatEngine implements Runnable {
         this.combatSpace = new StackSpace();
         this.combatRepository.add(this.gameUUID, this.combatSpace);
 
-        this.combatRepository.addGate("tcp://" + "10.209.222.2"+ ":42069/?keep");
+        this.combatRepository.addGate("tcp://" + "localhost"+ ":42069/?keep");
     }
 
     /**

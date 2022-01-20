@@ -22,7 +22,6 @@ import javafx.stage.StageStyle;
 public class Main extends Application {
     static Client currClient = new Client();
 
-
     @Override
     public void start(Stage primaryStage) throws IOException {
         try {
@@ -41,8 +40,6 @@ public class Main extends Application {
         }
 
         primaryStage.show();
-
-
     }
 
     public static void main(String[] args) throws IOException {

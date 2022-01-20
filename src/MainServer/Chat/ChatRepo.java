@@ -21,7 +21,7 @@ public class ChatRepo {
 <<<<<<< HEAD
         addGate("tcp://" + localhostddress+ ":" + port + "/?conn");
 =======
-        addGate("tcp://" + "10.209.222.2"+ ":" + port + "/?conn");
+        addGate("tcp://" + "localhost"+ ":" + port + "/?conn");
 >>>>>>> 6e50cf9b6410769bc92266e198e5770455a3a6cb
     }
      */

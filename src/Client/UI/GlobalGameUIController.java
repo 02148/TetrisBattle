@@ -239,7 +239,7 @@ public class GlobalGameUIController implements Initializable {
             Platform.runLater(() -> localGame.toThread().start());
 
             LocalGame.uiUpdater.progressProperty().addListener((obs,oldProgress,newProgress) ->
-                    lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
+                    lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*1000))));
             LocalGame.uiUpdater.messageProperty().addListener((obs,oldProgress,newProgress) ->
                     level.setText("Level " + newProgress.toString()));
             LocalGame.uiUpdater.titleProperty().addListener((obs,oldProgress,newProgress) ->
