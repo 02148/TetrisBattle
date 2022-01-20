@@ -1,6 +1,7 @@
 package Client;
 
 
+import Client.GameSession.Consumer;
 import Client.UI.GlobalChatUIController;
 import Main.Main;
 import MainServer.Utils;
@@ -158,14 +159,22 @@ public class Client extends Application {
     }
   }
 
-  public List<String> TryStartGame() {
+  public HashMap<String,List<String>> TryStartGame() {
     Object[] gameResponse = new Object[0];
     List<String> players = null;
+    List<String> playerNames = null;
+    HashMap<String,List<String>> playerInfo = new HashMap<>();
     try {
 
       userToServer.put(UUID, "start", roomUUID,"", 0);
-      gameResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(List.class));
+      gameResponse = serverToUser.get(new ActualField(UUID),
+              new FormalField(String.class),
+              new FormalField(List.class),
+              new FormalField(List.class));
       players = (List<String>) gameResponse[2];
+      playerNames = (List<String>) gameResponse[3];
+      playerInfo.put("UUID", players);
+      playerInfo.put("Names", playerNames);
 
 
       if (gameResponse[1].equals("ok")) {
@@ -184,7 +193,7 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return players;
+    return playerInfo;
   }
 
   public void sendChat(String message) throws InterruptedException {
@@ -201,7 +210,7 @@ public class Client extends Application {
     return userName;
   }
 
-  public void gameOver() {
+  public void gameOver(Consumer delta, Consumer full) {
     Object[] gameResponse = new Object[0];
 
     try {
@@ -217,6 +226,7 @@ public class Client extends Application {
 
       if (gameResponse[1].equals("ok")) {
         isGameActive = false;
+        delta.
 
         //Game ended
 

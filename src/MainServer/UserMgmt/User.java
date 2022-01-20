@@ -14,8 +14,8 @@ public class User {
 
     public User(Object[] q) {
         this(
-            (String)q[0],
             (String)q[1],
+                (String)q[0],
             (int)q[2],
             (double)q[3],
             (boolean)q[4]

@@ -12,6 +12,7 @@ import MainServer.UserMgmt.UserRepo;
 import common.Constants;
 import org.jspace.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,8 @@ public class MainServer {
     public static UserRepo users;
     public static GameRoomRepo gameRooms;
     public static HashMap<String, GameSession> gameSessions = new HashMap<>();
+    public static HashMap<String, CombatEngine> gameCombatEngines = new HashMap<>();
+
 
 
     public static void main(String[] args) throws Exception {
@@ -40,6 +43,7 @@ public class MainServer {
         gl.setGameSessionRepository(gameSessionRepo);
         gl.setCombatEngineRepository(combatRepo);
         gl.setGameSessions(gameSessions);
+        gl.setCombatEngines(gameCombatEngines);
         new Thread(gl).start();
 
         var crl = new ChatRoomListener("globalChat");
@@ -122,6 +126,8 @@ class GlobalListener implements Runnable {
     private SpaceRepository gameSessionRepository;
     private SpaceRepository combatEngineRepo;
     private HashMap<String,GameSession> gameSessions;
+    private HashMap<String,CombatEngine> gameCombatEngines;
+
 
     public void setChatChannels(SpaceRepository chatChannels) {
         this.chatChannels = chatChannels;
@@ -147,6 +153,10 @@ class GlobalListener implements Runnable {
         this.gameSessions = gameSessions;
     }
 
+    public void setCombatEngines(HashMap<String, CombatEngine> gameCombatEngines) {
+        this.gameCombatEngines = gameCombatEngines;
+    }
+
     public void run() {
         SpaceRepository mainChannels = new SpaceRepository();
         SequentialSpace userToServer = new SequentialSpace();
@@ -169,7 +179,7 @@ class GlobalListener implements Runnable {
 
                 if (userInput[1].equals("login")) {
                     String UUID = users.create((String) userInput[0]);
-                    gameRooms.addConnection((String) userInput[0],"globalChat");
+                    gameRooms.addConnection(UUID,"globalChat");
                     serverToUser.put(userInput[0], "ok", UUID);
                     System.out.println("Login: Sent response to client");
 
@@ -202,11 +212,20 @@ class GlobalListener implements Runnable {
                 } else if(userInput[1].equals("start")){
                     List<String> currPLayers = gameRooms.queryConnections((String) userInput[2]);
                     String roomUUID = (String) userInput[2];
+
+                    //Get player names
+                    List<String> currPlayerNames = new ArrayList<>();
+                    for(String playerUUID : currPLayers){
+                        currPlayerNames.add( users.queryUser(playerUUID).username);
+                        System.out.println(users.queryUser(playerUUID).username);
+                    }
+
+
                     if(!gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
-                        serverToUser.put(userInput[0], "not ok", currPLayers);
+                        serverToUser.put(userInput[0], "not ok", currPLayers, currPlayerNames);
                     }else{
-                        serverToUser.put(userInput[0], "ok", currPLayers);
+                        serverToUser.put(userInput[0], "ok", currPLayers, currPlayerNames);
 
                         //Initialize game session
                         SequentialSpace conns = new SequentialSpace();
@@ -218,6 +237,8 @@ class GlobalListener implements Runnable {
                         CombatEngine combatEngine = new CombatEngine(conns, combatEngineRepo, roomUUID);
                         (new Thread(combatEngine)).start();
 
+                        gameCombatEngines.put((String) userInput[2], combatEngine);
+
                         GameSession gameSession   =  new GameSession(this.gameSessionRepository, roomUUID, conns);
                         gameSessions.put((String) userInput[2], gameSession);
                     }
@@ -226,8 +247,12 @@ class GlobalListener implements Runnable {
                     if (connections.contains(userInput[0])) {
                         if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
                             if (connections.size() == 1) {
-                                gameRooms.close((String) userInput[2]);
+
+
                                 gameSessions.get((String) userInput[2]).deleteGameSession();
+                                gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                                gameRooms.close((String) userInput[2]);
+
                                 System.out.println("Host deleted room");
 
                             } else {
@@ -269,6 +294,8 @@ class GlobalListener implements Runnable {
 
                         //DELETE GAME SESSION
                         gameSessions.get((String) userInput[2]).deleteGameSession();
+                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                        gameRooms.close((String) userInput[2]);
 
 
                     } else {
@@ -286,6 +313,8 @@ class GlobalListener implements Runnable {
         }
 
     }
+
+
 }
 
 // TODO
