@@ -70,8 +70,6 @@ public class GlobalGameUIController implements Initializable {
 
     private List<Text> playerNames = new ArrayList<>();
     private boolean gameStarted;
-    Consumer consumerDelta;
-    Consumer consumerFull;
 
 
 
@@ -125,7 +123,7 @@ public class GlobalGameUIController implements Initializable {
             localGame.stop();
         }
 
-        client.leaveRoom(consumerDelta, consumerFull);
+        client.leaveRoom();
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -217,11 +215,11 @@ public class GlobalGameUIController implements Initializable {
             }
             if(!playersInRoom.isEmpty()) {
                 try {
-                    consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
-                    consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+                    client.deltaConsumer = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                    client.fullConsumer = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
 
-                    (new Thread(consumerDelta)).start();
-                    (new Thread(consumerFull)).start();
+                    (new Thread(client.deltaConsumer)).start();
+                    (new Thread(client.fullConsumer)).start();
                 } catch (Exception e) {}
             }
 
@@ -250,7 +248,7 @@ public class GlobalGameUIController implements Initializable {
                         System.out.println("SCORE" + line[1]);
                         client.currScore = Integer.parseInt(line[1]);
                         //Get the list
-                        client.gameOver(consumerDelta, consumerFull);
+                        client.gameOver(client.deltaConsumer, client.fullConsumer);
                         localGame.stop();
                     });
 
