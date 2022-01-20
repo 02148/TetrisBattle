@@ -17,6 +17,7 @@ public class Opponent {
 
     public Opponent( String userUUID) {
         try {
+            this.opponentUUID =  userUUID;
             this.nBoard = new Board(size);
             this.boardState = new BoardState(boardSize);
             this.consumerPackageHandler = new ConsumerPackageHandler(boardSize, boardState, nBoard);
@@ -30,9 +31,5 @@ public class Opponent {
 
     public ConsumerPackageHandler getConsumerPackageHandler() {
         return consumerPackageHandler;
-    }
-
-    public void keyDownEvent(KeyEvent keyEvent) {
-        System.out.println(keyEvent.getCode());
     }
 }
