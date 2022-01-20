@@ -4,6 +4,7 @@ package Main;
 import Client.Client;
 
 
+import Client.UI.GlobalChatUIController;
 import Client.UI.SplashScreenController;
 import javafx.fxml.FXMLLoader;
 
@@ -30,18 +31,17 @@ public class Main extends Application {
             Parent root = fxmlLoader.load();
             SplashScreenController splashScreenController = fxmlLoader.getController();
             splashScreenController.setClient(currClient);
-            splashScreenController.splash();
             Scene scene = new Scene(root,600,400);
             primaryStage.setScene(scene);
             primaryStage.initStyle(StageStyle.UNDECORATED);
             primaryStage.centerOnScreen();
+            splashScreenController.splash();
+
 
         } catch (IOException e) {
             e.printStackTrace();
         }
-
         primaryStage.show();
-
 
     }
 

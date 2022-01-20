@@ -2,6 +2,7 @@ package Client.UI;
 
 import Client.Client;
 import Main.Main;
+import common.Constants;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -16,6 +17,10 @@ import javafx.scene.media.MediaPlayer;
 import javafx.scene.media.MediaView;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import org.jspace.ActualField;
+import org.jspace.FormalField;
+import org.jspace.SequentialSpace;
+import org.jspace.SpaceRepository;
 
 
 import java.io.File;
@@ -43,37 +48,21 @@ public class SplashScreenController implements Initializable {
             public void run() {
                 try {
                     Thread.sleep(2000);
+                    splashScreen.getScene().getWindow().hide();
                 } catch (Exception e){
                     System.out.println(e);
                 }
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
-                        try {
-
-                            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
-                            splitPane = fxmlLoader.load();
-
-                            Scene scene = new Scene(splitPane,600,400);
-                            Stage primaryStage = new Stage();
-                            primaryStage.setScene(scene);
-
-                            primaryStage.centerOnScreen();
-                            //Get the controller and add client
-                            GlobalChatUIController globalChatUIController = fxmlLoader.getController();
-                            globalChatUIController.setClient(client);
-
-                            primaryStage.show();
-
-                            splashScreen.getScene().getWindow().hide();
-                        } catch (IOException ex) {
-                            Logger.getLogger(SplashScreenController.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-
-
+                        splashScreen.getScene().getWindow().hide();
+                        GameScreenController.setClient(client);
+                        GameScreenController.setScreen_chatUI();
                     }
                 });
             }
         }.start();
     }
 }
+
+
