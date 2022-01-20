@@ -78,6 +78,7 @@ class ChatRoomListener implements Runnable {
 
     public void run() {
         try {
+            System.out.println(rooms.exists(roomUUID));
             while (rooms.exists(roomUUID)) {
                 System.out.println("SERVER TRYING TO GET MESSAGE FROM " + roomUUID);
                 messageInput = chat.query(new FormalField(String.class),
@@ -86,6 +87,7 @@ class ChatRoomListener implements Runnable {
                         new FormalField(Double.class),
                         new FormalField(String.class));
                 System.out.println("SERVER GOT MESSAGE FROM " + roomUUID);
+                System.out.println("Server got message: " + messageInput[4]);
 
                 for (int i = 0; i < rooms.queryConnections(roomUUID).size(); i++) {
                     chat.get(new ActualField(messageInput[0]),new ActualField(messageInput[3]));
@@ -186,7 +188,7 @@ class GlobalListener implements Runnable {
                     System.out.println("Login: Sent response to client");
 
                 } else if (userInput[1].equals("create")) {
-                    String[] roomInfo = gameRooms.create((String) userInput[0]);
+                    String[] roomInfo = gameRooms.create((String) userInput[0], (String) userInput[2]);
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);

@@ -21,7 +21,7 @@ public class GameRoomRepo {
         GameRoom gr = new GameRoom(
                 "globalHost",
                 "globalChat",
-                0,
+                "globalChat",
                 0,
                 new HashMap<>()
         );
@@ -29,7 +29,7 @@ public class GameRoomRepo {
     }
 
     public void insertGameRoom(GameRoom gr) throws InterruptedException {
-        s.put(gr.userHostUUID, gr.UUID, gr.number, gr.timestamp, gr.numDead, gr.scores);
+        s.put(gr.userHostUUID, gr.UUID, gr.name, gr.timestamp, gr.numDead, gr.scores);
         s.put(gr.UUID, "lock");
     }
 
@@ -37,7 +37,7 @@ public class GameRoomRepo {
         s.get(new ActualField(uuid), new ActualField("lock"));
         var q = s.getp(new FormalField(String.class),
                 new ActualField(uuid),
-                new FormalField(Integer.class),
+                new FormalField(String.class),
                 new FormalField(Double.class),
                 new FormalField(Integer.class),
                 new FormalField(Object.class));
@@ -47,7 +47,7 @@ public class GameRoomRepo {
     public static GameRoom queryGameRoom(String uuid) throws InterruptedException {
         var q = s.queryp(new FormalField(String.class),
                 new ActualField(uuid),
-                new FormalField(Integer.class),
+                new FormalField(String.class),
                 new FormalField(Double.class),
                 new FormalField(Integer.class),
                 new FormalField(Object.class));
@@ -60,17 +60,17 @@ public class GameRoomRepo {
      *                 This user will become host of the room.
      * @return UUID of room, used for connecting to room.
      */
-    public String[] create(String userHostUUID) throws InterruptedException {
+    public String[] create(String userHostUUID, String name) throws InterruptedException {
         GameRoom gr = new GameRoom(
                 userHostUUID,
                 Utils.createUUID(),
-                getNewNumber(),
+                name,
                 0,
                 new HashMap<>()
         );
         insertGameRoom(gr);
         conns.put(userHostUUID, gr.UUID);
-        return new String[] { gr.UUID, String.valueOf(gr.number)};
+        return new String[] { gr.UUID, gr.name};
     }
 
     public void changeHost(String uuid, String newHost) throws InterruptedException {
@@ -112,7 +112,7 @@ public class GameRoomRepo {
     public boolean exists(String UUID) throws InterruptedException {
         Object[] q = s.queryp(new FormalField(String.class),
                 new ActualField(UUID),
-                new FormalField(Integer.class),
+                new FormalField(String.class),
                 new FormalField(Double.class),
                 new FormalField(Integer.class),
                 new FormalField(Object.class));
@@ -122,7 +122,7 @@ public class GameRoomRepo {
     public void queryAllRooms() throws InterruptedException {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
-                new FormalField(Integer.class),
+                new FormalField(String.class),
                 new FormalField(Double.class),
                 new FormalField(Integer.class),
                 new FormalField(Object.class)
@@ -163,14 +163,14 @@ public class GameRoomRepo {
     public String getUUID(String roomName) throws Exception {
         var allRooms = s.queryAll(new FormalField(String.class),
                 new FormalField(String.class),
-                new FormalField(Integer.class),
+                new FormalField(String.class),
                 new FormalField(Double.class),
                 new FormalField(Integer.class),
                 new FormalField(Object.class)
         );
 
         for (var q : allRooms) {
-            if (roomName.equals("room " + q[2])) {
+            if (roomName.equals(q[2])) {
                 return (String) q[1];
             }
         }

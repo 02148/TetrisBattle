@@ -83,11 +83,11 @@ public class Client extends Application {
     return (String) loginResponse[1];
   }
 
-  public String hostRoom() {
+  public String hostRoom(String newRoomName) {
     Object[] roomResponse = new Object[4];
     try {
 
-      userToServer.put(UUID, "create","","",0);
+      userToServer.put(UUID, "create",newRoomName,"",0);
       roomResponse = serverToUser.get(new ActualField(UUID),
               new FormalField(String.class), //Response
               new FormalField(String.class), //RoomUUID
