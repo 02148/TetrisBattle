@@ -23,7 +23,7 @@ public class AttackProducer implements Runnable{
 
     public AttackProducer(String gameUUID, String userUUID, Controls controller, List<String> conns) {
         try {
-            this.combatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":42069/" + gameUUID+ "?keep");
+            this.combatSpace = new RemoteSpace("tcp://" + "10.209.222.2"+ ":42069/" + gameUUID+ "?keep");
             this.gameUUID = gameUUID;
             this.userUUID = userUUID;
             this.controller = controller;

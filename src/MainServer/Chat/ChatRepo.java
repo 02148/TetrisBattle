@@ -18,7 +18,7 @@ public class ChatRepo {
     }
     /*
     public void addGate(String port) {
-        addGate("tcp://" + Constants.IP_address+ ":" + port + "/?conn");
+        addGate("tcp://" + "10.209.222.2"+ ":" + port + "/?conn");
     }
      */
 

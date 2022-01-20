@@ -16,7 +16,7 @@ public class AttackConsumer implements Runnable {
 
     public AttackConsumer(String userUUID, String gameUUID, BoardState boardState) {
          try {
-            this.combatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":42069/" + gameUUID+ "?keep");
+            this.combatSpace = new RemoteSpace("tcp://" + "10.209.222.2"+ ":42069/" + gameUUID+ "?keep");
             this.boardState = boardState;
             this.userUUID = userUUID;
             this.gameUUID = gameUUID;

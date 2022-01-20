@@ -33,7 +33,7 @@ public class MainServer {
         SpaceRepository gameSessionRepo = new SpaceRepository();
         SpaceRepository combatRepo = new SpaceRepository();
 
-        chatChannels.addGate("tcp://" + Constants.IP_address + ":4242/?conn");
+        chatChannels.addGate("tcp://" + "10.209.222.2" + ":4242/?conn");
 
 
         var gl = new GlobalListener();
@@ -169,7 +169,7 @@ class GlobalListener implements Runnable {
         mainChannels.add("serverToUser",serverToUser);
         //mainChannels.add("globalChat", chats.globalChat);
 
-        mainChannels.addGate("tcp://" + Constants.IP_address+ ":6969/?conn");
+        mainChannels.addGate("tcp://" + "10.209.222.2"+ ":6969/?conn");
 
         while(true) {
             Object[] userInput = new Object[0];
