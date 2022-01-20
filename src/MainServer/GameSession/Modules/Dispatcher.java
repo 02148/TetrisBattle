@@ -11,6 +11,7 @@ public class Dispatcher  implements Runnable {
     Space in, delta, full, conns;
     int T;
     HashMap<String, Double> lastTimestamps;
+    boolean stop = false;
 
     public Dispatcher(Space in,
                       Space delta,
@@ -26,7 +27,7 @@ public class Dispatcher  implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.stop) {
             try {
                 Object[] raw_data = in.get(
                         new FormalField(String.class),
@@ -64,5 +65,9 @@ public class Dispatcher  implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopThread() {
+        this.stop = true;
     }
 }

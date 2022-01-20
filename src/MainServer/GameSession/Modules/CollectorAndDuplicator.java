@@ -5,12 +5,14 @@ import org.jspace.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class CollectorAndDuplicator implements Runnable {
   private Space in, conns;
   private HashMap<String, Space> out;
   private String type;
   private int T;
+  private boolean stop = false;
 
   public CollectorAndDuplicator(Space in, HashMap<String, Space> out, Space conns, String type) throws Exception {
     this.in = in;
@@ -22,7 +24,7 @@ public class CollectorAndDuplicator implements Runnable {
 
   @Override
   public void run() {
-    while (true) {
+    while (!this.stop) {
       try {
         if(this.type.equals("delta")) {
           evaluateDeltaPackage();
@@ -53,7 +55,7 @@ public class CollectorAndDuplicator implements Runnable {
     for (var c : curConns) {
       String userUUID = (String) c[0];
 
-      if (out.containsKey(userUUID) && userUUID != packageUserUUID)
+      if (out.containsKey(userUUID) && !Objects.equals(userUUID, packageUserUUID))
         out.get(userUUID).put(raw_data_delta);
     }
   }
@@ -79,5 +81,9 @@ public class CollectorAndDuplicator implements Runnable {
       if (out.containsKey(userUUID))
         out.get(userUUID).put(raw_data_full);
     }
+  }
+
+  public void stopThread() {
+    this.stop = true;
   }
 }

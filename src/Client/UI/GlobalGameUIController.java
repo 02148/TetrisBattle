@@ -122,6 +122,7 @@ public class GlobalGameUIController implements Initializable {
 
     @FXML protected void handleStartGameAction(ActionEvent event){
         List<String> playersInRoom = client.TryStartGame();
+        playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
@@ -133,9 +134,38 @@ public class GlobalGameUIController implements Initializable {
             startGameButton.setDisable(true);
             startGameButton.setVisible(false);
 
+            //Adding the other player boards
+            int numPlayers = playersInRoom.size();
+
+            System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
+
+            HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
+            ArrayList<Board> opponentBoards = new ArrayList<>();
+
+            for(int i = 0; i < playersInRoom.size(); i++ ){
+                if(playersInRoom.get(i).equals(client.UUID)) continue;
+
+                System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
+
+                Opponent newOpponent = new Opponent(playersInRoom.get(i));
+                opponentBoards.add(newOpponent.getBoardView());
+
+                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+                consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
+            }
+            if(!playersInRoom.isEmpty()) {
+                try {
+                    Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                    Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+
+                    (new Thread(consumerDelta)).start();
+                    (new Thread(consumerFull)).start();
+                } catch (Exception e) {}
+            }
+
 
             // Making local game
-            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID);
+            localGame = new LocalGame(63, 94, client.roomUUID, client.UUID, playersInRoom, opponentBoards);
             boardHolder.getChildren().add(localGame.getViewModel());
             localGame.getViewModel().getScene().addEventFilter(KeyEvent.KEY_PRESSED, new EventHandler<KeyEvent>() {
                 @Override
@@ -144,31 +174,6 @@ public class GlobalGameUIController implements Initializable {
                 }
             });
             Platform.runLater(() -> localGame.toThread().start());
-
-
-            //Adding the other player boards
-            int numPlayers = playersInRoom.size();
-
-            System.out.println("There are "+ numPlayers + " in room "+ client.roomUUID);
-
-            HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
-
-            for(int i = 0; i < playersInRoom.size(); i++ ){
-                if(playersInRoom.get(i).equals(client.UUID)) continue;
-
-                System.out.println("Initializing board for player nr " + (i+1) + " with id " + playersInRoom.get(i));
-
-                Opponent newOpponent = new Opponent(playersInRoom.get(i));
-                addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
-                consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
-            }
-            try {
-                Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
-                Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
-
-                (new Thread(consumerDelta)).start();
-                (new Thread(consumerFull)).start();
-            } catch (Exception e) {}
 
 
             LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();

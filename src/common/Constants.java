@@ -2,6 +2,8 @@ package common;
 
 import javafx.scene.paint.Color;
 
+import java.util.HashMap;
+
 public class Constants {
     public static final String IP_address = "localhost";
     public static final Color[] tetroColors = new Color[]{  Color.CYAN,

@@ -10,6 +10,7 @@ import java.util.HashMap;
 public class Transformer implements Runnable {
     Space in, out, conns;
     int T;
+    boolean stop = false;
 
     public Transformer(Space in, Space out, Space conns) {
         this.in = in;
@@ -23,7 +24,7 @@ public class Transformer implements Runnable {
         var allBoards = new HashMap<String, Object[]>();
         Object[] collectedData;
         int counter;
-        while (true) {
+        while (!this.stop) {
             collectedData = new Object[]{new Object(),new Object(),new Object(),
                                          new Object(),new Object(),new Object(),
                                          new Object(),new Object(),new Object(),
@@ -67,5 +68,9 @@ public class Transformer implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopThread() {
+        this.stop = true;
     }
 }

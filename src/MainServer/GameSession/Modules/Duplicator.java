@@ -10,6 +10,7 @@ public class Duplicator implements Runnable {
     Space in, conns;
     HashMap<String, Space> out;
     int T;
+    boolean stop = false;
 
     public Duplicator(Space in, HashMap<String, Space> out, Space conns) throws Exception {
         this.in = in;
@@ -20,7 +21,7 @@ public class Duplicator implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.stop) {
             try {
                 var curConns = conns.queryAll(new FormalField(String.class));
 
@@ -54,5 +55,9 @@ public class Duplicator implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopThread() {
+        this.stop = true;
     }
 }

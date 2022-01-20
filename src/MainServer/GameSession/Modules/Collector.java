@@ -5,6 +5,7 @@ import org.jspace.Space;
 
 public class Collector implements Runnable {
     Space deltaIn, fullIn, out;
+    boolean stop = false;
 
     public Collector(Space deltaIn, Space fullIn, Space out) {
         this.deltaIn = deltaIn;
@@ -14,7 +15,7 @@ public class Collector implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.stop) {
             try {
                 // (HashMap<String,BitSet>)packageData
                 var fullPkg = this.fullIn.get(
@@ -37,5 +38,9 @@ public class Collector implements Runnable {
                 e.printStackTrace();
             }
         }
+    }
+
+    public void stopThread() {
+        this.stop = true;
     }
 }
