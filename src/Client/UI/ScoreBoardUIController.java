@@ -45,7 +45,6 @@ public class ScoreBoardUIController {
     @FXML protected void handleGoToMenuButton(ActionEvent event) throws IOException {
         client.leaveRoom();
 
-        client.roomUUID = "globalChat";
 
         FXMLLoader loader = new FXMLLoader(getClass().getResource("GlobalChatUI.fxml"));
         Scene scene = new Scene(loader.load());

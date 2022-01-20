@@ -274,6 +274,7 @@ class GlobalListener implements Runnable {
                     }
                 } else if(userInput[1].equals("gameOver")){
                     GameRoom currGameRoom = gameRooms.getGameRoom((String) userInput[2]);
+                    System.out.println("UUID FOR GAME ROOM" + currGameRoom.UUID);
 
                     int numPLayersInCurrRoom = gameRooms.queryConnections((String) userInput[2]).size();
 

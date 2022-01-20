@@ -37,7 +37,7 @@ public class GameOverListener implements Runnable{
                         new ActualField(client.roomUUID),
                         new FormalField(Object.class)
                 );
-                System.out.println("Listner : Got game over response ");
+                System.out.println("Listener : Got game over response ");
                 HashMap<String, Integer> scores = (HashMap<String, Integer>) serverResponse[3];
                 setUpPopUp(primaryStage, scores);
                 stop = true;
@@ -69,6 +69,7 @@ public class GameOverListener implements Runnable{
             scoreBoardUIController.setClient(client);
             scoreBoardUIController.setPrimaryStage(primaryStage);
             scoreBoardUIController.setUpScores(scores);
+            this.stop = true;
 
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();

@@ -55,10 +55,6 @@ public class ChatListener implements Runnable {
                         new FormalField(Double.class),
                         new FormalField(String.class));
 
-                if(chatInput != null){
-                    System.out.println("GOT SOMETHING");
-                }
-
                 if (chatInput != null && (!(chatInput[0].equals(lastSender)) || (Double) chatInput[3] > lastMessageTime)) {
                     lastMessageTime = (Double) chatInput[3];
                     lastSender = (String) chatInput[0];

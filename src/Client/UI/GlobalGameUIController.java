@@ -121,7 +121,6 @@ public class GlobalGameUIController implements Initializable {
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException, InterruptedException {
         chatListener.stop = true;
-
         if(localGame != null){
             localGame.stop();
         }
@@ -175,7 +174,7 @@ public class GlobalGameUIController implements Initializable {
 
         List<String> playersInRoom = playersInRoomInfo.get("UUID");
         List<String> playersInRoomNames = playersInRoomInfo.get("Names");
-        playersInRoom.remove(client.UUID);
+        //playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
         Stage primaryStage = (Stage)(this.startGameButton.getScene().getWindow());
@@ -239,7 +238,6 @@ public class GlobalGameUIController implements Initializable {
             });
             Platform.runLater(() -> localGame.toThread().start());
 
-
             LocalGame.uiUpdater.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
             LocalGame.uiUpdater.messageProperty().addListener((obs,oldProgress,newProgress) ->
@@ -256,11 +254,19 @@ public class GlobalGameUIController implements Initializable {
                         localGame.stop();
                         chatListener.stop = true;
                     });
+            if(!LocalGame.uiUpdater.isRunning()){
+                Platform.runLater(() ->{
+                    LocalGame.uiUpdater.cancel();
+                    LocalGame.uiUpdater.reset();
+                    LocalGame.uiUpdater.start();
+                } );
+            } else {
+                Platform.runLater(() ->{
+                    LocalGame.uiUpdater.restart();
+                });
+            }
 
-            Platform.runLater(() ->{
-                LocalGame.uiUpdater.reset();
-                LocalGame.uiUpdater.start();
-            } );
+
         } else {
             //cant start game
 

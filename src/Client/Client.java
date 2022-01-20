@@ -235,6 +235,7 @@ public class Client extends Application {
 
     try {
 
+
       userToServer.put(UUID, "gameOver", roomUUID, userName, currScore);
       gameResponse = serverToUser.query(
               new ActualField(UUID),
