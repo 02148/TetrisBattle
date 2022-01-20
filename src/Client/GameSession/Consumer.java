@@ -14,6 +14,7 @@ public class Consumer implements Runnable {
     private final String packageType, userUUID;
     private HashMap<String,Double> lastTimestampDelta, lastTimestampFull;
     private HashMap<String, ConsumerPackageHandler> consumerPackageHandlers;
+    private boolean stop = false;
 
     public Consumer(String userUUID, List<String> opponentUUIDs, HashMap<String, ConsumerPackageHandler> consumerPackageHandlers, String packageType) throws IOException, InterruptedException {
         this.userUUID = userUUID;
@@ -31,7 +32,7 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
-        while (true) {
+        while (!this.stop) {
             try {
 
                 if (this.packageType.equals("full")) {
@@ -78,9 +79,6 @@ public class Consumer implements Runnable {
                             this.consumerPackageHandlers.get(playerUUID).printBoard();
                         }
                     }
-
-
-                    //TODO: Take into account all players
                 } else {
                     throw new Exception("Unknown Package Type!");
                 }
@@ -91,6 +89,15 @@ public class Consumer implements Runnable {
                 e.printStackTrace();
             }
 
+        }
+    }
+
+    public void stop() {
+        this.stop = true;
+        try {
+            this.rs.close();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }
