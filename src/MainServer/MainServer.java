@@ -248,8 +248,10 @@ class GlobalListener implements Runnable {
                     if (connections.contains(userInput[0])) {
                         if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
                             if (connections.size() == 1) {
-                                gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
-                                gameSessions.get((String) userInput[2]).deleteGameSession();
+                                if(gameCombatEngines.containsKey((String) userInput[2])) {
+                                    gameCombatEngines.get((String) userInput[2  ]).deleteCombatEngine();
+                                    gameSessions.get((String) userInput[2]).deleteGameSession();
+                                }
                                 gameRooms.close((String) userInput[2]);
 
                                 System.out.println("Host deleted room");
