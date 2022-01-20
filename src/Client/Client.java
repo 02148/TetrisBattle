@@ -198,6 +198,8 @@ public class Client extends Application {
 
         //Error message
         System.out.println(gameResponse[1]);
+        playerInfo.put("UNABLE TO START ROOM", null);
+        return playerInfo;
       }
 
     } catch (InterruptedException e) {

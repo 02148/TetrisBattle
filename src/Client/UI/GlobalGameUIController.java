@@ -152,13 +152,21 @@ public class GlobalGameUIController implements Initializable {
 
 
     @FXML protected void handleStartGameAction(ActionEvent event){
+        startGame();
+    }
+
+    public void startGame() {
         HashMap<String,List<String>> playersInRoomInfo = client.TryStartGame();
+        if(playersInRoomInfo.containsKey("UNABLE TO START ROOM")) {
+            return;
+        }
+
         List<String> playersInRoom = playersInRoomInfo.get("UUID");
         List<String> playersInRoomNames = playersInRoomInfo.get("Names");
         playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
-        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage primaryStage = (Stage)(this.startGameButton.getScene().getWindow());
         gameOverListner = new GameOverListener(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
 
