@@ -22,6 +22,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import Client.ChatListener;
+import javafx.concurrent.Service;
 
 import java.io.IOException;
 import java.net.URL;
@@ -220,24 +221,26 @@ public class GlobalGameUIController implements Initializable {
             Platform.runLater(() -> localGame.toThread().start());
 
 
-            LocalGame.TaskRunLines taskRunLines = new LocalGame.TaskRunLines();
-
-            taskRunLines.progressProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.progressProperty().addListener((obs,oldProgress,newProgress) ->
                     lines.setText(String.format("Lines %.0f", (newProgress.doubleValue()*100)/2)));
-            taskRunLines.messageProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.messageProperty().addListener((obs,oldProgress,newProgress) ->
                     level.setText("Level " + newProgress.toString()));
-            taskRunLines.titleProperty().addListener((obs,oldProgress,newProgress) ->
+            LocalGame.uiUpdater.titleProperty().addListener((obs,oldProgress,newProgress) ->
                     {
+                        //Get the list
                         String[] line = lines.getText().split(" ");
                         System.out.println("SCORE" + line[1]);
                         client.currScore = Integer.parseInt(line[1]);
-                        //Get the list
-                        client.gameOver(consumerDelta, consumerFull);
+
                         localGame.stop();
+                        client.gameOver(consumerDelta, consumerFull);
+
                     });
 
-            Platform.runLater(() -> new Thread(taskRunLines).start());
-
+            Platform.runLater(() ->{
+                LocalGame.uiUpdater.reset();
+                LocalGame.uiUpdater.start();
+            } );
         } else {
             //cant start game
 

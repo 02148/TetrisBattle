@@ -289,14 +289,6 @@ class GlobalListener implements Runnable {
 
                         serverToUser.put(userInput[0], "ok", userInput[2], scores);
 
-                        System.out.println("Sending game over response");
-
-                        //DELETE GAME SESSION
-
-                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
-                        gameSessions.get((String) userInput[2]).deleteGameSession();
-                        gameRooms.close((String) userInput[2]);
-
                         Thread.sleep(1000);
 
                         Object[] serverResponse = serverToUser.get(
@@ -305,6 +297,16 @@ class GlobalListener implements Runnable {
                                 new ActualField( (String) userInput[2]),
                                 new FormalField(Object.class)
                         );
+
+                        System.out.println("Sending game over response");
+
+                        //DELETE GAME SESSION
+
+                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                        gameSessions.get((String) userInput[2]).deleteGameSession();
+                        gameRooms.close((String) userInput[2]);
+
+
 
 
                     } else {

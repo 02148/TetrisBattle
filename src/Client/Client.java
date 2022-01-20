@@ -34,7 +34,7 @@ public class Client extends Application {
   public RemoteSpace serverToUser;
   public RemoteSpace chatSpace;
 
-  public boolean isGameActive = false;
+
   public int currScore = 0;
 
   private static RemoteSpace mainServer;
@@ -100,7 +100,6 @@ public class Client extends Application {
         //Room can be started by UI
         System.out.println("Room can be joined using " + roomResponse[3]);
 
-        isGameActive = true;
 
       } else {
         //Error message
@@ -188,7 +187,6 @@ public class Client extends Application {
 
 
       if (gameResponse[1].equals("ok")) {
-        isGameActive = true;
 
 
 
@@ -236,13 +234,11 @@ public class Client extends Application {
 
       if (gameResponse[1].equals("ok")) {
         //Game ended
-        isGameActive = false;
         if(delta != null && full != null){
           delta.stop();
           full.stop();
         }
         roomUUID = "globalChat";
-
 
       } else {
 
