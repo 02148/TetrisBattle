@@ -17,7 +17,7 @@ public class Opponent {
 
     public Opponent( String userUUID) {
         try {
-            this.nBoard = new Board(size);
+            this.nBoard = new Board(size, true);
             this.boardState = new BoardState(boardSize);
             this.consumerPackageHandler = new ConsumerPackageHandler(boardSize, boardState, nBoard);
             this.controller = new Controls(nBoard, boardState, true);
