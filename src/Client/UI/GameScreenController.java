@@ -51,6 +51,7 @@ public class GameScreenController {
             //Get the controller and add client
             chatUI_controller = fxmlLoader.getController();
             chatUI_controller.setClient(client);
+            System.out.println(client.serverToUser.getUri());
 
             primaryStage.show();
         } catch (IOException e) {

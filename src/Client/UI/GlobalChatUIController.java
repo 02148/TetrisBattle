@@ -39,6 +39,9 @@ public class GlobalChatUIController implements Initializable {
 
     public void setClient(Client client){
         this.client = client;
+        if (client.chatSpace != null) {
+            System.out.println(client.chatSpace.getUri());
+        }
     }
 
     public void setUpChatListner(){

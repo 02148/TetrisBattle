@@ -47,7 +47,7 @@ public class Client extends Application {
     //SpaceRepository repo = new SpaceRepository();
     System.out.println("tcp://" + Constants.IP_address+ ":6969/main?mainServer");
     //repo.addGate("tcp://" + Constants.IP_address+ ":6969/?mainServer");
-    mainServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/main?mainServer");
+    //mainServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/main?mainServer");
     userToServer = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/userToServer?conn");
     serverToUser = new RemoteSpace("tcp://" + Constants.IP_address+ ":6969/serverToUser?conn");
 
