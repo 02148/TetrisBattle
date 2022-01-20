@@ -28,7 +28,7 @@ public class LocalGame implements Runnable {
     private final int boardSize = 200;
 
     public LocalGame(int posX, int posY, String gameUUID, String playerUUID, List<String> opponents, ArrayList<Board> opponentBoards) {
-        nBoard = new Board(posX,posY,size);
+        nBoard = new Board(posX,posY,size,false);
         this.boardState = new BoardState(boardSize);
         this.controller = new Controls(nBoard, boardState, false);
         this.controller.setOpponentBoards(opponentBoards);
@@ -91,7 +91,7 @@ public class LocalGame implements Runnable {
 
   public void stop() {
     this.stop = true;
-    gameOver = true;
+    //gameOver = true;
     this.attackProducer.stop();
     this.attackConsumer.stop();
     this.fullPkgProducer.stop();

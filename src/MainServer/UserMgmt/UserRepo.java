@@ -26,6 +26,14 @@ public class UserRepo {
                 new FormalField(Boolean.class));
         return new User(q);
     }
+    public User queryUser(String UUID) throws InterruptedException {
+        Object[] q = s.queryp(new ActualField(UUID),
+                new FormalField(String.class),
+                new FormalField(Integer.class),
+                new FormalField(Double.class),
+                new FormalField(Boolean.class));
+        return new User(q);
+    }
 
     public String create(String username) throws Exception {
         //It should be possible for users to have the same username

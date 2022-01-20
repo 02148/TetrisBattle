@@ -1,6 +1,7 @@
 package Client;
 
 
+import Client.GameSession.Consumer;
 import Client.UI.GlobalChatUIController;
 import Main.Main;
 import MainServer.Utils;
@@ -18,6 +19,9 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+
+//TODO: delete consumers, and local game when scoreboard is shown
+
 
 // Right now a lot of crap is included - this is only used for debugging end development purposes - Magn.
 public class Client extends Application {
@@ -150,9 +154,14 @@ public class Client extends Application {
 
 
 
-  public void leaveRoom() {
+  public void leaveRoom(Consumer delta, Consumer full) {
     try {
       userToServer.put(UUID, "leave", roomUUID,"", 0);
+      if(delta != null && full != null){
+        delta.stop();
+        full.stop();
+      }
+      roomUUID = "globalChat";
       chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
     } catch (InterruptedException e) {
       e.printStackTrace();
@@ -163,14 +172,22 @@ public class Client extends Application {
     }
   }
 
-  public List<String> TryStartGame() {
+  public HashMap<String,List<String>> TryStartGame() {
     Object[] gameResponse = new Object[0];
     List<String> players = null;
+    List<String> playerNames = null;
+    HashMap<String,List<String>> playerInfo = new HashMap<>();
     try {
 
       userToServer.put(UUID, "start", roomUUID,"", 0);
-      gameResponse = serverToUser.get(new ActualField(UUID), new FormalField(String.class), new FormalField(List.class));
+      gameResponse = serverToUser.get(new ActualField(UUID),
+              new FormalField(String.class),
+              new FormalField(List.class),
+              new FormalField(List.class));
       players = (List<String>) gameResponse[2];
+      playerNames = (List<String>) gameResponse[3];
+      playerInfo.put("UUID", players);
+      playerInfo.put("Names", playerNames);
 
 
       if (gameResponse[1].equals("ok")) {
@@ -189,7 +206,7 @@ public class Client extends Application {
     } catch (InterruptedException e) {
       e.printStackTrace();
     }
-    return players;
+    return playerInfo;
   }
 
   public void sendChat(String message) throws InterruptedException {
@@ -206,7 +223,7 @@ public class Client extends Application {
     return userName;
   }
 
-  public void gameOver() {
+  public void gameOver(Consumer delta, Consumer full) {
     Object[] gameResponse = new Object[0];
 
     try {
@@ -221,9 +238,14 @@ public class Client extends Application {
 
 
       if (gameResponse[1].equals("ok")) {
-        isGameActive = false;
-
         //Game ended
+        isGameActive = false;
+        if(delta != null && full != null){
+          delta.stop();
+          full.stop();
+        }
+        roomUUID = "globalChat";
+
 
       } else {
 

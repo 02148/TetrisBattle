@@ -13,6 +13,7 @@ import MainServer.UserMgmt.UserRepo;
 import common.Constants;
 import org.jspace.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -20,6 +21,9 @@ import java.util.List;
 public class MainServer {
     public static UserRepo users;
     public static GameRoomRepo gameRooms;
+    public static HashMap<String, GameSession> gameSessions = new HashMap<>();
+    public static HashMap<String, CombatEngine> gameCombatEngines = new HashMap<>();
+
 
 
     public static void main(String[] args) throws Exception {
@@ -39,6 +43,8 @@ public class MainServer {
         gl.setChatChannels(chatChannels);
         gl.setGameSessionRepository(gameSessionRepo);
         gl.setCombatEngineRepository(combatRepo);
+        gl.setGameSessions(gameSessions);
+        gl.setCombatEngines(gameCombatEngines);
         new Thread(gl).start();
 
         var crl = new ChatRoomListener("globalChat");
@@ -55,6 +61,9 @@ class GlobalListener implements Runnable {
     private SpaceRepository chatChannels;
     private SpaceRepository gameSessionRepository;
     private SpaceRepository combatEngineRepo;
+    private HashMap<String,GameSession> gameSessions;
+    private HashMap<String,CombatEngine> gameCombatEngines;
+
 
     public void setChatChannels(SpaceRepository chatChannels) {
         this.chatChannels = chatChannels;
@@ -74,6 +83,14 @@ class GlobalListener implements Runnable {
 
     public void setUsers(UserRepo users) {
         this.users = users;
+    }
+
+    public void setGameSessions(HashMap<String,GameSession> gameSessions){
+        this.gameSessions = gameSessions;
+    }
+
+    public void setCombatEngines(HashMap<String, CombatEngine> gameCombatEngines) {
+        this.gameCombatEngines = gameCombatEngines;
     }
 
     public void run() {
@@ -98,7 +115,7 @@ class GlobalListener implements Runnable {
 
                 if (userInput[1].equals("login")) {
                     String UUID = users.create((String) userInput[0]);
-                    gameRooms.addConnection((String) userInput[0],"globalChat");
+                    gameRooms.addConnection(UUID,"globalChat");
                     serverToUser.put(userInput[0], "ok", UUID);
                     System.out.println("Login: Sent response to client");
 
@@ -107,6 +124,7 @@ class GlobalListener implements Runnable {
                     String UUID = roomInfo[0];
                     String roomNr = roomInfo[1];
                     serverToUser.put(userInput[0],"ok", UUID, roomNr);
+                    gameRooms.removeConnection((String) userInput[0], "globalChat");
 
                     System.out.println("Create Room: Server response sent");
 
@@ -132,11 +150,20 @@ class GlobalListener implements Runnable {
                 } else if(userInput[1].equals("start")){
                     List<String> currPLayers = gameRooms.queryConnections((String) userInput[2]);
                     String roomUUID = (String) userInput[2];
+
+                    //Get player names
+                    List<String> currPlayerNames = new ArrayList<>();
+                    for(String playerUUID : currPLayers){
+                        currPlayerNames.add( users.queryUser(playerUUID).username);
+                        System.out.println(users.queryUser(playerUUID).username);
+                    }
+
+
                     if(!gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
-                        serverToUser.put(userInput[0], "not ok", currPLayers);
+                        serverToUser.put(userInput[0], "not ok", currPLayers, currPlayerNames);
                     }else{
-                        serverToUser.put(userInput[0], "ok", currPLayers);
+                        serverToUser.put(userInput[0], "ok", currPLayers, currPlayerNames);
 
                         //Initialize game session
                         SequentialSpace conns = new SequentialSpace();
@@ -148,14 +175,20 @@ class GlobalListener implements Runnable {
                         CombatEngine combatEngine = new CombatEngine(conns, combatEngineRepo, roomUUID);
                         (new Thread(combatEngine)).start();
 
+                        gameCombatEngines.put((String) userInput[2], combatEngine);
+
                         GameSession gameSession   =  new GameSession(this.gameSessionRepository, roomUUID, conns);
+                        gameSessions.put((String) userInput[2], gameSession);
                     }
                 } else if (userInput[1].equals("leave")) {
                     List connections = gameRooms.queryConnections((String) userInput[2]);
                     if (connections.contains(userInput[0])) {
                         if (gameRooms.isHost((String) userInput[2],(String) userInput[0])) {
                             if (connections.size() == 1) {
+                                gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                                gameSessions.get((String) userInput[2]).deleteGameSession();
                                 gameRooms.close((String) userInput[2]);
+
                                 System.out.println("Host deleted room");
 
                             } else {
@@ -189,13 +222,34 @@ class GlobalListener implements Runnable {
                         //Game can be ended
                         HashMap<String,Integer> scores = currGameRoom.getScores();
 
+                        //Insert game room again
+                        gameRooms.insertGameRoom(currGameRoom);
+
                         serverToUser.put(userInput[0], "ok", userInput[2], scores);
 
                         System.out.println("Sending game over response");
+
+                        //DELETE GAME SESSION
+
+                        gameCombatEngines.get((String) userInput[2]).deleteCombatEngine();
+                        gameSessions.get((String) userInput[2]).deleteGameSession();
+                        gameRooms.close((String) userInput[2]);
+
+                        Thread.sleep(1000);
+
+                        Object[] serverResponse = serverToUser.get(
+                                new ActualField((String) userInput[0]),
+                                new ActualField("ok"),
+                                new ActualField( (String) userInput[2]),
+                                new FormalField(Object.class)
+                        );
+
+
                     } else {
+                        gameRooms.insertGameRoom(currGameRoom);
                         serverToUser.put(userInput[0], "game not over", userInput[2], currGameRoom.getScores());
                     }
-                    gameRooms.insertGameRoom(currGameRoom);
+
 
                 }
             } catch (InterruptedException e) {
@@ -206,6 +260,8 @@ class GlobalListener implements Runnable {
         }
 
     }
+
+
 }
 
 

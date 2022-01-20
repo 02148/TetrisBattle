@@ -56,7 +56,7 @@ public class ChatListener implements Runnable {
                     message[0] = (String) chatInput[4]; //Message
                     message[1] = Double.toString((Double) chatInput[3]); //Timestamp
                     message[2] = (String) chatInput[2]; //Username
-                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3]) *1000));
+                    String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3])));
                     chatArea.appendText("\n" +  date + " " + message[2] + ": " + message[0]);
                 }
 

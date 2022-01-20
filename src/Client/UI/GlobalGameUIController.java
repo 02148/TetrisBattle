@@ -5,7 +5,7 @@ import Client.GameSession.Consumer;
 import Client.GameSession.ConsumerPackageHandler;
 import Client.Logic.LocalGame;
 import Client.Logic.Opponent;
-import Client.gameOverListner;
+import Client.GameOverListener;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +19,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import Client.ChatListener;
 
@@ -47,6 +48,17 @@ public class GlobalGameUIController implements Initializable {
     @FXML AnchorPane player7View;
     @FXML AnchorPane player8View;
 
+    @FXML Text player1Text;
+    @FXML Text player2Text;
+    @FXML Text player3Text;
+    @FXML Text player4Text;
+    @FXML Text player5Text;
+    @FXML Text player6Text;
+    @FXML Text player7Text;
+    @FXML Text player8Text;
+
+    @FXML Text roomTitle;
+
 
 
 
@@ -56,21 +68,40 @@ public class GlobalGameUIController implements Initializable {
 
     private Client client;
     private ChatListener chatListener;
-    private gameOverListner gameOverListner;
+    private GameOverListener gameOverListner;
     private List<AnchorPane> playerViews = new ArrayList<>();
+
+    private List<Text> playerNames = new ArrayList<>();
+    Consumer consumerDelta;
+    Consumer consumerFull;
 
 
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
         playerViews.add(player1View);
+        playerNames.add(player1Text);
+
         playerViews.add(player2View);
+        playerNames.add(player2Text);
+
         playerViews.add(player3View);
+        playerNames.add(player3Text);
+
         playerViews.add(player4View);
+        playerNames.add(player4Text);
+
         playerViews.add(player5View);
+        playerNames.add(player5Text);
+
         playerViews.add(player6View);
+        playerNames.add(player6Text);
+
         playerViews.add(player7View);
+        playerNames.add(player7Text);
+
         playerViews.add(player8View);
+        playerNames.add(player8Text);
 
 
     }
@@ -88,13 +119,13 @@ public class GlobalGameUIController implements Initializable {
 
     @FXML
     protected void handleLeaveGameAction(ActionEvent event) throws IOException {
+        chatListener.stop = true;
+
         if(localGame != null){
             localGame.stop();
         }
-        chatListener.stop = true;
-        client.leaveRoom();
 
-        client.roomUUID = "globalChat";
+        client.leaveRoom(consumerDelta, consumerFull);
 
         GameScreenController.hideScreen_gameUI();
         GameScreenController.setScreen_chatUI(client);
@@ -110,12 +141,14 @@ public class GlobalGameUIController implements Initializable {
 
 
     @FXML protected void handleStartGameAction(ActionEvent event){
-        List<String> playersInRoom = client.TryStartGame();
+        HashMap<String,List<String>> playersInRoomInfo = client.TryStartGame();
+        List<String> playersInRoom = playersInRoomInfo.get("UUID");
+        List<String> playersInRoomNames = playersInRoomInfo.get("Names");
         playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
-        gameOverListner = new gameOverListner(client, primaryStage);
+        gameOverListner = new GameOverListener(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
 
 
@@ -131,6 +164,16 @@ public class GlobalGameUIController implements Initializable {
             HashMap<String, ConsumerPackageHandler> consumerPackageHandlers = new HashMap<>();
             ArrayList<Board> opponentBoards = new ArrayList<>();
 
+            for(int i = 0; i < playersInRoom.size(); i++){
+                for(int j = 0; j < playersInRoomNames.size(); j++){
+                    if(playersInRoomNames.get(j).equals(client.getUserName())) continue;
+                    playerNames.get(i).setText(playersInRoomNames.get(j));
+                }
+
+            }
+
+
+
             for(int i = 0; i < playersInRoom.size(); i++ ){
                 if(playersInRoom.get(i).equals(client.UUID)) continue;
 
@@ -140,12 +183,13 @@ public class GlobalGameUIController implements Initializable {
                 opponentBoards.add(newOpponent.getBoardView());
 
                 addPlayerBoard(newOpponent.getBoardView(), playerViews.get(i));
+
                 consumerPackageHandlers.put(playersInRoom.get(i), newOpponent.getConsumerPackageHandler());
             }
             if(!playersInRoom.isEmpty()) {
                 try {
-                    Consumer consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
-                    Consumer consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
+                    consumerDelta = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "delta");
+                    consumerFull = new Consumer(client.UUID, playersInRoom, consumerPackageHandlers, "full");
 
                     (new Thread(consumerDelta)).start();
                     (new Thread(consumerFull)).start();
@@ -177,7 +221,7 @@ public class GlobalGameUIController implements Initializable {
                         System.out.println("SCORE" + line[1]);
                         client.currScore = Integer.parseInt(line[1]);
                         //Get the list
-                        client.gameOver();
+                        client.gameOver(consumerDelta, consumerFull);
                         localGame.stop();
                     });
 
@@ -190,8 +234,8 @@ public class GlobalGameUIController implements Initializable {
     }
 
     private void addPlayerBoard(Board playerBoard, AnchorPane pane){
-        AnchorPane.setBottomAnchor(playerBoard, 5.0);
-        AnchorPane.setTopAnchor(playerBoard,8.0);
+        AnchorPane.setBottomAnchor(playerBoard, 0.0);
+        AnchorPane.setTopAnchor(playerBoard,15.0);
         AnchorPane.setLeftAnchor(playerBoard, 50.0);
         AnchorPane.setRightAnchor(playerBoard, 5.0);
         pane.getChildren().add(playerBoard);

@@ -34,7 +34,6 @@ public class GlobalChatUIController implements Initializable {
 
     @Override
     public void initialize(URL url, ResourceBundle resourceBundle) {
-
     }
 
     public void setClient(Client client){
@@ -53,34 +52,40 @@ public class GlobalChatUIController implements Initializable {
 
     public void setIsLoggedIn(boolean loggedIn){
         isLoggedIn = loggedIn;
+        if(loggedIn) {
+            username.setText(Client.userName);
+            username.setDisable(true);
+        }
     }
 
     @FXML protected void handleLoginAction(ActionEvent event){
         if(!client.isLoggedIn){
-
-            client.userName = username.getText();
-            String response = client.login();
-
-            if(response.equals("ok")){
-                username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
-                username.setDisable(true);
-
-                setUpChatListner();
-                chatListener.stop = false;
+            if(!username.getText().trim().isEmpty() ){
+                client.userName = username.getText();
+                String response = client.login();
+                if(response.equals("ok")){
+                    isLoggedIn = true;
+                    username.setStyle("-fx-text-fill: green; -fx-font-size: 12px;");
+                    username.setDisable(true);
+                    if(chatListener == null){
+                        setUpChatListner();
+                        chatListener.stop = false;
+                    }
+                }
+            } else {
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             }
+        }else{
+            chatListener.stop = false;
         }
-
-
     }
 
     @FXML protected void handleExitButtonAction(ActionEvent event) {
-        if(chatListener != null){
-            chatListener.stop = true;
-        }
-       
         Platform.exit();
         System.exit(0);
     }
+
     @FXML protected void handleGoToLobbyButtonAction(ActionEvent event) throws IOException, InterruptedException {
         String response = "";
 
@@ -89,19 +94,17 @@ public class GlobalChatUIController implements Initializable {
         Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
         Scene scene = new Scene(loader.load(),1300,800);
 
-        
         //Check if username and roomUUID was provided
-        if(username.getText().trim().isEmpty()){
+        if(!isLoggedIn && username.getText().trim().isEmpty() ){
             username.setPromptText("Please input username");
             username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
         } else {
-            if(!isLoggedIn){
+            if(!username.getText().trim().isEmpty()){
                 client.userName = username.getText();
                 username.setDisable(true);
                 client.login();
                 isLoggedIn = true;
             }
-
 
             //Check if room exists if not create one
             //Check if user want to join or host
@@ -154,36 +157,32 @@ public class GlobalChatUIController implements Initializable {
 
     @FXML protected void handleChatInputAction(ActionEvent event) throws InterruptedException {
         if(!client.isLoggedIn){
-            if(username.getText().trim().isEmpty()){
-                username.setPromptText("Please input username");
-                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            } else {
+            if(!username.getText().trim().isEmpty() ){
                 client.userName = username.getText();
-                String response = client.login();
-                if(response.equals("ok")){
-
-                    username.setDisable(true);
-                    client.isLoggedIn = true;
-
-                    client.sendChat(chatTextField.getText());
-                    chatTextField.clear();
-
+                client.login();
+                username.setDisable(true);
+                
+                if(chatListener == null){
+                    System.out.println("Setting up new Chat Listner");
                     setUpChatListner();
                     chatListener.stop = false;
-
+                } else {
+                    chatListener.stop = false;
                 }
+            } else {
+                username.setPromptText("Please input username");
+                username.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            }
+            
+        } else{
+            chatListener.stop = false;
+        }
+        
 
-            }
-        } else {
-            if(chatListener == null){
-                System.out.println("Setting up new Chat Listner");
-                setUpChatListner();
-                chatListener.stop = false;
-            }
-            System.out.println(client.userName);
-            client.sendChat(chatTextField.getText());
-            chatTextField.clear();
-            }
+        System.out.println(client.userName);
+        client.sendChat(chatTextField.getText());
+        chatTextField.clear();
+            
         }
     }
 
