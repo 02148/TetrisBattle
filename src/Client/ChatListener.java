@@ -1,5 +1,8 @@
 package Client;
 
+import Client.UI.GlobalGameUIController;
+import javafx.application.Application;
+import javafx.application.Platform;
 import org.jspace.ActualField;
 import org.jspace.FormalField;
 import org.jspace.RemoteSpace;
@@ -17,6 +20,7 @@ public class ChatListener implements Runnable {
     private Double lastMessageTime = 0.0;
     private String lastSender = "";
     public boolean stop = false;
+    private GlobalGameUIController globalGameUIController;
 
     public ChatListener(TextArea chat) {
         this.chatArea = chat;
@@ -67,6 +71,10 @@ public class ChatListener implements Runnable {
                     message[2] = (String) chatInput[2]; //Username
                     String date = new java.text.SimpleDateFormat("MM/dd/yyyy HH:mm:ss").format(new java.util.Date ((long) ((double) chatInput[3])));
                     chatArea.appendText("\n" +  date + " " + message[2] + ": " + message[0]);
+
+                    if(message[0].equals("HOST HAS STARTED GAME") && globalGameUIController != null)
+                        Platform.runLater(() -> globalGameUIController.startGame(true));
+
                 }
 
 
@@ -79,5 +87,9 @@ public class ChatListener implements Runnable {
         System.out.println("ChatListener is not running");
 
 
+    }
+
+    public void setGlobalGameUIController(GlobalGameUIController globalGameUIController) {
+        this.globalGameUIController = globalGameUIController;
     }
 }

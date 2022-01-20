@@ -26,10 +26,7 @@ import javafx.concurrent.Service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public class GlobalGameUIController implements Initializable {
     @FXML private TextArea gameChatArea;
@@ -73,6 +70,7 @@ public class GlobalGameUIController implements Initializable {
     private List<AnchorPane> playerViews = new ArrayList<>();
 
     private List<Text> playerNames = new ArrayList<>();
+    private boolean gameStarted;
     Consumer consumerDelta;
     Consumer consumerFull;
 
@@ -111,8 +109,12 @@ public class GlobalGameUIController implements Initializable {
         chatListener = new ChatListener(gameChatArea);
         chatListener.setClient(client);
         chatListener.setChatSpace(client.chatSpace);
+        chatListener.stop = false;
+        chatListener.setGlobalGameUIController(this);
+
         Thread chatUpdater = new Thread(chatListener);
         Platform.runLater(()-> chatUpdater.start());
+        this.gameStarted = false;
 
     }
 
@@ -146,19 +148,39 @@ public class GlobalGameUIController implements Initializable {
         client.sendChat(client.getUserName() + " entered the room");
     }
     @FXML protected void  handleGameChatInputAction(ActionEvent event) throws InterruptedException {
+            if(Objects.equals(gameChatTextField.getText(), "HOST HAS STARTED GAME"))
+                return;
             client.sendChat(gameChatTextField.getText());
             gameChatTextField.clear();
     }
 
 
     @FXML protected void handleStartGameAction(ActionEvent event){
+        startGame(false);
+    }
+
+    public void startGame(boolean fromChat) {
         HashMap<String,List<String>> playersInRoomInfo = client.TryStartGame();
+        if(playersInRoomInfo.containsKey("UNABLE TO START ROOM")) {
+            return;
+        }
+        if(gameStarted)
+            return;
+        this.gameStarted = true;
+        if(!fromChat) {
+            try {
+                client.sendChat("HOST HAS STARTED GAME");
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         List<String> playersInRoom = playersInRoomInfo.get("UUID");
         List<String> playersInRoomNames = playersInRoomInfo.get("Names");
         playersInRoom.remove(client.UUID);
 
         //Setup listener to display scoreboard
-        Stage primaryStage = (Stage)((Node)event.getSource()).getScene().getWindow();
+        Stage primaryStage = (Stage)(this.startGameButton.getScene().getWindow());
         gameOverListner = new GameOverListener(client, primaryStage);
         Platform.runLater(() -> new Thread(gameOverListner).start());
 

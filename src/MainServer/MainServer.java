@@ -224,10 +224,10 @@ class GlobalListener implements Runnable {
                     }
 
 
-                    if(!gameRooms.isHost(roomUUID, (String) userInput[0])){
+                    if( !gameSessions.containsKey((String) userInput[2]) && !gameRooms.isHost(roomUUID, (String) userInput[0])){
                         //Person is not host so they cant start the game
                         serverToUser.put(userInput[0], "not ok", currPLayers, currPlayerNames);
-                    }else{
+                    } else{
                         serverToUser.put(userInput[0], "ok", currPLayers, currPlayerNames);
 
                         //Initialize game session
