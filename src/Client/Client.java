@@ -28,6 +28,8 @@ public class Client extends Application {
   public static String userName;
   public static String UUID;
 
+  public Consumer deltaConsumer, fullConsumer;
+
   public String roomUUID = "globalChat";
 
   public static RemoteSpace userToServer;
@@ -152,14 +154,15 @@ public class Client extends Application {
 
 
 
-  public void leaveRoom(Consumer delta, Consumer full) {
+  public void leaveRoom() {
     try {
       userToServer.put(UUID, "leave", roomUUID,"", 0);
-      if(delta != null && full != null){
-        delta.stop();
-        full.stop();
-      }
 
+
+      if(deltaConsumer != null)
+        deltaConsumer.stop();
+      if(fullConsumer != null)
+        fullConsumer.stop();
       roomUUID = "globalChat";
       chatSpace = new RemoteSpace("tcp://" + Constants.IP_address+ ":4242/globalChat?conn");
       System.out.println("GLOBAL CHAT ENTERED");
@@ -243,10 +246,12 @@ public class Client extends Application {
 
       if (gameResponse[1].equals("ok")) {
         //Game ended
-        if(delta != null && full != null){
+
+        if(delta != null)
+
           delta.stop();
+        if(full != null)
           full.stop();
-        }
         roomUUID = "globalChat";
 
       } else {
